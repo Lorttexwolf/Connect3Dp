@@ -1,5 +1,9 @@
 # Connect3Dp
 
-Design a vendor-agnostic remote management framework for 3D Printing.
+**Design a vendor-agnostic remote management framework for 3D Printing.**
 
 A Purdue Northwest Undergraduate Research Proposal conducted by Aaron Jung, Justin Meng, and Jih Bin Luo.
+
+## Documents
+
+[Creality Print & Creality K1C](./Research/Creality/CrealityK1C.md)

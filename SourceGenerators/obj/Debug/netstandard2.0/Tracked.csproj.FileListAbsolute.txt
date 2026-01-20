@@ -1,0 +1,11 @@
+C:\Users\comis\Documents\Connect3Dp\Tracked\bin\Debug\netstandard2.0\Connect3Dp.Tracked.deps.json
+C:\Users\comis\Documents\Connect3Dp\Tracked\bin\Debug\netstandard2.0\Connect3Dp.Tracked.dll
+C:\Users\comis\Documents\Connect3Dp\Tracked\bin\Debug\netstandard2.0\Connect3Dp.Tracked.pdb
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.csproj.AssemblyReference.cache
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.AssemblyInfoInputs.cache
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.AssemblyInfo.cs
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.csproj.CoreCompileInputs.cache
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Tracked.sourcelink.json
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Connect3Dp.Tracked.dll
+C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Connect3Dp.Tracked.pdb

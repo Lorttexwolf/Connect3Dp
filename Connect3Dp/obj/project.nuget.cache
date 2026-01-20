@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "eO1fjqLKzaM=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connect3Dp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\comis\\.nuget\\packages\\mqttnet\\5.0.1.1416\\mqttnet.5.0.1.1416.nupkg.sha512",
+    "C:\\Users\\comis\\.nuget\\packages\\partialsourcegen\\0.0.20\\partialsourcegen.0.0.20.nupkg.sha512"
+  ],
+  "logs": []
+}

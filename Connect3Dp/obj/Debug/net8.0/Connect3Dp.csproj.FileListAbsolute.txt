@@ -1,0 +1,13 @@
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.csproj.AssemblyReference.cache
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.AssemblyInfoInputs.cache
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.AssemblyInfo.cs
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.csproj.CoreCompileInputs.cache
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.sourcelink.json
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\Connect3Dp.deps.json
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\Connect3Dp.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\Connect3Dp.pdb
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\refint\Connect3Dp.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.pdb
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\ref\Connect3Dp.dll

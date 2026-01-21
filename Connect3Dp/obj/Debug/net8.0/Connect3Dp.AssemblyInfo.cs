@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Connect3Dp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36768fdfb97fd5db43857db60629b391c4200e75")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55a442ead309ded47512056796ffc600c617d04f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Connect3Dp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Connect3Dp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

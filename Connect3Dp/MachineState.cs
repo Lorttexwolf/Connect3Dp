@@ -1,4 +1,5 @@
-﻿using Connect3Dp.Plugins.OME;
+﻿using Connect3Dp.Constants;
+using Connect3Dp.Plugins.OME;
 using Connect3Dp.SourceGeneration;
 using Connect3Dp.Tracked;
 using PartialSourceGen;
@@ -35,6 +36,8 @@ namespace Connect3Dp
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public MachineAirDuctMode? AirDuctMode { get; internal set; }
+
+        public Dictionary<string, bool> LightFixtures { get; internal set; } = [];
 
         public string? StreamingOMEURL { get; internal set; }
         public string? ThumbnailOMEURL { get; internal set; }
@@ -105,17 +108,7 @@ namespace Connect3Dp
         {
             if (!this.HasFeature(desiredFeature))
             {
-                throw new MachineException(new MachineMessage
-                {
-                    Title = "Unsupported Feature",
-                    Body = $"Machine does not support feature {Enum.GetName(desiredFeature)}",
-                    Source = MessageSource.Connector,
-                    Severity = MachineMessageSeverity.Error,
-                    AutoResolve = new MessageAutoResole { },
-                    IssuedAt = DateTime.Now,
-                    LastSeenAt = DateTime.Now,
-
-                }, null);
+                throw new MachineException(MachineMessages.NoFeature(desiredFeature));
             }
         }
     }

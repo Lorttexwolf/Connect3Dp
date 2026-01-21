@@ -11,19 +11,20 @@ namespace Connect3Dp.Constants
     /// </summary>
     internal static class MachineMessages
     {
-        public static MachineMessage FailedToConnect { get; } = new MachineMessage
+        public static MachineMessage FailedToConnect => new("Unable to connect to Machine", "An issue occurred connecting to this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
         {
-            Title = "Unable to connect to Machine",
-            Body = "An issue occurred connecting to this Machine",
-            Severity = MachineMessageSeverity.Error,
             AutoResolve = new MessageAutoResole
             {
                 OnConnected = true
-            },
-            Source = MessageSource.Connector,
-            IssuedAt = DateTime.Now,
-            LastSeenAt = DateTime.Now,
-            
+            }
         };
+
+        public static MachineMessage NoFeature(MachineFeature desiredFeature)
+        {
+            return new MachineMessage("Unsupported Feature", $"Machine does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+            {
+                Severity = MachineMessageSeverity.Error
+            };
+        }
     }
 }

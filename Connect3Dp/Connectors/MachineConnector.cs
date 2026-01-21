@@ -26,7 +26,7 @@ namespace Connect3Dp.Connectors
 
         #region Connect()
 
-        public Task Connect()
+        public Task Connect(CancellationToken cancellationToken = default)
         {
             return Do(async () =>
             {
@@ -42,7 +42,30 @@ namespace Connect3Dp.Connectors
             }, Constants.MachineMessages.FailedToConnect);
         }
 
-        protected abstract Task Connect_Internal();
+        protected abstract Task Connect_Internal(CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Light Fixtures
+
+        protected async Task SetLightFixture(string name, bool isOn)
+        {
+            State.EnsureHasFeature(MachineFeature.Lighting);
+
+            var changeOp = new RunnableOperation(
+                async (_) => await SetLightFixture_Internal(name, isOn),
+                (_) => Task.FromResult((State.LightFixtures.ContainsKey(name) && State.LightFixtures.GetValueOrDefault(name) == isOn) ? CompletionStatus.Complete() : CompletionStatus.NotComplete()),
+                timeout: TimeSpan.FromSeconds(5));
+
+            var result = await changeOp.RunAsync();
+
+            _ = this.PollChanges();
+        }
+
+        protected virtual Task SetLightFixture_Internal(string name, bool isOn)
+        {
+            throw new NotImplementedException($"{nameof(SetLightFixture_Internal)} has not been implemented on the Connector");
+        }
 
         #endregion
 

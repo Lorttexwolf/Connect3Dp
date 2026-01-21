@@ -47,12 +47,12 @@ namespace Connect3Dp.Connectors.BambuLab
             MQTTClient.ApplicationMessageReceivedAsync += OnMessage;
         }
 
-        public async Task Connect()
+        public async Task Connect(CancellationToken cancellationToken = default)
         {
             if (this.MQTTClient.IsConnected) return;
 
-            await this.MQTTClient.ConnectAsync(this.MQTTOptions);
-            await this.MQTTClient.PingAsync();
+            await this.MQTTClient.ConnectAsync(this.MQTTOptions, cancellationToken);
+            await this.MQTTClient.PingAsync(cancellationToken);
         }
 
         private async Task PublishCommand(string category, string command, JsonObject? commandData = null)

@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace Connect3Dp.Connectors.Creality
 {
-    internal class CrealityK1Connector
+    public class CrealityK1Connector(Uri address, string nickname, string uid) : MachineConnector(nickname, uid, "Creality", "K1C")
     {
-        private readonly JEWebSocket Socket;
+        private readonly SimpleWebSocketClient Websocket = new(address);
+
+        protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
+        {
+            await this.Websocket.ConnectAsync(cancellationToken);
+        }
     }
 }

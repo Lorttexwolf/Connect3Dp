@@ -31,11 +31,9 @@ namespace Connect3Dp.Connectors.BambuLab
             this.MQTT.OnData += MQTT_OnData;
         }
 
-        protected override async Task<bool> Connect_Internal()
+        protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
         {
             await this.MQTT.Connect();
-
-            return this.MQTT.IsConnected;
         }
 
         private void MQTT_OnData(BBLMQTTData data)

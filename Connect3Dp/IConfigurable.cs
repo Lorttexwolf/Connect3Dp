@@ -1,12 +1,19 @@
-﻿namespace Connect3Dp
+﻿using Connect3Dp.Connectors;
+using System.Text.Json.Serialization;
+
+namespace Connect3Dp
 {
-    // https://github.com/greghesp/ha-bambulab/issues/1448
-    // https://www.youtube.com/watch?v=44s4A_yNPOw
-
-    public interface IConfigurable
+    public interface IConfigurableConnector
     {
-        public object GetConfiguration();
+        object GetConfiguration();
 
-        public static abstract object MakeWithConfiguration(object configuration);
+        public static abstract Type GetConfigurationType();
+
+        public static abstract MachineConnector CreateFromConfiguration(object configuration);
+    }
+
+    public interface IConnectorConfiguration
+    {
+        string ConnectorTypeFullName { get; }
     }
 }

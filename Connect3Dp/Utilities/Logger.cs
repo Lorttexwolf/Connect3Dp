@@ -20,16 +20,16 @@ namespace Connect3Dp.Utilities
 
         private readonly object _LOCK = new();
 
-        public Logger(string categoryName, Level visibleLevels = Level.Trace)
+        private Logger(string categoryName, Level visibleLevels = Level.Trace)
         {
-            this.CategoryName = categoryName;
-            this.VisibleLevels = visibleLevels;
+            CategoryName = categoryName;
+            VisibleLevels = visibleLevels;
         }
 
         public void Log(Level level, string message, ConsoleColor foregroundColor = ConsoleColor.White)
         {
-            Level visibleLevels = this.VisibleLevels;
-            if (OverriddenCategoryLevels.TryGetValue(this.CategoryName, out var overiddenLevel))
+            Level visibleLevels = VisibleLevels;
+            if (OverriddenCategoryLevels.TryGetValue(CategoryName, out var overiddenLevel))
             {
                 visibleLevels = overiddenLevel;
             }
@@ -38,7 +38,7 @@ namespace Connect3Dp.Utilities
             lock (_LOCK)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Write($"[{DateTime.Now.ToString("h:mm tt")}] ");
+                Console.Write($"[{DateTime.Now:h:mm tt}] ");
 
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.Write($"{CategoryName} ");
@@ -101,7 +101,7 @@ namespace Connect3Dp.Utilities
             Info(message);
         }
 
-        public static Logger Category(string categoryName)
+        public static Logger OfCategory(string categoryName)
         {
             if (!CategoriesToLogger.TryGetValue(categoryName, out Logger? value))
             {

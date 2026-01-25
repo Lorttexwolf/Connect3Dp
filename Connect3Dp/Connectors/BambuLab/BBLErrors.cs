@@ -17,7 +17,6 @@ namespace Connect3Dp.Connectors.BambuLab
 
         private static readonly ConcurrentDictionary<string, Lazy<Task<BBLMachineErrors>>> DownloadedErrors;
 
-
         //private static readonly PeriodicAsyncAction periodicCheckForUpdates();
 
         static BBLErrors()

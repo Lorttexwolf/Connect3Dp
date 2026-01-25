@@ -1,0 +1,23 @@
+﻿using Connect3Dp.State;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Connect3Dp.Extensions
+{
+    public static class MachineStatusExtensions
+    {
+        public static bool IsOccupied(this MachineStatus status)
+        {
+            return status switch
+            {
+                MachineStatus.Printing => true,
+                MachineStatus.Paused => true,
+                MachineStatus.Failed => true,
+                _ => false,
+            };
+        }
+    }
+}

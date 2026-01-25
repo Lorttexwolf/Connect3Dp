@@ -50,9 +50,29 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Cronos": {
+              "target": "Package",
+              "version": "[0.11.1, )"
+            },
+            "FluentFTP": {
+              "target": "Package",
+              "version": "[53.0.2, )"
+            },
+            "FluentFTP.GnuTLS": {
+              "target": "Package",
+              "version": "[1.0.37, )"
+            },
+            "Humanizer": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            },
             "MQTTnet": {
               "target": "Package",
               "version": "[5.0.1.1416, )"
+            },
+            "NJsonSchema": {
+              "target": "Package",
+              "version": "[11.5.2, )"
             },
             "PartialSourceGen": {
               "target": "Package",

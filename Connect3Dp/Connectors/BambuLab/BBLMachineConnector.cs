@@ -1,151 +1,213 @@
-﻿using Connect3Dp.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using Connect3Dp.Connectors.BambuLab.Constants;
+using Connect3Dp.State;
+using Connect3Dp.Utilities;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Connect3Dp.Connectors.BambuLab
 {
-    public class BBLMachineConnector : MachineConnector
+    public sealed class BBLMachineConfiguration : IConnectorConfiguration
     {
-        public BBLFirmwareVersion? FirmwareVersion { get; private set; }
+        public required string Address { get; init; }
+        public required string SerialNumber { get; init; }
+        public required string AccessCode { get; init; }
+        public string? Nickname { get; init; }
+
+        public string ConnectorTypeFullName { get; } = typeof(BBLMachineConnector).FullName!;
+    }
+
+    public class BBLMachineConnector : MachineConnector, IConfigurableConnector
+    {
         public IPAddress Address { get; }
         public string SerialNumber { get; }
         public string PrefixSerialNumber { get; }
         public string AccessCode { get; }
 
+        private readonly BBLFTPConnection FTP; 
         private readonly BBLMQTTConnection MQTT;
-        private bool PrevUsesUnsupportedSecurity { get; set; }
+        private BBLFirmwareVersion? FirmwareVersion;
+        private bool PrevUsesUnsupportedSecurity;
+        private bool HasUSBOrSDCard;
+        private readonly bool IsUSBOrSDCardRequired;
 
-        private BBLMachineConnector(string nickname, string sn, string accessCode, IPAddress address) : base(nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
+        private BBLMachineConnector(string? nickname, string sn, string accessCode, IPAddress address) : base(nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
         {
             this.Address = address;
             this.SerialNumber = sn;
             this.PrefixSerialNumber = sn[..3];
             this.AccessCode = accessCode;
             this.MQTT = new BBLMQTTConnection(address, sn, accessCode);
+            this.FTP = new BBLFTPConnection(address, accessCode);
+            this.HasUSBOrSDCard = false;
+            this.IsUSBOrSDCardRequired = BBLConstants.IsSDCardOrUSBRequired(BBLConstants.GetModelFromSerialNumber(sn));
 
             this.MQTT.OnData += MQTT_OnData;
-        }
 
-        protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
-        {
-            await this.MQTT.Connect();
+            _ = new PeriodicAsyncAction(TimeSpan.FromSeconds(30), async () =>
+            {
+                if (!this.State.IsConnected) return;
+
+                var sb = new StringBuilder("3MF Files on SD Card / USB:\n");
+                
+                foreach (var item3MF in await this.FTP.List3MFFiles())
+                {
+                    sb.AppendLine($"|\t{item3MF}");
+                }
+
+                Logger.OfCategory("Bleh, 3MF").Trace(sb.ToString());
+            });
         }
 
         private void MQTT_OnData(BBLMQTTData data)
         {
-            if (data.Connection.HasValue)
+            if (data.HasUSBOrSDCard.HasValue && this.IsUSBOrSDCardRequired)
             {
-                this.State.IsConnected = data.Connection.Value;
+                bool hasMedia = data.HasUSBOrSDCard.Value;
+                var hasMissingMessage = this.State.Messages.Contains(BBLMessages.SDCardOrUSBMissing);
 
-                if (!data.Connection.Value)
+                if (!hasMedia && !hasMissingMessage)
+                {
+                    // Removed
+                    data.Changes.AddMessage(BBLMessages.SDCardOrUSBMissing);
+                }
+                else if (hasMedia && hasMissingMessage)
+                {
+                    // Added
+                    data.Changes.RemoveMessage(BBLMessages.SDCardOrUSBMissing);
+                }
+
+                this.HasUSBOrSDCard = hasMedia;
+            }
+
+            if (data.Changes.IsConnected.HasValue)
+            {
+                if (!data.Changes.IsConnected.Value)
                 {
                     // Disconnected, reset security flag.
                     this.PrevUsesUnsupportedSecurity = false;
                 }
             }
 
-            if (data.FirmwareVersion.HasValue && !this.PrevUsesUnsupportedSecurity)
+            if (data.FirmwareVersion.HasValue)
             {
                 this.FirmwareVersion = data.FirmwareVersion.Value;
-
-                MachineFeature machineFeatures = MachineFeature.Lighting | MachineFeature.Controllable | MachineFeature.Print;
-
-                // We will decide which features are available on this machine depending on the model!
-
-                // All models have automatic bed-leveling capability.
-                machineFeatures |= MachineFeature.Print_Options_BedLevel;
-
-                if (BBLConstants.ModelFeatures.WithInspectFirstLayer.Contains(this.State.Model))
-                {
-                    machineFeatures |= MachineFeature.Print_Options_InspectFirstLayer;
-                }
-
-                if (BBLConstants.ModelFeatures.WithFlowRateCali.Contains(this.State.Model))
-                {
-                    machineFeatures |= MachineFeature.Print_Options_FlowCalibration;
-                }
-
-                if (BBLConstants.ModelFeatures.WithClimateControl.Contains(this.State.Model))
-                {
-                    machineFeatures |= MachineFeature.AirDuct;
-                }
-
-                if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(this.State.Model))
-                {
-                    machineFeatures |= MachineFeature.OME; // Currently (1/17/2026), only RTSPS is supported.
-                }
-
-                this.State.Features = machineFeatures;
             }
+
+            MachineCapabilities machineFeatures = MachineCapabilities.Lighting | MachineCapabilities.Control | MachineCapabilities.FetchFiles | MachineCapabilities.PrintHistory;
+
+            // We will decide which features are available on this machine depending on the model!
+
+            string model = this.State.Model;
+
+            // All models have automatic bed-leveling capability.
+            machineFeatures |= MachineCapabilities.Print_Options_BedLevel;
+
+            if (BBLConstants.ModelFeatures.WithInspectFirstLayer.Contains(model))
+            {
+                machineFeatures |= MachineCapabilities.Print_Options_InspectFirstLayer;
+            }
+
+            if (BBLConstants.ModelFeatures.WithFlowRateCali.Contains(model))
+            {
+                machineFeatures |= MachineCapabilities.Print_Options_FlowCalibration;
+            }
+
+            if (BBLConstants.ModelFeatures.WithClimateControl.Contains(model))
+            {
+                machineFeatures |= MachineCapabilities.AirDuct;
+            }
+
+            if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(model))
+            {
+                // TODO: Implement
+
+                //machineFeatures |= MachineCapabilities.OME;
+            }
+
+            if (BBLConstants.ModelFeatures.With30FPMCamera.Contains(model)) // Lovely, 30 Frames per Minute.
+            {
+                // TODO: Implement
+            }
+
+            // Apply runtime restrictions AFTER computing full capabilities
 
             if (data.UsesUnsupportedSecurity.HasValue && data.UsesUnsupportedSecurity.Value)
             {
                 // Without LAN Mode and Developer Mode we cannot control anything.
                 // When switching to these modes, the machine must be restarted.
 
-                this.State.Features &= ~(MachineFeature.Print | MachineFeature.Controllable | MachineFeature.AirDuct);
+                machineFeatures &= ~(MachineCapabilities.SendJob | MachineCapabilities.StartLocalJob | MachineCapabilities.Control | MachineCapabilities.AirDuct);
             }
 
-            if (data.PrintJob != null)
+            if (!this.HasUSBOrSDCard && this.IsUSBOrSDCardRequired)
             {
-                if (this.State.CurrentJob == null)
-                {
-                    if (data.PrintJob.Name != null 
-                        && data.PrintJob.TotalTime.HasValue 
-                        && data.PrintJob.RemainingTime.HasValue 
-                        && data.PrintJob.PercentageComplete.HasValue
-                        && data.PrintJob.Stage != null)
-                    {
-                        this.State.CurrentJob = new MachinePrintJob()
-                        {
-                            Name = data.PrintJob.Name,
-                            PercentageComplete = data.PrintJob.PercentageComplete.Value,
-                            RemainingTime = data.PrintJob.RemainingTime.Value,
-                            Stage = data.PrintJob.Stage,
-                            TotalTime = data.PrintJob.TotalTime.Value,
-                            FilePath = data.PrintJob.FilePath
-                        };
-                    }
-                    else
-                    {
-                        // Not all data exists, ask for a push of ALL data.
-                        //_ = this.MQTT.PublishPushAll();
+                machineFeatures &= ~(MachineCapabilities.SendJob | MachineCapabilities.StartLocalJob | MachineCapabilities.FetchFiles);
+            }
 
-                    }
-                }
-                else
+            data.Changes.SetFeatures(machineFeatures);
+
+            // Append Files to the Print Job
+
+            var job = this.State.Job;
+
+            if (job != null)
+            {
+                if (job.File == null)
                 {
-                    this.State.CurrentJob.TotalTime = data.PrintJob.TotalTime.GetValueOrDefault(this.State.CurrentJob.TotalTime);
-                    this.State.CurrentJob.RemainingTime = data.PrintJob.RemainingTime.GetValueOrDefault(this.State.CurrentJob.RemainingTime);
-                    this.State.CurrentJob.Stage = data.PrintJob.Stage ?? this.State.CurrentJob.Stage;
-                    this.State.CurrentJob.Name = data.PrintJob.Name ?? this.State.CurrentJob.Name;
-                    this.State.CurrentJob.FilePath = data.PrintJob.FilePath ?? this.State.CurrentJob.FilePath;
-                    this.State.CurrentJob.PercentageComplete = data.PrintJob.PercentageComplete.GetValueOrDefault(this.State.CurrentJob.PercentageComplete);
+                    // TODO: Verify the location of files on FTP.
+
+                    var file3MF = new BBLMachineFile(this, $"{job.Name}", "3MF");
+
+                    data.Changes.UpdateCurrentJob(c => c.SetFile(file3MF));
+                }
+
+                if (job.Thumbnail == null)
+                {
+                    // TODO: Verify the location of files on FTP.
+
+                    var thumbnailFile = new BBLMachineThumbnailFile(this, $"{job.Name}");
+
+                    data.Changes.UpdateCurrentJob(c => c.SetThumbnail(thumbnailFile));
                 }
             }
 
-            if (data.Status.HasValue)
+            // Append to the Print History.
+
+            if (data.Changes.Status.HasValue && this.State.Status == MachineStatus.Printing)
             {
-                // Status has changed.
-                this.State.Status = data.Status.Value;
+                if (data.Changes.Status.Value == MachineStatus.Printed)
+                {
+                    data.Changes.AddHistoricJob(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail, null));
+                }
+                else if (data.Changes.Status.Value == MachineStatus.Failed)
+                {
+                    data.Changes.AddHistoricJob(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail, null));
+                }
             }
 
-            if (data.HVACMode.HasValue)
-            {
-                this.State.AirDuctMode = data.HVACMode.Value;
-            }
+            CommitState(data.Changes);
+        }
 
-            if (data.MaterialUnits != null)
-            {
-                this.State.MaterialUnits = data.MaterialUnits;
-            }
+        protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
+        {
+            await Task.WhenAll(this.MQTT.Connect(cancellationToken), this.FTP.Connect());
+        }
 
-            _ = base.PollChanges();
+        protected override Task Stop_Internal(CancellationToken cancellationToken = default)
+        {
+            return this.MQTT.PublishStop();
+        }
+
+        protected override async Task BeginMUHeating_Internal(string unitID, HeatingSettings settings)
+        {
+            await MQTT.PublishAMSHeatingCommand(unitID, settings);
+        }
+
+        protected override async Task EndMaterialUnitHeating_Internal(string unitID)
+        {
+            await MQTT.PublishAMSStopHeatingCommand(unitID);
         }
 
         internal override bool OvenMediaEnginePullURL_Internal([NotNullWhen(true)] out string? passURL)
@@ -168,9 +230,110 @@ namespace Connect3Dp.Connectors.BambuLab
             return this.MQTT.PublishHVACModeCommand(mode);
         }
 
-        public static BBLMachineConnector LAN(string nickname, string sn, string accessCode, IPAddress address)
+        public static BBLMachineConnector LAN(string? nickname, string sn, string accessCode, IPAddress address)
         {
             return new BBLMachineConnector(nickname, sn, accessCode, address);
         }
+
+        #region Configuration
+
+        public override object GetConfiguration()
+        {
+            return new BBLMachineConfiguration()
+            {
+                Nickname = this.State.Nickname,
+                AccessCode = AccessCode,
+                Address = Address.ToString(),
+                SerialNumber = SerialNumber,
+            };
+        }
+
+        public static Type GetConfigurationType()
+        {
+            return typeof(BBLMachineConfiguration);
+        }
+
+        public static MachineConnector CreateFromConfiguration(object configuration)
+        {
+            if (configuration is BBLMachineConfiguration bbl)
+            {
+                return LAN(bbl.Nickname, bbl.SerialNumber, bbl.AccessCode, IPAddress.Parse(bbl.Address));
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region Files
+
+        public record BBLMachineFile : MachineFile
+        {
+            public string FileName { get; }
+            public string AppendedID { get; }
+
+            public BBLMachineFile(BBLMachineConnector machine, string fileName, string appendedID) : base($"BBL/{machine.State.ID}/{appendedID}", machine)
+            {
+                FileName = fileName;
+                AppendedID = appendedID;
+            }
+
+            public override string? MimeType => "model/3mf";
+
+            protected override Task<bool> DoDownload(Stream outStream)
+            {
+                return ((BBLMachineConnector)Machine).FTP.DownloadStream(outStream, FileName);
+            }
+        }
+
+        public record BBLMachineThumbnailFile : BBLMachineFile
+        {
+            public int PlateNumber { get; }
+            public Positions Position { get; }
+
+            public BBLMachineThumbnailFile(BBLMachineConnector machine, string File3MFName, int PlateNumber = 1, Positions Position = Positions.Diagonal) : base(machine, File3MFName, "Thumbnail")
+            {
+                this.PlateNumber = PlateNumber;
+                this.Position = Position;
+            }
+
+            public override string? MimeType => "image/png";
+
+            protected override async Task<bool> DoDownload(Stream outStream)
+            {
+                using var stream3MF = new MemoryStream();
+
+                if (!await base.DoDownload(stream3MF)) return false;
+
+                stream3MF.Position = 0;
+
+                using var zip = new ZipArchive(stream3MF, ZipArchiveMode.Read);
+
+                var entry = zip.GetEntry(GetThumbnailEntryPath());
+                if (entry is null) return false;
+
+                if (outStream.CanSeek) outStream.SetLength(0);
+
+                using var entryStream = entry.Open();
+                await entryStream.CopyToAsync(outStream);
+                await outStream.FlushAsync();
+
+                return true;
+            }
+
+            private string GetThumbnailEntryPath() => $"Metadata/{Position switch
+            {
+                Positions.Diagonal => $"plate_{PlateNumber}_small",
+                Positions.Top => $"top_{PlateNumber}",
+                _ => throw new ArgumentOutOfRangeException(nameof(Position))
+            }}.png";
+
+            public enum Positions
+            {
+                Diagonal = 0,
+                Top = 1
+            }
+        }
+
+        #endregion
     }
 }

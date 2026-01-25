@@ -1,4 +1,6 @@
 ﻿using Connect3Dp.Connectors;
+using Connect3Dp.Extensions;
+using Connect3Dp.State;
 using Connect3Dp.Utilities;
 using System;
 using System.Collections.Generic;
@@ -52,7 +54,7 @@ namespace Connect3Dp.Plugins.OME
                 return;
             }
 
-            var machineLiveStreams = StreamsToMachine.Where(p => p.Value.State.HasFeature(MachineFeature.OME)).Select(p => p.Key);
+            var machineLiveStreams = StreamsToMachine.Where(p => p.Value.State.HasFeature(MachineCapabilities.OME)).Select(p => p.Key);
             var missingStreams = machineLiveStreams.Except(liveStreams);
 
             foreach (var streamToAdd in missingStreams)
@@ -106,7 +108,7 @@ namespace Connect3Dp.Plugins.OME
 
         static OMEPlugin()
         {
-            Logger = Logger.Category(nameof(OMEPlugin));
+            Logger = Logger.OfCategory(nameof(OMEPlugin));
 
             if (!TryGetEnvironment(out var env))
             {
@@ -148,7 +150,7 @@ namespace Connect3Dp.Plugins.OME
 
         private static string MakeStreamName(MachineConnector forMachine)
         {
-            return $"machine/{forMachine.State.UID}";
+            return $"machine/{forMachine.State.ID}";
         }
 
         public static bool TryGetInstance([NotNullWhen(true)] out OMEPlugin? instance)

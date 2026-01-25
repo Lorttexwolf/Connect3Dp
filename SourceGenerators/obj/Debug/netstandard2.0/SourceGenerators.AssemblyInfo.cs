@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Connect3Dp.SourceGeneration")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36768fdfb97fd5db43857db60629b391c4200e75")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d5586fa03cfc6c7e89453662de566873731ed9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Connect3Dp.SourceGeneration")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Connect3Dp.SourceGeneration")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

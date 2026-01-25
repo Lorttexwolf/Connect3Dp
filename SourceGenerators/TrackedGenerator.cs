@@ -355,7 +355,7 @@ namespace Connect3Dp.SourceGeneration
         private void WriteClassStart()
         {
             var trackedClassName = $"Tracked{_originalType.Name}";
-            _builder.AppendLine($"\tpublic sealed partial class {trackedClassName}");
+            _builder.AppendLine($"\tinternal sealed partial class {trackedClassName}");
             _builder.AppendLine("\t{");
         }
 

@@ -22,6 +22,24 @@ namespace Connect3Dp
         public static OperationResult Ok(string? message = null) => new() { Success = true, Message = message };
 
         public static OperationResult Fail(string message, Exception? ex = null) => new() { Success = false, Message = message, Exception = ex };
+
+        public override string ToString()
+        {
+            if (this.Success)
+            {
+                return "Success";
+            }
+            else return $"Failure, {Message}\n{Exception}";
+        }
+
+        /// <exception cref="Exception"></exception>
+        public void ThrowIfFailed()
+        {
+            if (!this.Success)
+            {
+                throw new Exception($"Operation Failed: {Message ?? "No Message Provided"}", this.Exception);
+            }
+        }
     }
 
     /// <summary>
@@ -74,7 +92,7 @@ namespace Connect3Dp
                         return Result;
                     }
 
-                    var completionStatus = await CheckCompletionAsync(cancellationToken);
+                    var completionStatus = CheckCompletionAsync(cancellationToken);
 
                     if (completionStatus.IsComplete)
                     {
@@ -140,7 +158,7 @@ namespace Connect3Dp
         /// <summary>
         /// Check if the operation has completed and return status
         /// </summary>
-        protected abstract Task<CompletionStatus> CheckCompletionAsync(CancellationToken cancellationToken);
+        protected abstract CompletionStatus CheckCompletionAsync(CancellationToken cancellationToken);
 
         // Virtual methods with default implementations
 
@@ -178,6 +196,8 @@ namespace Connect3Dp
         public static CompletionStatus NotComplete() => new() { IsComplete = false };
 
         public static CompletionStatus Complete(bool success = true, string? message = null) => new() { IsComplete = true, Success = success, Message = message };
+    
+        public static CompletionStatus Condition(bool isCompleteAndSuccess, string? message = null) => new() { IsComplete = isCompleteAndSuccess, Success = isCompleteAndSuccess, Message = message };
     }
 
     /// <summary>
@@ -186,19 +206,19 @@ namespace Connect3Dp
     public class RunnableOperation : Operation
     {
         private readonly Func<CancellationToken, Task> _executeAction;
-        private readonly Func<CancellationToken, Task<CompletionStatus>> _checkCompletion;
+        private readonly Func<CancellationToken, CompletionStatus> _checkCompletion;
         private readonly Func<CancellationToken, Task>? _undoAction;
 
         public RunnableOperation(
-            Func<CancellationToken, Task> executeAction,
-            Func<CancellationToken, Task<CompletionStatus>> checkCompletion,
-            Func<CancellationToken, Task>? undoAction = null,
+            Func<CancellationToken, Task> execute,
+            Func<CancellationToken, CompletionStatus> isSuccess,
+            Func<CancellationToken, Task>? undo = null,
             TimeSpan? timeout = null)
             : base(timeout)
         {
-            _executeAction = executeAction ?? throw new ArgumentNullException(nameof(executeAction));
-            _checkCompletion = checkCompletion ?? throw new ArgumentNullException(nameof(checkCompletion));
-            _undoAction = undoAction;
+            _executeAction = execute;
+            _checkCompletion = isSuccess;
+            _undoAction = undo;
         }
 
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -206,7 +226,7 @@ namespace Connect3Dp
             return _executeAction(cancellationToken);
         }
 
-        protected override Task<CompletionStatus> CheckCompletionAsync(CancellationToken cancellationToken)
+        protected override CompletionStatus CheckCompletionAsync(CancellationToken cancellationToken)
         {
             return _checkCompletion(cancellationToken);
         }
@@ -219,5 +239,3 @@ namespace Connect3Dp
         }
     }
 }
-
-// Upload Operation? 

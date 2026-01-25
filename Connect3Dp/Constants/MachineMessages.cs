@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Connect3Dp.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,29 @@ namespace Connect3Dp.Constants
         {
             AutoResolve = new MessageAutoResole
             {
-                OnConnected = true
+                WhenConnected = true
             }
         };
 
-        public static MachineMessage NoFeature(MachineFeature desiredFeature)
+        public static MachineMessage FailedToStop => new("Unable to stop the Machine", "An issue occurred stopping this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+        {
+            AutoResolve = new MessageAutoResole
+            {
+                WhenStatus = MachineStatus.Stopped | MachineStatus.Failed
+            }
+        };
+
+        public static MachineMessage NoFeature(MachineCapabilities desiredFeature)
         {
             return new MachineMessage("Unsupported Feature", $"Machine does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+            {
+                Severity = MachineMessageSeverity.Error
+            };
+        }
+
+        public static MachineMessage NoMUFeature(MaterialUnitFeatures desiredFeature)
+        {
+            return new MachineMessage("Unsupported Material Unit Feature", $"Material Unit does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
             {
                 Severity = MachineMessageSeverity.Error
             };

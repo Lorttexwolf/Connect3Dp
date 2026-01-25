@@ -11,3 +11,9 @@ C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.dll
 C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\refint\Connect3Dp.dll
 C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\Connect3Dp.pdb
 C:\Users\comis\Documents\Connect3Dp\Connect3Dp\obj\Debug\net8.0\ref\Connect3Dp.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libgcc_s_seh-1.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libgmp-10.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libgnutls-30.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libhogweed-6.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libnettle-8.dll
+C:\Users\comis\Documents\Connect3Dp\Connect3Dp\bin\Debug\net8.0\libwinpthread-1.dll

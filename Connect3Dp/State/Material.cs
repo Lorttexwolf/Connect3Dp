@@ -1,4 +1,5 @@
-﻿using PartialSourceGen;
+﻿using Connect3Dp.SourceGeneration.UpdateGen;
+using PartialSourceGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,41 +8,44 @@ using System.Threading.Tasks;
 
 namespace Connect3Dp.State
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="Name">ex, PLA, PETG, PPS-CF, PA-GF</param>
-    /// <param name="FProfileIDX">Filament_id of the JSON filament profiles on Orca Slicer / BambuLab Studio.</param>
-    [Partial]
-    public struct Material(string name, MaterialColor color, string? fProfileIDX) : IEquatable<Material>
+    [GenerateUpdate]
+    public partial class Material : IEquatable<Material?>
     {
-        public string Name { get; set; } = name;
-        public MaterialColor Color { get; set; } = color;
-        public string? FProfileIDX { get; set; } = fProfileIDX;
+        /// <summary>
+        /// PLA, PETG, PPS-CF, PA-GF
+        /// </summary>
+        public required string Name { get; set; }
 
-        public override readonly bool Equals(object? obj)
+        public required MaterialColor Color { get; set; }
+
+        /// <summary>
+        /// Filament_id of the JSON filament profiles on Orca Slicer / BambuLab Studio.
+        /// </summary>
+        public string? FProfileIDX { get; set; }
+
+        public override bool Equals(object? obj)
         {
-            return obj is Material material && Equals(material);
+            return Equals(obj as Material);
         }
 
-        public readonly bool Equals(Material other)
+        public bool Equals(Material? other)
         {
-            return Name == other.Name &&
-                   EqualityComparer<MaterialColor>.Default.Equals(Color, other.Color) &&
-                   FProfileIDX == other.FProfileIDX;
+            return other is not null &&
+                   Name == other.Name &&
+                   EqualityComparer<MaterialColor>.Default.Equals(Color, other.Color);
         }
 
-        public override readonly int GetHashCode()
+        public override int GetHashCode()
         {
-            return HashCode.Combine(Name, Color, FProfileIDX);
+            return HashCode.Combine(Name, Color);
         }
 
-        public static bool operator ==(Material left, Material right)
+        public static bool operator ==(Material? left, Material? right)
         {
-            return left.Equals(right);
+            return EqualityComparer<Material>.Default.Equals(left, right);
         }
 
-        public static bool operator !=(Material left, Material right)
+        public static bool operator !=(Material? left, Material? right)
         {
             return !(left == right);
         }

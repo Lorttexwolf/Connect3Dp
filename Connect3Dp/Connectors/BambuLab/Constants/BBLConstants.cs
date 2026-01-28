@@ -9,6 +9,11 @@ namespace Connect3Dp.Connectors.BambuLab.Constants
 {
     public class BBLConstants
     {
+        public const ushort ExternalTrayID = 254;
+        public const string ExternalTrayMUID = "External";
+        public const int ExternalTraySlotNumber = 0;
+        public readonly static MaterialLocation ExternalTrayLocation = new(ExternalTrayMUID, ExternalTraySlotNumber);
+
         public const string ModelX1C = "X1C";
         public const string ModelX1 = "X1";
         public const string ModelX1E = "X1E";

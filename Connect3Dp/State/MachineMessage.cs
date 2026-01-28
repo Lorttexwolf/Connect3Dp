@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Connect3Dp.State
 {
-
     public class MachineMessage : IEquatable<MachineMessage?>, IUniquelyIdentifiable
     {
         public string ID { get; } 
@@ -78,7 +77,7 @@ namespace Connect3Dp.State
         Info = 0,   
         Success = 1,
         Warning = 2,
-        Error = 3
+        ErrorDuringPrinting = 3 // TODO: Refine messages which are associated to printer failures.
     }
 
     /// <summary>
@@ -114,9 +113,8 @@ namespace Connect3Dp.State
     {
         public static bool TryFindError(this IEnumerable<MachineMessage> messages, [NotNullWhen(true)] out MachineMessage? errorMessage)
         {
-            errorMessage = messages.FirstOrDefault(m => m.Severity == MachineMessageSeverity.Error);
+            errorMessage = messages.FirstOrDefault(m => m.Severity == MachineMessageSeverity.ErrorDuringPrinting);
             return errorMessage is not null;
         }
-
     }
 }

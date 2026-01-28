@@ -10,7 +10,7 @@ namespace Connect3Dp.State
     {
         public override string ToString()
         {
-            return $"MU {MUID} Slot {Slot}";
+            return $"MU: {MUID} Slot: {Slot}";
         }
     }
 }

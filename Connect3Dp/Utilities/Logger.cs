@@ -95,6 +95,12 @@ namespace Connect3Dp.Utilities
             Log(Level.Error, message);
         }
 
+        public void Error(Exception ex, string message)
+        {
+            Log(Level.Error, $"{message}: {ex}");
+        }
+
+
         public void Info(string message, ConsoleColor foregroundColor)
         {
             Console.ForegroundColor = foregroundColor;

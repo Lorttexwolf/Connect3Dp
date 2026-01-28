@@ -70,12 +70,12 @@ namespace Connect3Dp.Connectors.BambuLab
                 if (!hasMedia && !hasMissingMessage)
                 {
                     // Removed
-                    data.Changes.AddMessage(BBLMessages.SDCardOrUSBMissing);
+                    data.Changes.SetMessages(BBLMessages.SDCardOrUSBMissing);
                 }
                 else if (hasMedia && hasMissingMessage)
                 {
                     // Added
-                    data.Changes.RemoveMessage(BBLMessages.SDCardOrUSBMissing);
+                    data.Changes.RemoveMessages(BBLMessages.SDCardOrUSBMissing);
                 }
 
                 this.HasUSBOrSDCard = hasMedia;
@@ -146,7 +146,7 @@ namespace Connect3Dp.Connectors.BambuLab
                 machineFeatures &= ~(MachineCapabilities.SendJob | MachineCapabilities.StartLocalJob | MachineCapabilities.FetchFiles);
             }
 
-            data.Changes.SetFeatures(machineFeatures);
+            data.Changes.SetCapabilities(machineFeatures);
 
             // Append Files to the Print Job
 
@@ -179,11 +179,11 @@ namespace Connect3Dp.Connectors.BambuLab
             {
                 if (data.Changes.Status.Value == MachineStatus.Printed)
                 {
-                    data.Changes.AddHistoricJob(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail, null));
+                    data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail, null));
                 }
-                else if (data.Changes.Status.Value == MachineStatus.Failed)
+                else if (data.Changes.Status.Value == MachineStatus.Canceled)
                 {
-                    data.Changes.AddHistoricJob(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail, null));
+                    data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail, null));
                 }
             }
 
@@ -266,16 +266,10 @@ namespace Connect3Dp.Connectors.BambuLab
 
         #region Files
 
-        public record BBLMachineFile : MachineFile
+        public class BBLMachineFile(BBLMachineConnector machine, string fileName, string appendedID) : MachineFile($"BBL/{machine.State.ID}/{appendedID}", machine)
         {
-            public string FileName { get; }
-            public string AppendedID { get; }
-
-            public BBLMachineFile(BBLMachineConnector machine, string fileName, string appendedID) : base($"BBL/{machine.State.ID}/{appendedID}", machine)
-            {
-                FileName = fileName;
-                AppendedID = appendedID;
-            }
+            public string FileName { get; } = fileName;
+            private string AppendedID { get; } = appendedID;
 
             public override string? MimeType => "model/3mf";
 
@@ -283,18 +277,17 @@ namespace Connect3Dp.Connectors.BambuLab
             {
                 return ((BBLMachineConnector)Machine).FTP.DownloadStream(outStream, FileName);
             }
+
+            public override object Clone()
+            {
+                return new BBLMachineFile((BBLMachineConnector)this.Machine, this.FileName, this.AppendedID);
+            }
         }
 
-        public record BBLMachineThumbnailFile : BBLMachineFile
+        public class BBLMachineThumbnailFile(BBLMachineConnector machine, string File3MFName, int PlateNumber = 1, BBLMachineThumbnailFile.Positions Position = BBLMachineThumbnailFile.Positions.Diagonal) : BBLMachineFile(machine, File3MFName, "Thumbnail")
         {
-            public int PlateNumber { get; }
-            public Positions Position { get; }
-
-            public BBLMachineThumbnailFile(BBLMachineConnector machine, string File3MFName, int PlateNumber = 1, Positions Position = Positions.Diagonal) : base(machine, File3MFName, "Thumbnail")
-            {
-                this.PlateNumber = PlateNumber;
-                this.Position = Position;
-            }
+            public int PlateNumber { get; } = PlateNumber;
+            public Positions Position { get; } = Position;
 
             public override string? MimeType => "image/png";
 
@@ -326,6 +319,11 @@ namespace Connect3Dp.Connectors.BambuLab
                 Positions.Top => $"top_{PlateNumber}",
                 _ => throw new ArgumentOutOfRangeException(nameof(Position))
             }}.png";
+
+            public override object Clone()
+            {
+                return new BBLMachineThumbnailFile((BBLMachineConnector)this.Machine, this.FileName, this.PlateNumber, this.Position);
+            }
 
             public enum Positions
             {

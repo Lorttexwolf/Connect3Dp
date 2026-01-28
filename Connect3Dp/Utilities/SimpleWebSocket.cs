@@ -23,7 +23,7 @@ namespace Connect3Dp.Utilities
         public string? CloseStatusDescription => Base.CloseStatusDescription;
 
         public event Action? OnConnected;
-        public event Action<WebSocketCloseStatus?, string?> OnDisconnected;
+        public event Action<WebSocketCloseStatus?, string?>? OnDisconnected;
         public event Action<string>? OnMessage;
 
         public SimpleWebSocketClient(Uri uri, Action<ClientWebSocketOptions>? configureOptions = null)
@@ -106,7 +106,7 @@ namespace Connect3Dp.Utilities
             }
             catch (Exception)
             {
-                await CloseInternalAsync(WebSocketCloseStatus.InternalServerError, "Receive Loop Failure");
+                await CloseInternalAsync(WebSocketCloseStatus.InternalServerError, "Receive Loop Failure", cancellationToken);
             }
         }
 

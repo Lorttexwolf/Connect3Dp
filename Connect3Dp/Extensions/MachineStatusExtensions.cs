@@ -9,15 +9,6 @@ namespace Connect3Dp.Extensions
 {
     public static class MachineStatusExtensions
     {
-        public static bool IsOccupied(this MachineStatus status)
-        {
-            return status switch
-            {
-                MachineStatus.Printing => true,
-                MachineStatus.Paused => true,
-                MachineStatus.Failed => true,
-                _ => false,
-            };
-        }
+
     }
 }

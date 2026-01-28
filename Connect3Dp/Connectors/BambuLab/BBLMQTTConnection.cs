@@ -16,11 +16,14 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Connect3Dp.Connectors.BambuLab
 {
     internal class BBLMQTTConnection
     {
+        // https://github.com/bambulab/BambuStudio/blob/07323b69d83d461aecb9a42b1f13363dab2f5e5a/src/slic3r/GUI/DeviceCore/DevFilaSystem.cpp
+
         private readonly Logger Logger;
 
         private readonly IMqttClient MQTTClient = new MqttClientFactory().CreateMqttClient();
@@ -56,6 +59,8 @@ namespace Connect3Dp.Connectors.BambuLab
 
             await this.MQTTClient.ConnectAsync(this.MQTTOptions, cancellationToken);
             await this.MQTTClient.PingAsync(cancellationToken);
+
+            Logger.Info("Connected via MQTT");
         }
 
         private async Task PublishCommand(string category, string command, JsonObject? commandData = null)
@@ -194,7 +199,7 @@ namespace Connect3Dp.Connectors.BambuLab
 
             this.OnData?.Invoke(new BBLMQTTData
             {
-                Changes = new MachineStateUpdate().SetConnected(true)
+                Changes = new MachineStateUpdate().SetIsConnected(true)
             });
 
             await this.PublishGetFirmwareVersion();
@@ -207,7 +212,7 @@ namespace Connect3Dp.Connectors.BambuLab
         {
             this.OnData?.Invoke(new BBLMQTTData
             {
-                Changes = new MachineStateUpdate().SetConnected(false)
+                Changes = new MachineStateUpdate().SetIsConnected(false)
             });
 
             if (this.PullAllChangesPeriodic != null)
@@ -240,50 +245,87 @@ namespace Connect3Dp.Connectors.BambuLab
 
         private async Task OnMessage(MqttApplicationMessageReceivedEventArgs ev)
         {
-            var JSON = JsonDocument.Parse(ev.ApplicationMessage.Payload);
-            var readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null);
+            JsonDocument JSON;
+            try
+            {
+                JSON = JsonDocument.Parse(ev.ApplicationMessage.Payload);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to parse MQTT JSON payload.");
+                return;
+            }
+
+            BBLMQTTData readData;
+            try
+            {
+                readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to initialize BBLMQTTData.");
+                return;
+            }
 
             if (JSON.RootElement.TryGetProperty("print", out var printJSON))
             {
-                //if (printJSON.TryGetInt32(out var msg, "msg") && msg == 1)
-                //{
-                //    // TODO: Implement for A1
-                //    return;
-                //}
-
-                OnMessagePrintMQTTSecurity(printJSON, ref readData);
-
-                OnMessagePrintSDCard(printJSON, ref readData);
-
-                OnMessagePrintGcodeState(printJSON, ref readData);
-
-                OnMessagePrintJob(printJSON, ref readData);
+                TryRun(() => OnMessagePrintMQTTSecurity(printJSON, ref readData), "Print.Security");
+                TryRun(() => OnMessagePrintSDCard(printJSON, ref readData), "Print.SDCard");
+                TryRun(() => OnMessagePrintGcodeState(printJSON, ref readData), "Print.GcodeState");
+                TryRun(() => OnMessagePrintJob(printJSON, ref readData), "Print.Job");
 
                 if (printJSON.TryGetProperty("device", out var devicesJSON))
                 {
-                    OnMessagePrintDevices(devicesJSON, ref readData);
+                    TryRun(() => OnMessagePrintDevices(devicesJSON, ref readData), "Print.Devices");
                 }
 
-                OnMessagePrintMaterials(printJSON, ref readData);
-
-                OnMessagePrintNozzles(printJSON, ref readData);
-
-                OnMessagePrintLighting(printJSON, ref readData);
+                TryRun(() => OnMessagePrintMaterials(printJSON, ref readData), "Print.Materials");
+                TryRun(() => OnMessagePrintNozzles(printJSON, ref readData), "Print.Nozzles");
+                TryRun(() => OnMessagePrintLighting(printJSON, ref readData), "Print.Lighting");
             }
 
             if (JSON.RootElement.TryGetProperty("info", out var infoJSON))
             {
-                OnMessageInfoVersion(infoJSON, ref readData);
+                TryRun(() => OnMessageInfoVersion(infoJSON, ref readData), "Info.Version");
             }
 
-            if (readData.UpdateAMSMapping.HasValue && readData.UpdateAMSMapping.Value)
+            if (readData.UpdateAMSMapping == true)
             {
-                await this.PublishGetFirmwareVersion();
-                Logger.Trace("AMS ID -> AMS SN mappings requested.");
+                try
+                {
+                    await this.PublishGetFirmwareVersion();
+                    Logger.Trace("AMS ID -> AMS SN mappings requested.");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Failed to publish firmware version request.");
+                }
             }
 
-            OnData?.Invoke(readData);
+            try
+            {
+                OnData?.Invoke(readData);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "OnData handler threw an exception.");
+            }
+
         }
+
+        private void TryRun(Action action, string context)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"Exception while handling MQTT message section: {context}");
+                throw;
+            }
+        }
+
 
         private static void OnMessagePrintDevices(JsonElement devicesJSON, ref BBLMQTTData data)
         {
@@ -319,7 +361,7 @@ namespace Connect3Dp.Connectors.BambuLab
                     "running" => MachineStatus.Printing,
                     "pause" => MachineStatus.Paused,
                     "finish" => MachineStatus.Printed,
-                    "failed" => MachineStatus.Failed,
+                    "failed" => MachineStatus.Canceled,
                     _ => MachineStatus.Unknown,
                 });
             }
@@ -373,9 +415,9 @@ namespace Connect3Dp.Connectors.BambuLab
                 data.Changes.UpdateCurrentJob(changes => changes.SetRemainingTime(remainingTimeSpan));
             }
 
-            if ((data.Changes.CurrentJobUpdate?.PercentageComplete.HasValue  ?? false)
-                && (data.Changes.CurrentJobUpdate?.RemainingTime.HasValue ?? false)
-                && TryCalculateTotalTime(data.Changes.CurrentJobUpdate.RemainingTime.Value.TotalSeconds, data.Changes.CurrentJobUpdate.PercentageComplete.Value, out var calculatedTotalTime))
+            if ((data.Changes.CurrentJob?.PercentageComplete.HasValue ?? false)
+                && (data.Changes.CurrentJob?.RemainingTime.HasValue ?? false)
+                && TryCalculateTotalTime(data.Changes.CurrentJob.RemainingTime.Value.TotalSeconds, data.Changes.CurrentJob.PercentageComplete.Value, out var calculatedTotalTime))
             {
                 data.Changes.UpdateCurrentJob(changes => changes.SetTotalTime(calculatedTotalTime.Value));
             }
@@ -383,6 +425,64 @@ namespace Connect3Dp.Connectors.BambuLab
 
         private void OnMessagePrintMaterials(JsonElement printJSON, ref BBLMQTTData data)
         {
+            // TODO: Extended support for AMS Drying.
+            // BBL will be adding the "dry_setting" object soon which gives the target temp, filament, and total duration.
+            // https://github.com/bambulab/BambuStudio/blob/07323b69d83d461aecb9a42b1f13363dab2f5e5a/src/slic3r/GUI/DeviceCore/DevFilaSystem.cpp#L507
+            // This functionality is only out for the H2D (As of 1/27/2026)
+            //DevJsonValParser::ParseVal(j_ams, "dry_time", curr_ams->m_left_dry_time);
+            //if (obj->is_support_remote_dry)
+            //{
+            //    if (j_ams.contains("info"))
+            //    {
+            //        const std::string&info = j_ams["info"].get < std::string> ();
+            //        curr_ams->m_dry_status = (DevAms::DryStatus)DevUtil::get_flag_bits(info, 4, 4);
+            //        curr_ams->m_dry_fan1_status = (DevAms::DryFanStatus)DevUtil::get_flag_bits(info, 18, 2);
+            //        curr_ams->m_dry_fan2_status = (DevAms::DryFanStatus)DevUtil::get_flag_bits(info, 20, 2);
+            //        curr_ams->m_dry_sub_status = (DevAms::DrySubStatus)DevUtil::get_flag_bits(info, 22, 4);
+            //    }
+
+            //    if (j_ams.contains("dry_setting"))
+            //    {
+            //        const auto&j_dry_settings = j_ams["dry_setting"];
+            //        DevAms::DrySettings dry_settings;
+            //        DevJsonValParser::ParseVal(j_dry_settings, "dry_filament", dry_settings.dry_filament);
+            //        DevJsonValParser::ParseVal(j_dry_settings, "dry_temperature", dry_settings.dry_temp);
+            //        DevJsonValParser::ParseVal(j_dry_settings, "dry_duration", dry_settings.dry_hour);
+            //        curr_ams->m_dry_settings = dry_settings;
+            //    }
+
+            //    if (j_ams.contains("dry_sf_reason"))
+            //    {
+            //        curr_ams->m_dry_cannot_reasons = DevJsonValParser::GetVal<std::vector<DevAms::CannotDryReason>>(j_ams, "dry_sf_reason");
+            //    }
+            //}
+
+            {
+                if ((printJSON.TryGetProperty("vt_tray", out var vt_tray) || printJSON.TryGetProperty("vir", out vt_tray)) && vt_tray.TryGetString(out var vt_tray_id, "id"))
+                {
+                    ParseTrayAndAMSInt32(ushort.Parse(vt_tray_id), out var amsN, out var trayN);
+
+                    data.Changes.UpdateMaterialUnits(amsN.ToString(), amsConfigure => amsConfigure
+                        .SetFeatures(MaterialUnitFeatures.None)
+                        .SetCapacity(1));
+
+                    if (vt_tray.TryGetString(out var tray_type, "tray_type"))
+                    {
+                        data.Changes.UpdateMaterialUnits(amsN.ToString(), ams => ams.UpdateLoaded(trayN, tray => tray.SetName(tray_type)));
+                    }
+
+                    if (vt_tray.TryGetString(out var tray_color, "tray_color"))
+                    {
+                        data.Changes.UpdateMaterialUnits(amsN.ToString(), ams => ams.UpdateLoaded(trayN, tray => tray.SetColor(new MaterialColor(null, tray_color))));
+                    }
+
+                    if (vt_tray.TryGetString(out var tray_info_idx, "tray_info_idx"))
+                    {
+                        data.Changes.UpdateMaterialUnits(amsN.ToString(), ams => ams.UpdateLoaded(trayN, tray => tray.SetFProfileIDX(tray_info_idx)));
+                    }
+                }
+            }
+
             if (printJSON.TryGetPropertyChain(out var amsArrayElem, "ams", "ams"))
             {
                 var amsCount = amsArrayElem.GetArrayLength();
@@ -402,14 +502,13 @@ namespace Connect3Dp.Connectors.BambuLab
                     }
 
                     var amsModel = BBLConstants.GetAMSModelFromSN(amsSN);
-                    var amsFeatures = BBLConstants.GetAMSFeaturesFromModel(amsModel);
-                    var amsHeatingConstraints = BBLConstants.GetAMSHeatingConstraintsFromModel(amsModel);
 
-                    data.Changes.UpdateMaterialUnit(amsSN, amsConfigure => amsConfigure
+                    data.Changes.UpdateMaterialUnits(amsSN, amsConfigure => amsConfigure
+                        .SetID(amsSN)
                         .SetCapacity(BBLConstants.GetAMSCapacityFromModel(amsModel))
                         .SetModel(amsModel)
-                        .SetFeatures(amsFeatures)
-                        .SetHeatingConstraints(amsHeatingConstraints));
+                        .SetFeatures(BBLConstants.GetAMSFeaturesFromModel(amsModel))
+                        .SetHeatingConstraints(BBLConstants.GetAMSHeatingConstraintsFromModel(amsModel)));
 
                     // Loaded Materials
 
@@ -419,63 +518,60 @@ namespace Connect3Dp.Connectors.BambuLab
                         {
                             if (!trayElem.TryGetString(out var trayId_s, "id") || !int.TryParse(trayId_s, out var trayId)) continue;
 
-                            if (trayElem.TryGetInt32(out var state, "state") && state == 10)
+                            if (trayElem.TryGetString(out var tray_type, "tray_type"))
                             {
-                                // Tray is empty! Though, this doesn't work for A1/P1 series.
-
-                                data.Changes.UpdateMaterialUnit(amsSN, amsConfigure => amsConfigure.ClearSlot(trayId));
-                                continue;
+                                data.Changes.UpdateMaterialUnits(amsSN, ams => ams.UpdateLoaded(trayId, tray => tray.SetName(tray_type)));
                             }
 
-                            if (trayElem.TryGetString(out var tray_type, "tray_type")
-                                && trayElem.TryGetString(out var tray_color, "tray_color")
-                                && trayElem.TryGetString(out var tray_info_idx, "tray_info_idx"))
+                            if (trayElem.TryGetString(out var tray_color, "tray_color"))
                             {
-                                var trayMaterial = new Material(tray_type, new MaterialColor(null, tray_color), tray_info_idx);
+                                data.Changes.UpdateMaterialUnits(amsSN, ams => ams.UpdateLoaded(trayId, tray => tray.SetColor(new MaterialColor(null, tray_color))));
+                            }
 
-                                data.Changes.UpdateMaterialUnit(amsSN, amsConfigure => amsConfigure.SetSlot(trayId, trayMaterial));
+                            if (trayElem.TryGetString(out var tray_info_idx, "tray_info_idx"))
+                            {
+                                data.Changes.UpdateMaterialUnits(amsSN, ams => ams.UpdateLoaded(trayId, tray => tray.SetFProfileIDX(tray_info_idx)));
                             }
                         }
                     }  
 
                     if (amsElem.TryGetString(out var temp_C_s, "temp") && double.TryParse(temp_C_s, out var temp_C))
                     {
-                        data.Changes.UpdateMaterialUnit(amsSN, configure => configure.SetTemperatureC(temp_C));
+                        data.Changes.UpdateMaterialUnits(amsSN, configure => configure.SetTemperatureC(temp_C));
                     }
 
                     if (amsElem.TryGetString(out var humidity_percent_S, "humidity_raw") && Int32.TryParse(humidity_percent_S, out var humidity_percent))
                     {
-                        data.Changes.UpdateMaterialUnit(amsSN, configure => configure.SetHumidityPercent(humidity_percent));
+                        data.Changes.UpdateMaterialUnits(amsSN, configure => configure.SetHumidityPercent(humidity_percent));
                     }
 
                     if (amsElem.TryGetInt32(out var dry_time, "dry_time"))
                     {
-                        // Bambu Lab doesn't support target temp, nor is spinning as of 1/18/2026 :skull:
-
-                        if (dry_time > 0)
+                        if (dry_time > 0 && amsElem.TryGetInt32(out var dry_temperature, "dry_setting", "dry_temperature"))
                         {
-                            var activeHeatingSettings = new PartialHeatingSettings()
-                            {
-                                Duration = TimeSpan.FromMinutes(dry_time)
-                            };
+                            var activeHeatingSettings = new HeatingJob(dry_temperature, TimeSpan.FromMinutes(dry_time));
 
-                            data.Changes.UpdateMaterialUnit(amsSN, configure => configure.SetActiveHeatingSettings(activeHeatingSettings));
+                            data.Changes.UpdateMaterialUnits(amsSN, configure => configure.SetHeatingJob(activeHeatingSettings));
                         }
-                        else
+                        else if (dry_time <= 0)
                         {
-                            data.Changes.UpdateMaterialUnit(amsSN, configure => configure.SetActiveHeatingSettings(null));
+                            data.Changes.UpdateMaterialUnits(amsSN, configure => configure.SetHeatingJob(null));
                         }
-
                     }
                 }
-
             }
+        }
+
+        private void OnMessagePrintFunctionality(JsonElement printJSON, ref BBLMQTTData data)
+        {
+            // TODO: fun and fun2 express the capabilities on the printer.
+            // https://github.com/bambulab/BambuStudio/blob/07323b69d83d461aecb9a42b1f13363dab2f5e5a/src/slic3r/GUI/DeviceManager.cpp#L4105
+
+
         }
 
         private void OnMessagePrintNozzles(JsonElement printJSON, ref BBLMQTTData data)
         {
-            // TODO: Improve.
-
             var materialInNozzles = new Dictionary<int, MaterialLocation>();
 
             if (printJSON.TryGetPropertyChain(out var extruders, "device", "extruder", "info"))
@@ -498,6 +594,12 @@ namespace Connect3Dp.Connectors.BambuLab
 
                     if (extruder.TryGetInt32(out int number, "id") && extruder.TryGetInt32(out var snow, "snow"))
                     {
+                        if (snow == BBLConstants.ExternalTrayID)
+                        {
+                            materialInNozzles.Add(number, BBLConstants.ExternalTrayLocation);
+                            continue;
+                        }
+
                         ParseTrayAndAMSInt32((ushort)snow, out var ams, out var tray);
 
                         if (AMSIDToSN.TryGetValue(ams, out var amsSN))
@@ -511,20 +613,51 @@ namespace Connect3Dp.Connectors.BambuLab
                     }
                 }
             }
-
+            
             if (printJSON.TryGetPropertyChain(out var nozzles, "device", "nozzle", "info"))
             {
                 foreach (var nozzle in nozzles.EnumerateArray())
                 {
                     if (nozzle.TryGetInt32(out int number, "id") && nozzle.TryGetDouble(out double diameter, "diameter"))
                     {
-                        var materialInNozzle = materialInNozzles.GetValueOrDefault(number);
-
-                        data.Changes.SetNozzle(new MachineNozzle(number, diameter, materialInNozzle == default ? null : materialInNozzle));
+                        data.Changes.UpdateNozzles(number, config => config.SetNumber(number).SetDiameter(diameter));
                     }
 
+                    if (materialInNozzles.TryGetValue(number, out var materialInNozzle))
+                    {
+                        data.Changes.UpdateNozzles(number, config => config.SetMaterial(materialInNozzle));
+                    }
                 }
             }
+
+            // A1 & PI series
+
+            // TODO: FINISH FOR ESP
+
+            //if (printJSON.TryGetString(out var nozzle_diameter, "nozzle_diameter"))
+            //{
+            //    data.Changes.UpdateNozzles(0, nozzle => nozzle.SetNumber(0).SetDiameter(double.Parse(nozzle_diameter)));
+            //}
+
+            //{
+            //    MaterialLocation? materialLocation = null;
+
+            //    if (printJSON.TryGetString(out var tray_now, "ams", "tray_now"))
+            //    {
+            //        if (BBLConstants.ExternalTrayID == ushort.Parse(tray_now))
+            //        {
+            //            materialLocation = BBLConstants.ExternalTrayLocation;
+            //        }
+            //        else
+            //        {
+            //            materialLocation = materialInNozzles.GetValueOrDefault(ushort.Parse(tray_now));
+            //        }
+
+            //        data.Changes.UpdateNozzles(0, nozzle => nozzle.SetMaterial(materialLocation));
+            //    }
+
+
+            //}
         }
 
         private void OnMessagePrintHMS(JsonElement printJSON, ref BBLMQTTData data)
@@ -537,17 +670,15 @@ namespace Connect3Dp.Connectors.BambuLab
             //    "code": 131086
             // }
             // ],
-
         }
 
-        private void OnMessagePrintSDCard(JsonElement printJSON, ref BBLMQTTData data)
+        private static void OnMessagePrintSDCard(JsonElement printJSON, ref BBLMQTTData data)
         {
             if (printJSON.TryGetBoolean(out bool sdcard, "sdcard"))
             {
                 data.HasUSBOrSDCard = sdcard;
             }
         }
-
 
         private static void OnMessagePrintLighting(JsonElement printJSON, ref BBLMQTTData data)
         {
@@ -575,7 +706,7 @@ namespace Connect3Dp.Connectors.BambuLab
 
                         if (name.Equals("chamber_light"))
                         {
-                            data.Changes.SetLight("Chamber", isOn);
+                            data.Changes.SetLights("Chamber", isOn);
                         }
                     }
 
@@ -584,6 +715,7 @@ namespace Connect3Dp.Connectors.BambuLab
             }
 
         }
+        
         public static void ParseTrayAndAMSInt32(ushort value, out ushort ams, out ushort tray)
         {
             uint u = (uint)value;

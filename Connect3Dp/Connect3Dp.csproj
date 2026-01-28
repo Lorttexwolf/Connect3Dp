@@ -11,14 +11,14 @@
     <PackageReference Include="Cronos" Version="0.11.1" />
     <PackageReference Include="FluentFTP" Version="53.0.2" />
     <PackageReference Include="FluentFTP.GnuTLS" Version="1.0.37" />
-    <PackageReference Include="Humanizer" Version="3.0.1" />
-    <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+  <PackageReference Include="Humanizer" Version="3.0.1" />
+	<PackageReference Include="MQTTnet" Version="5.0.1.1416" />
     <PackageReference Include="NJsonSchema" Version="11.5.2" />
     <PackageReference Include="PartialSourceGen" Version="0.0.20" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SourceGenerators\SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SourceGenerators\SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+  </ItemGroup>
 
 </Project>

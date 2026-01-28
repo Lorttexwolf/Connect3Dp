@@ -1,4 +1,5 @@
-﻿using PartialSourceGen;
+﻿using Connect3Dp.SourceGeneration.UpdateGen;
+using PartialSourceGen;
 using System.Text.Json.Serialization;
 
 namespace Connect3Dp.State
@@ -7,15 +8,15 @@ namespace Connect3Dp.State
     {
         public required string ID;
         public required int Slots;
-        // Add filaments 
-        public required HashSet<IHeatingSchedule> HeatingSchedule;
+        // TODO: Add filaments 
+        public required HashSet<HeatingSchedule> HeatingSchedule;
     }
 
-    public partial class MaterialUnit(string ID, int Capacity) : IReadOnlyMaterialUnit
+    [GenerateUpdate]
+    public partial class MaterialUnit : IReadOnlyMaterialUnit
     {
-        // TODO: Max and min heating tempC. HeatingConstraints
-
-        public string ID { get; set; } = ID;
+        public required string ID { get; set; }
+        public required int Capacity { get; set; }
 
         public string? Model { get; set; }
 
@@ -24,27 +25,24 @@ namespace Connect3Dp.State
 
         public HeatingConstraints? HeatingConstraints { get; internal set; }
 
-        public int Capacity { get; set; } = Capacity;
-
         public Dictionary<int, Material> Loaded { get; } = [];
 
         public double? HumidityPercent { get; set; }
         public double? TemperatureC { get; set; }
         
-        public PartialHeatingSettings? HeatingJob { get; set; }
+        public HeatingJob? HeatingJob { get; set; }
 
         public HashSet<HeatingSchedule> HeatingSchedule { get; init;  } = [];
 
         IReadOnlyDictionary<int, Material> IReadOnlyMaterialUnit.Loaded => Loaded;
-
-        IEnumerable<IHeatingSchedule> IReadOnlyMaterialUnit.HeatingSchedule => HeatingSchedule;
+        IEnumerable<HeatingSchedule> IReadOnlyMaterialUnit.HeatingSchedule => HeatingSchedule;
 
         public object GetConfiguration()
         {
             return new MaterialUnitConfiguration()
             {
                 ID = ID,
-                HeatingSchedule = new HashSet<IHeatingSchedule>(),
+                HeatingSchedule = [],
                 Slots = Capacity
             };
         }
@@ -77,7 +75,7 @@ namespace Connect3Dp.State
             if (TemperatureC != other.TemperatureC)
                 return false;
 
-            if (!EqualityComparer<PartialHeatingSettings?>.Default.Equals(HeatingJob, other.HeatingJob))
+            if (!EqualityComparer<HeatingJob?>.Default.Equals(HeatingJob, other.HeatingJob))
                 return false;
 
             if (!HeatingSchedule.SetEquals(other.HeatingSchedule))

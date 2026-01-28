@@ -2,6 +2,6 @@
 {
     public interface IUniquelyIdentifiable
     {
-        public string ID { get; }
+        string ID { get; }
     }
 }

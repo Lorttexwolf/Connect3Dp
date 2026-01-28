@@ -15,7 +15,7 @@
             {
                 throw new ArgumentException($"Filament color may not be null or empty");
             }
-            if (hexColor.StartsWith("#"))
+            if (hexColor.StartsWith('#'))
             {
                 hexColor = hexColor[1..];
             }

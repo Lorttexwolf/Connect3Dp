@@ -20,7 +20,7 @@ namespace Connect3Dp.State
     /// suitable for use as a cache key, logging identifier, or lookup handle.
     /// </para>
     /// </remarks>
-    public abstract record MachineFile : IUniquelyIdentifiable, IDisposable
+    public abstract class MachineFile : IUniquelyIdentifiable, IDisposable, IEquatable<MachineFile?>, ICloneable
     {
         private static readonly ConcurrentDictionary<string, MachineFile> IDToFile = new();
 
@@ -75,6 +75,33 @@ namespace Connect3Dp.State
                 _Disposed = true;
                 GC.SuppressFinalize(this);
             }
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as MachineFile);
+        }
+
+        public bool Equals(MachineFile? other)
+        {
+            return other is not null && ID.Equals(other.ID);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ID);
+        }
+
+        public abstract object Clone();
+
+        public static bool operator ==(MachineFile? left, MachineFile? right)
+        {
+            return EqualityComparer<MachineFile>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(MachineFile? left, MachineFile? right)
+        {
+            return !(left == right);
         }
     }
 }

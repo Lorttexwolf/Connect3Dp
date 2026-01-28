@@ -22,7 +22,13 @@ namespace Connect3Dp.Connectors
 
         protected MachineConnector(string? nickname, string id, string company, string model)
         {
-            _State = new MachineState(id, company, model, nickname);
+            _State = new MachineState
+            {
+                ID = id,
+                Nickname = nickname,
+                Brand = company,
+                Model = model
+            };
             Previous_State = new TrackedMachineState(_State);
         }
 
@@ -54,7 +60,7 @@ namespace Connect3Dp.Connectors
 
                 return new RunnableOperation(
                     Stop_Internal,
-                    (_) => CompletionStatus.Condition(this.State.Status is MachineStatus.Stopped or MachineStatus.Failed),
+                    (_) => CompletionStatus.Condition(this.State.Status is MachineStatus.Canceled),
                     timeout: TimeSpan.FromSeconds(15)).RunAsync();
 
             }, Constants.MachineMessages.FailedToStop);
@@ -71,7 +77,7 @@ namespace Connect3Dp.Connectors
 
         public async Task<OperationResult> BeginMUHeating(string unitID, HeatingSettings settings)
         {
-            var unit = _State.MaterialUnits.FirstOrDefault(x => x.ID.Equals(unitID));
+            var unit = _State.MaterialUnits.GetValueOrDefault(unitID);
 
             if (unit == null) return OperationResult.Fail($"Unit of ID {unitID} does not exist!");
 
@@ -83,14 +89,14 @@ namespace Connect3Dp.Connectors
 
             // Heating Constraints
 
-            if (!unit.HeatingConstraints.HasValue || !settings.InRange(unit.HeatingConstraints.Value))
+            if (!unit.HeatingConstraints.HasValue || !settings.IsInRange(unit.HeatingConstraints.Value))
             {
                 return OperationResult.Fail($"TempC must be in Range {unit.HeatingConstraints!.Value}");
             }
 
             var heatOperation = new RunnableOperation(
                 execute: (cts) => BeginMUHeating_Internal(unitID, settings),
-                isSuccess: (cts) => CompletionStatus.Condition(_State.MaterialUnits.Any((item) => item.ID.Equals(unitID) && item.HeatingJob != null)),
+                isSuccess: (cts) => CompletionStatus.Condition(_State.MaterialUnits.Values.Any((item) => item.ID.Equals(unitID) && item.HeatingJob != null)),
                 undo: null,
                 timeout: TimeSpan.FromSeconds(30));
 
@@ -108,7 +114,7 @@ namespace Connect3Dp.Connectors
 
         public async Task<OperationResult> EndMUHeating(string unitID)
         {
-            var unit = _State.MaterialUnits.FirstOrDefault(x => x.ID.Equals(unitID));
+            var unit = _State.MaterialUnits.GetValueOrDefault(unitID);
 
             if (unit == null)
             {
@@ -121,7 +127,7 @@ namespace Connect3Dp.Connectors
 
             var heatOperation = new RunnableOperation(
                 execute: (cts) => EndMaterialUnitHeating_Internal(unitID),
-                isSuccess: (cts) => CompletionStatus.Condition(_State.MaterialUnits.Any((item) => item.ID.Equals(unitID) && item.HeatingJob == null)),
+                isSuccess: (cts) => CompletionStatus.Condition(_State.MaterialUnits.Values.Any((item) => item.ID.Equals(unitID) && item.HeatingJob == null)),
                 undo: null,
                 timeout: TimeSpan.FromSeconds(30));
 
@@ -201,8 +207,8 @@ namespace Connect3Dp.Connectors
 
             // RULE: CurrentJob must only exist while status is Printing, Paused, or Failed.
 
-            if ((State.Status.IsOccupied() || (updatedState.Status.HasValue && updatedState.Status.Value.IsOccupied())) 
-                && !(State.Job != null || updatedState.CurrentJobUpdate != null))
+            if ((State.Status != MachineStatus.Idle || (updatedState.Status.HasValue && updatedState.Status.Value != MachineStatus.Idle)) 
+                && !(State.Job != null || updatedState.CurrentJob != null))
             {
                 issue = "Job must only exist while status is Printing, Paused, or Failed.";
 
@@ -211,36 +217,36 @@ namespace Connect3Dp.Connectors
 
             // RULE: With the MU Heating feature, a Heating Constraint must be applied before advertising this functionality.
 
-            foreach (var mu in State.MaterialUnits)
+            if (updatedState.MaterialUnitsToSet != null)
             {
-                var hasHeatingFeature = mu.Features.HasFlag(MaterialUnitFeatures.Heating);
-                var hasHeatingConstraints = mu.HeatingConstraints != null;
-
-                // Check if this unit is being updated
-                if (updatedState.MaterialUnitUpdates?.TryGetValue(mu.ID, out var unitUpdate) == true)
+                foreach (var mu in State.MaterialUnits)
                 {
-                    if (unitUpdate.Features.HasValue) hasHeatingFeature = unitUpdate.Features.Value.HasFlag(MaterialUnitFeatures.Heating);
+                    var hasHeatingFeature = mu.Features.HasFlag(MaterialUnitFeatures.Heating);
+                    var hasHeatingConstraints = mu.HeatingConstraints != null;
 
-                    if (unitUpdate.HeatingConstraintsSet) hasHeatingConstraints = unitUpdate.HeatingConstraints != null;
+                    // Check if this unit is being updated
+                    if (updatedState.MaterialUnitsToSet.TryGetValue(mu.ID, out var unitUpdate) == true)
+                    {
+                        if (unitUpdate.Features.HasValue) hasHeatingFeature = unitUpdate.Features.Value.HasFlag(MaterialUnitFeatures.Heating);
+
+                        if (unitUpdate.HeatingConstraintsIsSet) hasHeatingConstraints = unitUpdate.HeatingConstraints != null;
+                    }
+
+                    if (hasHeatingFeature && !hasHeatingConstraints)
+                    {
+                        issue = $"Material Unit '{mu.ID}' has Heating feature but no HeatingConstraints configured.";
+                        return false;
+                    }
                 }
 
-                if (hasHeatingFeature && !hasHeatingConstraints)
-                {
-                    issue = $"Material Unit '{mu.ID}' has Heating feature but no HeatingConstraints configured.";
-                    return false;
-                }
-            }
-
-            if (updatedState.MaterialUnitUpdates != null)
-            {
-                foreach (var (unitId, unitUpdate) in updatedState.MaterialUnitUpdates)
+                foreach (var (unitId, unitUpdate) in updatedState.MaterialUnitsToSet)
                 {
                     // Skip if this is an existing unit (already checked above)
                     if (State.MaterialUnits.Any(mu => mu.ID == unitId))
                         continue;
 
                     var hasHeatingFeature = unitUpdate.Features?.HasFlag(MaterialUnitFeatures.Heating) ?? false;
-                    var hasHeatingConstraints = unitUpdate.HeatingConstraintsSet && unitUpdate.HeatingConstraints != null;
+                    var hasHeatingConstraints = unitUpdate.HeatingConstraintsIsSet && unitUpdate.HeatingConstraints != null;
 
                     if (hasHeatingFeature && !hasHeatingConstraints)
                     {
@@ -293,7 +299,7 @@ namespace Connect3Dp.Connectors
 
             // Apply Update
 
-            this._State.AppendUpdate(updatedState);
+            updatedState.AppendUpdate(this._State);
 
             // Poll Changes
 
@@ -350,22 +356,27 @@ namespace Connect3Dp.Connectors
 
             // Scheduling
 
-            foreach (var (_, MU) in updatedState.MaterialUnitUpdates ?? [])
+            if (updatedState.MaterialUnitsToSet != null)
             {
-                if (MU.SchedulesToAdd != null)
+                foreach (var MU in updatedState.MaterialUnitsToSet.Values)
                 {
-                    var schedules = MU.SchedulesToAdd.Where(s => !s.SchedulerID.HasValue || !Scheduler.IsTaskRunning(s.SchedulerID.Value));
-
-                    ScheduleMUHeatingTasks(MU.ID, schedules);
-                }
-
-                if (MU.SchedulesToRemove != null)
-                {
-                    foreach (var schedule in MU.SchedulesToRemove)
+                    if (MU.HeatingScheduleToSet != null)
                     {
-                        if (schedule.SchedulerID.HasValue) Scheduler.End(schedule.SchedulerID.Value);
+                        var schedules = MU.HeatingScheduleToSet.Where(s => !s.SchedulerID.HasValue || !Scheduler.IsTaskRunning(s.SchedulerID.Value));
+
+                        ScheduleMUHeatingTasks(MU.ID, schedules);
+                    }
+
+                    if (MU.HeatingScheduleToRemove != null)
+                    {
+                        foreach (var schedule in MU.HeatingScheduleToRemove)
+                        {
+                            if (schedule.SchedulerID.HasValue) Scheduler.End(schedule.SchedulerID.Value);
+                        }
                     }
                 }
+
+                // TODO: MU for removal.
             }
 
             Previous_State.ViewAll();
@@ -420,14 +431,14 @@ namespace Connect3Dp.Connectors
             }
             catch (MachineException mEx)
             {
-                if (doCommitError) CommitState(changes => changes.AddMessage(errorMessage));
+                if (doCommitError) CommitState(changes => changes.SetMessages(errorMessage));
                 throw;
             }
             catch (Exception ex)
             {
                 var mEx = new MachineException(errorMessage, ex);
 
-                if (doCommitError) CommitState(changes => changes.AddMessage(errorMessage));
+                if (doCommitError) CommitState(changes => changes.SetMessages(errorMessage));
                 throw mEx;
             }
         }
@@ -440,13 +451,13 @@ namespace Connect3Dp.Connectors
             }
             catch (MachineException mEx)
             {
-                if (doCommitError) CommitState(changes => changes.AddMessage(errorMessage));
+                if (doCommitError) CommitState(changes => changes.SetMessages(errorMessage));
                 throw;
             }
             catch (Exception ex)
             {
                 var mEx = new MachineException(errorMessage, ex);
-                if (doCommitError) CommitState(changes => changes.AddMessage(errorMessage));
+                if (doCommitError) CommitState(changes => changes.SetMessages(errorMessage));
                 throw mEx;
             }
         }

@@ -12,7 +12,7 @@ namespace Connect3Dp.Constants
     /// </summary>
     internal static class MachineMessages
     {
-        public static MachineMessage FailedToConnect => new("Unable to connect to Machine", "An issue occurred connecting to this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+        public static MachineMessage FailedToConnect => new("Unable to connect to Machine", "An issue occurred connecting to this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.ErrorDuringPrinting)
         {
             AutoResolve = new MessageAutoResole
             {
@@ -20,27 +20,27 @@ namespace Connect3Dp.Constants
             }
         };
 
-        public static MachineMessage FailedToStop => new("Unable to stop the Machine", "An issue occurred stopping this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+        public static MachineMessage FailedToStop => new("Unable to stop the Machine", "An issue occurred stopping this Machine", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.ErrorDuringPrinting)
         {
             AutoResolve = new MessageAutoResole
             {
-                WhenStatus = MachineStatus.Stopped | MachineStatus.Failed
+                WhenStatus = MachineStatus.Canceled
             }
         };
 
         public static MachineMessage NoFeature(MachineCapabilities desiredFeature)
         {
-            return new MachineMessage("Unsupported Feature", $"Machine does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+            return new MachineMessage("Unsupported Feature", $"Machine does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.ErrorDuringPrinting)
             {
-                Severity = MachineMessageSeverity.Error
+                Severity = MachineMessageSeverity.ErrorDuringPrinting
             };
         }
 
         public static MachineMessage NoMUFeature(MaterialUnitFeatures desiredFeature)
         {
-            return new MachineMessage("Unsupported Material Unit Feature", $"Material Unit does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.Error)
+            return new MachineMessage("Unsupported Material Unit Feature", $"Material Unit does not support feature {Enum.GetName(desiredFeature)}", DateTime.Now, MessageSource.Connector, MachineMessageSeverity.ErrorDuringPrinting)
             {
-                Severity = MachineMessageSeverity.Error
+                Severity = MachineMessageSeverity.ErrorDuringPrinting
             };
         }
     }

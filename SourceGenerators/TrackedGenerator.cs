@@ -159,14 +159,14 @@ namespace Connect3Dp.SourceGeneration
     internal class TypeResolver
     {
         private readonly INamedTypeSymbol? _iDictionary;
-        private readonly INamedTypeSymbol? _iList;
+        private readonly INamedTypeSymbol? _iCollection;
         private readonly INamedTypeSymbol? _iReadOnlyList;
         private readonly INamedTypeSymbol? _iReadOnlyDictionary;
 
         public TypeResolver(Compilation compilation)
         {
             _iDictionary = compilation.GetTypeByMetadataName("System.Collections.Generic.IDictionary`2");
-            _iList = compilation.GetTypeByMetadataName("System.Collections.Generic.IList`1");
+            _iCollection = compilation.GetTypeByMetadataName("System.Collections.Generic.ICollection`1");
             _iReadOnlyList = compilation.GetTypeByMetadataName("System.Collections.Generic.IReadOnlyList`1");
             _iReadOnlyDictionary = compilation.GetTypeByMetadataName("System.Collections.Generic.IReadOnlyDictionary`2");
         }
@@ -180,9 +180,9 @@ namespace Connect3Dp.SourceGeneration
             }
 
             // Check list types (mutable and read-only)
-            if (IsListType(propertyType, out var listArgs))
+            if (IsCollectionType(propertyType, out var listArgs))
             {
-                return $"TrackedList<{listArgs}>";
+                return $"TrackedCollection<{listArgs}>";
             }
 
             // Check for nested tracked types
@@ -191,7 +191,11 @@ namespace Connect3Dp.SourceGeneration
                 return GetFullyQualifiedTrackedTypeName(propertyType);
             }
 
-            // Default: wrap in TrackedValue
+            if (propertyType.IsValueType)
+            {
+                return $"TrackedStruct<{GetFullyQualifiedName(propertyType)}>";
+            }
+
             return $"TrackedValue<{GetFullyQualifiedName(propertyType)}>";
         }
 
@@ -226,11 +230,11 @@ namespace Connect3Dp.SourceGeneration
             return false;
         }
 
-        private bool IsListType(ITypeSymbol type, out string typeArguments)
+        private bool IsCollectionType(ITypeSymbol type, out string typeArguments)
         {
             typeArguments = string.Empty;
 
-            if (_iList != null && ImplementsInterface(type, _iList))
+            if (_iCollection != null && ImplementsInterface(type, _iCollection))
             {
                 typeArguments = GetListTypeArguments(type);
                 return true;

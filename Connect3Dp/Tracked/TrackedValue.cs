@@ -14,12 +14,12 @@ namespace Connect3Dp.Tracked
         /// </summary>
         public R Use(bool markAsSeen)
         {
-            R val = this.Use_Internal();
+            R val = this.LastValue();
             if (markAsSeen) View();
             return val;
         }
 
-        protected abstract R Use_Internal();
+        protected abstract R LastValue();
 
         public bool TryUse(bool markAsSeen, [NotNullWhen(true)] out R? lastValue)
         {
@@ -30,19 +30,14 @@ namespace Connect3Dp.Tracked
         public abstract void View();
     }
 
-    public static class TrackedExtensions
-    {
-        public static TrackedValue<T> Track<T>(this T what) => new(() => what);
-    }
-
-    public sealed class TrackedValue<T>(Func<T> getter) : Tracked<T>
+    public sealed class TrackedStruct<T>(Func<T> getter) : Tracked<T> where T : struct
     {
         private readonly Func<T> _Getter = getter;
         private T _LastValue = getter();
 
         public override bool HasChanged => !EqualityComparer<T>.Default.Equals(_LastValue, _Getter());
 
-        protected override T Use_Internal()
+        protected override T LastValue()
         {
             return _LastValue;
         }
@@ -50,6 +45,34 @@ namespace Connect3Dp.Tracked
         public override void View()
         {
             _LastValue = _Getter();
+        }
+    }
+
+    public sealed class TrackedValue<T>(Func<T?> getter) : Tracked<T> where T : class, ICloneable
+    {
+        private readonly Func<T?> _Getter = getter;
+        private T? _LastValue = getter();
+
+        public override bool HasChanged => !EqualityComparer<T>.Default.Equals(_LastValue, _Getter());
+
+        protected override T LastValue()
+        {
+            return _LastValue;
+        }
+
+        public override void View()
+        {
+            var gotValue = _Getter();
+
+            if (gotValue != null)
+            {
+                _LastValue = (T?)gotValue.Clone();
+            }
+            else
+            {
+                _LastValue = null;
+            }
+
         }
     }
 }

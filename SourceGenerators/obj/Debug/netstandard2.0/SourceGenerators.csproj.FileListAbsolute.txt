@@ -9,14 +9,3 @@ C:\Users\comis\Documents\Connect3Dp\Tracked\bin\Debug\netstandard2.0\Connect3Dp.
 C:\Users\comis\Documents\Connect3Dp\Tracked\bin\Debug\netstandard2.0\Connect3Dp.SourceGeneration.pdb
 C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Connect3Dp.SourceGeneration.dll
 C:\Users\comis\Documents\Connect3Dp\Tracked\obj\Debug\netstandard2.0\Connect3Dp.SourceGeneration.pdb
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\bin\Debug\netstandard2.0\Connect3Dp.SourceGeneration.deps.json
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\bin\Debug\netstandard2.0\Connect3Dp.SourceGeneration.dll
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\bin\Debug\netstandard2.0\Connect3Dp.SourceGeneration.pdb
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.csproj.AssemblyReference.cache
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.AssemblyInfoInputs.cache
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.AssemblyInfo.cs
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.csproj.CoreCompileInputs.cache
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\SourceGenerators.sourcelink.json
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\Connect3Dp.SourceGeneration.dll
-C:\Users\comis\Documents\Connect3Dp\SourceGenerators\obj\Debug\netstandard2.0\Connect3Dp.SourceGeneration.pdb

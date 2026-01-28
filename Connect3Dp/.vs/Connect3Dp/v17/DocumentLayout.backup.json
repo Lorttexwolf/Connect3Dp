@@ -3,187 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6D7D94F5-82A3-4D25-B525-BD2CF598CB35}|..\\What\\What.csproj|c:\\users\\comis\\documents\\connect3dp\\what\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblerrors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblerrors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\machineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\machineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblmachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblmachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\localprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\localprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinecapabilities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinecapabilities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinestateupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinestateupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\historicprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\historicprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\utilities\\periodicasyncaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:utilities\\periodicasyncaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblmqttconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblmqttconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\extensions\\imachinestateextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:extensions\\imachinestateextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblftpconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblftpconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblesplancamerastreamer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblesplancamerastreamer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\utilities\\machinefilecache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:utilities\\machinefilecache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\constants\\bblconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\constants\\bblconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblerrors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblerrors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\constants\\bblmessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\constants\\bblmessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\constants\\machinemessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:constants\\machinemessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\ireadonlymachinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\ireadonlymachinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinenozzle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinenozzle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinemessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinemessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\machineconnectors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\machineconnectors.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\printjobupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\printjobupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\ireadonlymachineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\ireadonlymachineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\elegoo\\elegoomachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\elegoo\\elegoomachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\tracked\\trackedvalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:tracked\\trackedvalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\operation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:operation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\monomachine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:monomachine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\iconfigurable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:iconfigurable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\iuniquelyidentifiable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:iuniquelyidentifiable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\creality\\crealityk1connector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\creality\\crealityk1connector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connect3dp.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connect3dp.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materialunit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialunit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblfirmwareversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblfirmwareversion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\heatingconstraints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\heatingconstraints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6D7D94F5-82A3-4D25-B525-BD2CF598CB35}|..\\What\\What.csproj|c:\\users\\comis\\documents\\connect3dp\\what\\what.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\scheduling\\cronscheduler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:scheduling\\cronscheduler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materialunitupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialunitupdate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\utilities\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:utilities\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\heatingjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\heatingjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\heatingschedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -194,6 +31,66 @@
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\ireadonlymaterialunit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materialunit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialunit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\heatingsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\heatingsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\historicprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\historicprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\ireadonlymachineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\ireadonlymachineprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\ireadonlymachinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\ireadonlymachinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\localprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\localprintjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machineairductmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machineairductmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinecapabilities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinecapabilities.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinemessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinemessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinefile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinenozzle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinenozzle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machinestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machinestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\material.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\material.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materialcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materiallocation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materiallocation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -202,84 +99,179 @@
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialunitfeatures.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\heatingsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\heatingsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\printjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\printjob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\extensions\\machinestatusextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:extensions\\machinestatusextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\printoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\printoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\extensions\\materialunitextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:extensions\\materialunitextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\machineairductmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\machineairductmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\material.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\material.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\test.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\test.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\utilities\\simplewebsocket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:utilities\\simplewebsocket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\extensions\\jsonelementextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:extensions\\jsonelementextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\iconfigurable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:iconfigurable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\plugins\\ome\\omeplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:plugins\\ome\\omeplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\iuniquelyidentifiable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:iuniquelyidentifiable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AB3C1B9D-4580-47F2-A824-DB4DA91ED029}|..\\SourceGenerators\\SourceGenerators.csproj|c:\\users\\comis\\documents\\connect3dp\\sourcegenerators\\trackedgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\tracked\\trackedvalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:tracked\\trackedvalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblesplancamerastreamer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblesplancamerastreamer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\operation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:operation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblmqttconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblmqttconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\machineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\machineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\constants\\machinemessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:constants\\machinemessages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\extensions\\machinestatusextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:extensions\\machinestatusextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblmachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblmachineconnector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5b586112-fe68-e29c-c1e8-71b6781b961c\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblftpconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblftpconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D7D94F5-82A3-4D25-B525-BD2CF598CB35}|..\\What\\What.csproj|c:\\users\\comis\\documents\\connect3dp\\what\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\utilities\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:utilities\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\3a509934-f17e-67bd-ff1d-a7a40e6a6294\\PrintJob.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\7c8d28d8-da8c-96f9-8955-4a18bf6a9ca8\\MaterialUnit.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB3C1B9D-4580-47F2-A824-DB4DA91ED029}|..\\SourceGenerators\\SourceGenerators.csproj|c:\\users\\comis\\documents\\connect3dp\\sourcegenerators\\updategen\\updategenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\connectors\\bambulab\\bblcerts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:connectors\\bambulab\\bblcerts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{AB3C1B9D-4580-47F2-A824-DB4DA91ED029}|..\\SourceGenerators\\SourceGenerators.csproj|c:\\users\\comis\\documents\\connect3dp\\sourcegenerators\\itypesymbolextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a033f3ec-0ee3-c910-0155-4e9b9df203df\\Material.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\8ecaff09-4df7-5d89-6ae5-54346e336abf\\Material.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\decd1e78-3310-4057-a14f-daa20cbd9014\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\fe1e56d2-ceda-cf6f-758f-e480b9872a39\\PrintJob.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\082bf115-ab6b-d6c0-e179-277778f32887\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\e6456f4b-d2e3-ab0e-2690-28da096fb713\\MaterialUnit.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1db8ef34-d521-888f-0c67-4d39b73d4e22\\PrintJob.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\079285fc-8526-d326-f1b2-3a8a9e7fd570\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5d72b844-066a-c07c-1301-394f64756c2c\\Material.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\baea7a74-8949-ce4a-0588-452733b4d8de\\Material.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\ddb42963-32f5-a71b-42af-93534bdedff8\\Test.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\531bee0a-0897-795c-bb16-469f38c1e050\\PrintJob.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1d8e265d-5bae-82c5-77a0-87c3100c8e2a\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{AB3C1B9D-4580-47F2-A824-DB4DA91ED029}|..\\SourceGenerators\\SourceGenerators.csproj|c:\\users\\comis\\documents\\connect3dp\\sourcegenerators\\sourcegenerators.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\plugins\\iplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:plugins\\iplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6D7D94F5-82A3-4D25-B525-BD2CF598CB35}|..\\What\\What.csproj|c:\\users\\comis\\documents\\connect3dp\\what\\what.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\exceptions\\machineexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:exceptions\\machineexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\4dce0102-05a5-b537-d436-5e28363e525a\\MachineState.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\tracked\\trackeddictionary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:tracked\\trackeddictionary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\540b9c21-0634-12ea-06c5-49311b0ce270\\PrintJob.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\tracked\\trackedlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:tracked\\trackedlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AB3C1B9D-4580-47F2-A824-DB4DA91ED029}|..\\SourceGenerators\\SourceGenerators.csproj|c:\\users\\comis\\documents\\connect3dp\\sourcegenerators\\trackedgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\state\\materialcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:state\\materialcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\772f0b77-3a7e-401d-212b-e69462bfc6c5\\MaterialUnit.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\cc68ed23-c3e8-0226-b907-cfa758ea4414\\MaterialUnitA.Update.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\22b15830-098f-ecbc-3dcf-496d7ccb4ae3\\TrackedMachineState.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\b52e8243db92238e6e07e29b20371e57cad92798\\TrackedPrintJob.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5ae40d97-13fd-802c-0bf3-739ef6401470\\PartialPrintJob_IsWhole.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a1ea8ff2-8b60-d777-b5f0-15ab3053b0a8\\PartialPrintJob.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\plugins\\ome\\origin_conf\\server.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:plugins\\ome\\origin_conf\\server.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|c:\\users\\comis\\documents\\connect3dp\\connect3dp\\plugins\\ome\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
-      "RelativeMoniker": "D:0:0:{A9346F1B-CC3F-45C6-A462-10D4A061EB55}|Connect3Dp.csproj|solutionrelative:plugins\\ome\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\comis\\Documents\\Connect3Dp\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
@@ -301,397 +293,371 @@
       "DocumentGroups": [
         {
           "DockedHeight": 159,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 0,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "LocalPrintJob.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\LocalPrintJob.cs",
-              "RelativeDocumentMoniker": "State\\LocalPrintJob.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\LocalPrintJob.cs",
-              "RelativeToolTip": "State\\LocalPrintJob.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T08:47:27.565Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "BBLMachineConnector.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMachineConnector.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLMachineConnector.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMachineConnector.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLMachineConnector.cs",
-              "ViewState": "AgIAAHEAAAAAAAAAAADwv5cAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T01:37:33.7Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MachineStateUpdate.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStateUpdate.cs",
-              "RelativeDocumentMoniker": "State\\MachineStateUpdate.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStateUpdate.cs",
-              "RelativeToolTip": "State\\MachineStateUpdate.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAUwE4AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T21:30:02.448Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "BBLConstants.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\Constants\\BBLConstants.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\Constants\\BBLConstants.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\Constants\\BBLConstants.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\Constants\\BBLConstants.cs",
-              "ViewState": "AgIAAGkAAAAAAAAAAAAawIEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-15T18:50:32.061Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 0,
               "Title": "BBLErrors.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLErrors.cs",
               "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLErrors.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLErrors.cs",
               "RelativeToolTip": "Connectors\\BambuLab\\BBLErrors.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABsAAAAAAAAAA==",
+              "ViewState": "AgIAABkAAAAAAAAAAAAgwG8AAACOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T22:13:05.705Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\What\\Program.cs",
-              "RelativeDocumentMoniker": "..\\What\\Program.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\What\\Program.cs",
-              "RelativeToolTip": "..\\What\\Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAcwBgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T04:21:59.432Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MachineCapabilities.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineCapabilities.cs",
-              "RelativeDocumentMoniker": "State\\MachineCapabilities.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineCapabilities.cs",
-              "RelativeToolTip": "State\\MachineCapabilities.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:53:17.833Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MachineState.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineState.cs",
-              "RelativeDocumentMoniker": "State\\MachineState.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineState.cs",
-              "RelativeToolTip": "State\\MachineState.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAIwBsAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T05:02:42.676Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "IMachineStateExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\IMachineStateExtensions.cs",
-              "RelativeDocumentMoniker": "Extensions\\IMachineStateExtensions.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\IMachineStateExtensions.cs",
-              "RelativeToolTip": "Extensions\\IMachineStateExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T19:34:59.705Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "BBLFTPConnection.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFTPConnection.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLFTPConnection.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFTPConnection.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLFTPConnection.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAowDEAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T23:50:32.928Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "MachineFile.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineFile.cs",
-              "RelativeDocumentMoniker": "State\\MachineFile.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineFile.cs",
-              "RelativeToolTip": "State\\MachineFile.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T23:48:36.082Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MachineStatus.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStatus.cs",
-              "RelativeDocumentMoniker": "State\\MachineStatus.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStatus.cs",
-              "RelativeToolTip": "State\\MachineStatus.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBgAAABJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T01:07:31.627Z",
+              "WhenOpened": "2026-01-28T08:01:18.58Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MachineConnector.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnector.cs",
-              "RelativeDocumentMoniker": "Connectors\\MachineConnector.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnector.cs",
-              "RelativeToolTip": "Connectors\\MachineConnector.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8BAACZAAAAAAAAAA==",
+              "Title": "BBLEspLANCameraStreamer.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
+              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
+              "RelativeToolTip": "Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:13:39.11Z",
+              "WhenOpened": "2026-01-28T08:00:14.413Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "AsyncMethodBuilderCore.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs [Read Only]",
-              "ViewState": "AgIAABgAAAAAAAAAAAAowDYAAAAIAAAAAQAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T02:51:48.079Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "AsyncEvent.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs [Read Only]",
-              "ViewState": "AgIAACsAAAAAAAAAAAAowDwAAABcAAAAAQAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T02:51:44.71Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "HistoricPrintJob.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HistoricPrintJob.cs",
-              "RelativeDocumentMoniker": "State\\HistoricPrintJob.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HistoricPrintJob.cs",
-              "RelativeToolTip": "State\\HistoricPrintJob.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T23:04:32.834Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "BBLMQTTConnection.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMQTTConnection.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLMQTTConnection.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMQTTConnection.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLMQTTConnection.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAABAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T23:00:14.135Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "PeriodicAsyncAction.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\PeriodicAsyncAction.cs",
-              "RelativeDocumentMoniker": "Utilities\\PeriodicAsyncAction.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\PeriodicAsyncAction.cs",
-              "RelativeToolTip": "Utilities\\PeriodicAsyncAction.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-17T23:58:59.911Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "MachineMessages.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Constants\\MachineMessages.cs",
-              "RelativeDocumentMoniker": "Constants\\MachineMessages.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Constants\\MachineMessages.cs",
-              "RelativeToolTip": "Constants\\MachineMessages.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-20T21:17:47.526Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 2,
               "Title": "MachineFileCache.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\MachineFileCache.cs",
               "RelativeDocumentMoniker": "Utilities\\MachineFileCache.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\MachineFileCache.cs",
               "RelativeToolTip": "Utilities\\MachineFileCache.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAMwCwAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T02:00:59.465Z",
+              "WhenOpened": "2026-01-28T08:00:06.035Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "BBLMessages.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\Constants\\BBLMessages.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\Constants\\BBLMessages.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\Constants\\BBLMessages.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\Constants\\BBLMessages.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAADuAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "HeatingConstraints.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingConstraints.cs",
+              "RelativeDocumentMoniker": "State\\HeatingConstraints.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingConstraints.cs",
+              "RelativeToolTip": "State\\HeatingConstraints.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T06:57:32.824Z",
+              "WhenOpened": "2026-01-28T07:59:58.232Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "MachinePrintJob.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachinePrintJob.cs",
-              "RelativeDocumentMoniker": "State\\MachinePrintJob.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachinePrintJob.cs",
-              "RelativeToolTip": "State\\MachinePrintJob.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAA8AAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "HeatingJob.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingJob.cs",
+              "RelativeDocumentMoniker": "State\\HeatingJob.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingJob.cs",
+              "RelativeToolTip": "State\\HeatingJob.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T20:30:59.247Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": ".gitignore",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore",
-              "RelativeDocumentMoniker": "..\\.gitignore",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore",
-              "RelativeToolTip": "..\\.gitignore",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAACAAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-01-25T01:57:43.967Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "MachineConnectors.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnectors.cs",
-              "RelativeDocumentMoniker": "Connectors\\MachineConnectors.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnectors.cs",
-              "RelativeToolTip": "Connectors\\MachineConnectors.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAgwEQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T22:06:12.026Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "MachineMessage.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineMessage.cs",
-              "RelativeDocumentMoniker": "State\\MachineMessage.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineMessage.cs",
-              "RelativeToolTip": "State\\MachineMessage.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAcwGcAAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:13:28.322Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "IReadOnlyMachineState.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachineState.cs",
-              "RelativeDocumentMoniker": "State\\IReadOnlyMachineState.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachineState.cs",
-              "RelativeToolTip": "State\\IReadOnlyMachineState.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T22:39:43.214Z",
+              "WhenOpened": "2026-01-28T07:59:14.433Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "MachineNozzle.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineNozzle.cs",
-              "RelativeDocumentMoniker": "State\\MachineNozzle.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineNozzle.cs",
-              "RelativeToolTip": "State\\MachineNozzle.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "HeatingSchedule.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSchedule.cs",
+              "RelativeDocumentMoniker": "State\\HeatingSchedule.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSchedule.cs",
+              "RelativeToolTip": "State\\HeatingSchedule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T06:05:55.811Z"
+              "WhenOpened": "2026-01-28T07:55:17.363Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 10,
               "Title": "IReadOnlyMachinePrintJob.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachinePrintJob.cs",
               "RelativeDocumentMoniker": "State\\IReadOnlyMachinePrintJob.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachinePrintJob.cs",
               "RelativeToolTip": "State\\IReadOnlyMachinePrintJob.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAkAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T22:45:44.621Z"
+              "WhenOpened": "2026-01-28T07:54:45.886Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "HistoricPrintJob.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HistoricPrintJob.cs",
+              "RelativeDocumentMoniker": "State\\HistoricPrintJob.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HistoricPrintJob.cs",
+              "RelativeToolTip": "State\\HistoricPrintJob.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:54:45.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "LocalPrintJob.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\LocalPrintJob.cs",
+              "RelativeDocumentMoniker": "State\\LocalPrintJob.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\LocalPrintJob.cs",
+              "RelativeToolTip": "State\\LocalPrintJob.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:53:40.657Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MachineCapabilities.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineCapabilities.cs",
+              "RelativeDocumentMoniker": "State\\MachineCapabilities.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineCapabilities.cs",
+              "RelativeToolTip": "State\\MachineCapabilities.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:53:07.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Material.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Material.cs",
+              "RelativeDocumentMoniker": "State\\Material.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Material.cs",
+              "RelativeToolTip": "State\\Material.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:49:32.894Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "MaterialColor.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialColor.cs",
+              "RelativeDocumentMoniker": "State\\MaterialColor.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialColor.cs",
+              "RelativeToolTip": "State\\MaterialColor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:49:12.873Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "MachineFile.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineFile.cs",
+              "RelativeDocumentMoniker": "State\\MachineFile.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineFile.cs",
+              "RelativeToolTip": "State\\MachineFile.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAgwGgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:47:42.754Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "MachineStatus.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStatus.cs",
+              "RelativeDocumentMoniker": "State\\MachineStatus.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineStatus.cs",
+              "RelativeToolTip": "State\\MachineStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAWwBwAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:32:46.112Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "MachineState.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineState.cs",
+              "RelativeDocumentMoniker": "State\\MachineState.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineState.cs",
+              "RelativeToolTip": "State\\MachineState.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAmwDcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T05:12:55.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "MachineNozzle.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineNozzle.cs",
+              "RelativeDocumentMoniker": "State\\MachineNozzle.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineNozzle.cs",
+              "RelativeToolTip": "State\\MachineNozzle.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T05:13:04.302Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IReadOnlyMaterialUnit.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMaterialUnit.cs",
+              "RelativeDocumentMoniker": "State\\IReadOnlyMaterialUnit.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMaterialUnit.cs",
+              "RelativeToolTip": "State\\IReadOnlyMaterialUnit.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:39:13.4Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MaterialUnit.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnit.cs",
+              "RelativeDocumentMoniker": "State\\MaterialUnit.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnit.cs",
+              "RelativeToolTip": "State\\MaterialUnit.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwCEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T05:12:52.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "MaterialLocation.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialLocation.cs",
+              "RelativeDocumentMoniker": "State\\MaterialLocation.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialLocation.cs",
+              "RelativeToolTip": "State\\MaterialLocation.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:49:07.895Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "PrintJob.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintJob.cs",
+              "RelativeDocumentMoniker": "State\\PrintJob.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintJob.cs",
+              "RelativeToolTip": "State\\PrintJob.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:48:42.731Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "HeatingSettings.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSettings.cs",
+              "RelativeDocumentMoniker": "State\\HeatingSettings.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSettings.cs",
+              "RelativeToolTip": "State\\HeatingSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:36:39.426Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "PrintOptions.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintOptions.cs",
+              "RelativeDocumentMoniker": "State\\PrintOptions.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintOptions.cs",
+              "RelativeToolTip": "State\\PrintOptions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:48:30.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Test.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Test.cs",
+              "RelativeDocumentMoniker": "State\\Test.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Test.cs",
+              "RelativeToolTip": "State\\Test.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:48:29.737Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IReadOnlyMachineState.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachineState.cs",
+              "RelativeDocumentMoniker": "State\\IReadOnlyMachineState.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMachineState.cs",
+              "RelativeToolTip": "State\\IReadOnlyMachineState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:43:48.985Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 27,
-              "Title": "PrintJobUpdate.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintJobUpdate.cs",
-              "RelativeDocumentMoniker": "State\\PrintJobUpdate.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\PrintJobUpdate.cs",
-              "RelativeToolTip": "State\\PrintJobUpdate.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAD4v1MAAAANAAAAAAAAAA==",
+              "Title": "SimpleWebSocket.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\SimpleWebSocket.cs",
+              "RelativeDocumentMoniker": "Utilities\\SimpleWebSocket.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\SimpleWebSocket.cs",
+              "RelativeToolTip": "Utilities\\SimpleWebSocket.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAuwIwAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T20:25:04.42Z"
+              "WhenOpened": "2026-01-28T07:47:04.429Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "IConfigurable.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IConfigurable.cs",
+              "RelativeDocumentMoniker": "IConfigurable.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IConfigurable.cs",
+              "RelativeToolTip": "IConfigurable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:47:01.236Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 29,
-              "Title": "ELEGOOMachineConnector.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\ELEGOO\\ELEGOOMachineConnector.cs",
-              "RelativeDocumentMoniker": "Connectors\\ELEGOO\\ELEGOOMachineConnector.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\ELEGOO\\ELEGOOMachineConnector.cs",
-              "RelativeToolTip": "Connectors\\ELEGOO\\ELEGOOMachineConnector.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAqwC4AAAAJAAAAAAAAAA==",
+              "Title": "IUniquelyIdentifiable.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IUniquelyIdentifiable.cs",
+              "RelativeDocumentMoniker": "IUniquelyIdentifiable.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IUniquelyIdentifiable.cs",
+              "RelativeToolTip": "IUniquelyIdentifiable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-20T23:44:01.755Z"
+              "WhenOpened": "2026-01-28T07:46:57.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MachineAirDuctMode.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineAirDuctMode.cs",
+              "RelativeDocumentMoniker": "State\\MachineAirDuctMode.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineAirDuctMode.cs",
+              "RelativeToolTip": "State\\MachineAirDuctMode.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:43:43.44Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -701,9 +667,23 @@
               "RelativeDocumentMoniker": "Tracked\\TrackedValue.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Tracked\\TrackedValue.cs",
               "RelativeToolTip": "Tracked\\TrackedValue.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:57:32.891Z"
+              "WhenOpened": "2026-01-28T07:46:27.875Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "MachineMessage.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineMessage.cs",
+              "RelativeDocumentMoniker": "State\\MachineMessage.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineMessage.cs",
+              "RelativeToolTip": "State\\MachineMessage.cs",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAUwE8AAABiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T07:35:43.119Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -713,209 +693,385 @@
               "RelativeDocumentMoniker": "Operation.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Operation.cs",
               "RelativeToolTip": "Operation.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAAA8wDkAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAHcAAAAAAAAAAADwv44AAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T00:54:42.098Z"
+              "WhenOpened": "2026-01-28T07:44:24.708Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "MonoMachine.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\MonoMachine.cs",
-              "RelativeDocumentMoniker": "MonoMachine.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\MonoMachine.cs",
-              "RelativeToolTip": "MonoMachine.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 23,
+              "Title": "MaterialUnitFeatures.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitFeatures.cs",
+              "RelativeDocumentMoniker": "State\\MaterialUnitFeatures.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitFeatures.cs",
+              "RelativeToolTip": "State\\MaterialUnitFeatures.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T02:56:53.799Z"
+              "WhenOpened": "2026-01-28T07:36:23.429Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "IConfigurable.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IConfigurable.cs",
-              "RelativeDocumentMoniker": "IConfigurable.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IConfigurable.cs",
-              "RelativeToolTip": "IConfigurable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T20:24:53.19Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "IUniquelyIdentifiable.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IUniquelyIdentifiable.cs",
-              "RelativeDocumentMoniker": "IUniquelyIdentifiable.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\IUniquelyIdentifiable.cs",
-              "RelativeToolTip": "IUniquelyIdentifiable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T22:59:22.938Z"
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 35,
-              "Title": "CrealityK1Connector.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\Creality\\CrealityK1Connector.cs",
-              "RelativeDocumentMoniker": "Connectors\\Creality\\CrealityK1Connector.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\Creality\\CrealityK1Connector.cs",
-              "RelativeToolTip": "Connectors\\Creality\\CrealityK1Connector.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBsAAAAJAAAAAAAAAA==",
+              "Title": "MachineStatusExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MachineStatusExtensions.cs",
+              "RelativeDocumentMoniker": "Extensions\\MachineStatusExtensions.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MachineStatusExtensions.cs",
+              "RelativeToolTip": "Extensions\\MachineStatusExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-20T23:06:48.097Z"
+              "WhenOpened": "2026-01-28T07:34:11.806Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
-              "Title": "JsonConverter.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs [Read Only]",
-              "ViewState": "AgIAAEYCAAAAAAAAAAAQwFwCAAACAAAAAQAAAA==",
+              "DocumentIndex": 34,
+              "Title": "MachineMessages.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Constants\\MachineMessages.cs",
+              "RelativeDocumentMoniker": "Constants\\MachineMessages.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Constants\\MachineMessages.cs",
+              "RelativeToolTip": "Constants\\MachineMessages.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAACYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T21:40:40.459Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 42,
-              "Title": "BBLFirmwareVersion.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFirmwareVersion.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLFirmwareVersion.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFirmwareVersion.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLFirmwareVersion.cs",
-              "ViewState": "AgIAAEcAAAAAAAAAAAAqwBMAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T01:36:53.462Z"
+              "WhenOpened": "2026-01-28T07:34:01.816Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 36,
-              "Title": "JsonPropertyInfo.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs [Read Only]",
-              "ViewState": "AgIAACMDAAAAAAAAAAAQwFgDAABZAAAAAQAAAA==",
+              "Title": "BBLMachineConnector.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMachineConnector.cs",
+              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLMachineConnector.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMachineConnector.cs",
+              "RelativeToolTip": "Connectors\\BambuLab\\BBLMachineConnector.cs",
+              "ViewState": "AgIAAJoAAAAAAAAAAADwv7cAAABMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T21:39:51.816Z",
-              "EditorCaption": " [Read Only]"
+              "WhenOpened": "2026-01-28T07:33:26.262Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
-              "Title": "IPAddress.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs [Read Only]",
-              "ViewState": "AgIAAF8BAAAAAAAAAAAQwIcBAAAUAAAAAQAAAA==",
+              "DocumentIndex": 32,
+              "Title": "BBLMQTTConnection.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMQTTConnection.cs",
+              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLMQTTConnection.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLMQTTConnection.cs",
+              "RelativeToolTip": "Connectors\\BambuLab\\BBLMQTTConnection.cs",
+              "ViewState": "AgIAACUDAAAAAAAAAAD4v0ADAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T21:39:56.618Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 40,
-              "Title": "ObjectDefaultConverter.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
-              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs [Read Only]",
-              "ViewState": "AgIAAOEAAAAAAAAAAAAQwPsAAABPAAAAAQAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T21:40:37.676Z",
-              "EditorCaption": " [Read Only]"
+              "WhenOpened": "2026-01-27T04:23:04.141Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 38,
-              "Title": "Connect3Dp.csproj",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connect3Dp.csproj",
-              "RelativeDocumentMoniker": "Connect3Dp.csproj",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connect3Dp.csproj",
-              "RelativeToolTip": "Connect3Dp.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-20T21:17:17.182Z"
+              "Title": "BBLFTPConnection.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFTPConnection.cs",
+              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLFTPConnection.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLFTPConnection.cs",
+              "RelativeToolTip": "Connectors\\BambuLab\\BBLFTPConnection.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAcwDMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T05:09:46.137Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
-              "Title": "MaterialUnit.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnit.cs",
-              "RelativeDocumentMoniker": "State\\MaterialUnit.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnit.cs",
-              "RelativeToolTip": "State\\MaterialUnit.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 39,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\What\\Program.cs",
+              "RelativeDocumentMoniker": "..\\What\\Program.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\What\\Program.cs",
+              "RelativeToolTip": "..\\What\\Program.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACwAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-14T21:05:02.512Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 43,
-              "Title": "HeatingConstraints.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingConstraints.cs",
-              "RelativeDocumentMoniker": "State\\HeatingConstraints.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingConstraints.cs",
-              "RelativeToolTip": "State\\HeatingConstraints.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T02:00:07.38Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 45,
-              "Title": "CronScheduler.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Scheduling\\CronScheduler.cs",
-              "RelativeDocumentMoniker": "Scheduling\\CronScheduler.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Scheduling\\CronScheduler.cs",
-              "RelativeToolTip": "Scheduling\\CronScheduler.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAtwEIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T08:21:48.852Z"
+              "WhenOpened": "2026-01-18T04:21:59.432Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 46,
-              "Title": "MaterialUnitUpdate.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitUpdate.cs",
-              "RelativeDocumentMoniker": "State\\MaterialUnitUpdate.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitUpdate.cs",
-              "RelativeToolTip": "State\\MaterialUnitUpdate.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAwwCIAAAAJAAAAAAAAAA==",
+              "Title": "ITypeSymbolExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\ITypeSymbolExtensions.cs",
+              "RelativeDocumentMoniker": "..\\SourceGenerators\\ITypeSymbolExtensions.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\ITypeSymbolExtensions.cs",
+              "RelativeToolTip": "..\\SourceGenerators\\ITypeSymbolExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T21:33:18.349Z"
+              "WhenOpened": "2026-01-27T03:09:11.566Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "MachineConnector.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnector.cs",
+              "RelativeDocumentMoniker": "Connectors\\MachineConnector.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\MachineConnector.cs",
+              "RelativeToolTip": "Connectors\\MachineConnector.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAAAYwMkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T04:28:33.35Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 47,
+              "Title": "Material.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a033f3ec-0ee3-c910-0155-4e9b9df203df\\Material.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a033f3ec-0ee3-c910-0155-4e9b9df203df\\Material.Update.g.cs",
+              "ToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAADUAAAAAAAAAAAAswFMAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:09:33.289Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5b586112-fe68-e29c-c1e8-71b6781b961c\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5b586112-fe68-e29c-c1e8-71b6781b961c\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAMkAAAAAAAAAAAAEwOIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:10:50.183Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
               "Title": "Logger.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\Logger.cs",
               "RelativeDocumentMoniker": "Utilities\\Logger.cs",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\Logger.cs",
               "RelativeToolTip": "Utilities\\Logger.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAASwC8AAAA0AAAAAAAAAA==",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAAAGQAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-17T22:41:14.982Z"
+              "WhenOpened": "2026-01-27T04:43:16.471Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
-              "Title": "IReadOnlyMaterialUnit.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMaterialUnit.cs",
-              "RelativeDocumentMoniker": "State\\IReadOnlyMaterialUnit.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\IReadOnlyMaterialUnit.cs",
-              "RelativeToolTip": "State\\IReadOnlyMaterialUnit.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBEAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 42,
+              "Title": "PrintJob.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\3a509934-f17e-67bd-ff1d-a7a40e6a6294\\PrintJob.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\3a509934-f17e-67bd-ff1d-a7a40e6a6294\\PrintJob.Update.g.cs",
+              "ToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAIwAAAAAAAAAAAAawKQAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T22:47:10.984Z"
+              "OverriddenToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:10:53.021Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "AsyncEvent.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs [Read Only]",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\ec0e3b5ba83792ceb6f9654c11666808cb47f5b1927756ab2aa3ed48c7295397\\Source\\MQTTnet\\Internal\\AsyncEvent.cs [Read Only]",
+              "ViewState": "AgIAACsAAAAAAAAAAAAjwEEAAAAQAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T02:51:44.71Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "MaterialUnit.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\7c8d28d8-da8c-96f9-8955-4a18bf6a9ca8\\MaterialUnit.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\7c8d28d8-da8c-96f9-8955-4a18bf6a9ca8\\MaterialUnit.Update.g.cs",
+              "ToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAK0AAAAAAAAAAAAywN8AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:09:43.058Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 44,
+              "Title": "UpdateGenerator.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\UpdateGen\\UpdateGenerator.cs",
+              "RelativeDocumentMoniker": "..\\SourceGenerators\\UpdateGen\\UpdateGenerator.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\UpdateGen\\UpdateGenerator.cs",
+              "RelativeToolTip": "..\\SourceGenerators\\UpdateGen\\UpdateGenerator.cs",
+              "ViewState": "AgIAAGIAAAAAAAAAAAAAwHMAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-26T21:03:47.961Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "BBLCerts.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLCerts.cs",
+              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLCerts.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLCerts.cs",
+              "RelativeToolTip": "Connectors\\BambuLab\\BBLCerts.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T04:21:22.257Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "Material.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\8ecaff09-4df7-5d89-6ae5-54346e336abf\\Material.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\8ecaff09-4df7-5d89-6ae5-54346e336abf\\Material.Update.g.cs",
+              "ToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:05:35.34Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": "PrintJob.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\fe1e56d2-ceda-cf6f-758f-e480b9872a39\\PrintJob.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\fe1e56d2-ceda-cf6f-758f-e480b9872a39\\PrintJob.Update.g.cs",
+              "ToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAADMAAAAAAAAAAAAgwDwAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T03:02:57.345Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\decd1e78-3310-4057-a14f-daa20cbd9014\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\decd1e78-3310-4057-a14f-daa20cbd9014\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAYwDEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T04:05:30.334Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\082bf115-ab6b-d6c0-e179-277778f32887\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\082bf115-ab6b-d6c0-e179-277778f32887\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAE4BAAAAAAAAAAAqwGMBAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T02:28:42.761Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
+              "Title": "MaterialUnit.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\e6456f4b-d2e3-ab0e-2690-28da096fb713\\MaterialUnit.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\e6456f4b-d2e3-ab0e-2690-28da096fb713\\MaterialUnit.Update.g.cs",
+              "ToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAALcAAAAAAAAAAAAcwPsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T02:58:37.139Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 53,
+              "Title": "PrintJob.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1db8ef34-d521-888f-0c67-4d39b73d4e22\\PrintJob.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1db8ef34-d521-888f-0c67-4d39b73d4e22\\PrintJob.Update.g.cs",
+              "ToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAADMAAAAAAAAAAAA1wEkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:33:40.561Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 54,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\079285fc-8526-d326-f1b2-3a8a9e7fd570\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\079285fc-8526-d326-f1b2-3a8a9e7fd570\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAMoAAAAAAAAAAAAUwOYAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:35:31.292Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 56,
+              "Title": "Material.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\baea7a74-8949-ce4a-0588-452733b4d8de\\Material.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\baea7a74-8949-ce4a-0588-452733b4d8de\\Material.Update.g.cs",
+              "ToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAcwCYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:32:16.66Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 57,
+              "Title": "Test.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\ddb42963-32f5-a71b-42af-93534bdedff8\\Test.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\ddb42963-32f5-a71b-42af-93534bdedff8\\Test.Update.g.cs",
+              "ToolTip": "Test.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAABgAAAAAAAAAAAAkwD0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "Test.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:29:19.42Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 58,
+              "Title": "PrintJob.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\531bee0a-0897-795c-bb16-469f38c1e050\\PrintJob.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\531bee0a-0897-795c-bb16-469f38c1e050\\PrintJob.Update.g.cs",
+              "ToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAACYAAAAAAAAAAAAqwDoAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:27:31.647Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 59,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1d8e265d-5bae-82c5-77a0-87c3100c8e2a\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\1d8e265d-5bae-82c5-77a0-87c3100c8e2a\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAAACIBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:27:26.79Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 62,
+              "Title": "MachineState.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\4dce0102-05a5-b537-d436-5e28363e525a\\MachineState.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\4dce0102-05a5-b537-d436-5e28363e525a\\MachineState.Update.g.cs",
+              "ToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAkwBoAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MachineState.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-26T23:54:58.537Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 55,
+              "Title": "Material.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5d72b844-066a-c07c-1301-394f64756c2c\\Material.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5d72b844-066a-c07c-1301-394f64756c2c\\Material.Update.g.cs",
+              "ToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "Material.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-27T00:00:42.183Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 61,
               "Title": "What.csproj",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\What\\What.csproj",
               "RelativeDocumentMoniker": "..\\What\\What.csproj",
@@ -927,199 +1083,163 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
-              "Title": "HeatingSchedule.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSchedule.cs",
-              "RelativeDocumentMoniker": "State\\HeatingSchedule.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSchedule.cs",
-              "RelativeToolTip": "State\\HeatingSchedule.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T22:42:01.203Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 50,
-              "Title": "MaterialLocation.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialLocation.cs",
-              "RelativeDocumentMoniker": "State\\MaterialLocation.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialLocation.cs",
-              "RelativeToolTip": "State\\MaterialLocation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T02:12:48.536Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 51,
-              "Title": "MaterialUnitFeatures.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitFeatures.cs",
-              "RelativeDocumentMoniker": "State\\MaterialUnitFeatures.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialUnitFeatures.cs",
-              "RelativeToolTip": "State\\MaterialUnitFeatures.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T21:55:51.602Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 52,
-              "Title": "HeatingSettings.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSettings.cs",
-              "RelativeDocumentMoniker": "State\\HeatingSettings.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\HeatingSettings.cs",
-              "RelativeToolTip": "State\\HeatingSettings.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBsAAAA7AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T00:41:26.503Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 53,
-              "Title": "MachineStatusExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MachineStatusExtensions.cs",
-              "RelativeDocumentMoniker": "Extensions\\MachineStatusExtensions.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MachineStatusExtensions.cs",
-              "RelativeToolTip": "Extensions\\MachineStatusExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T21:21:54.53Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 54,
-              "Title": "MaterialUnitExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MaterialUnitExtensions.cs",
-              "RelativeDocumentMoniker": "Extensions\\MaterialUnitExtensions.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\MaterialUnitExtensions.cs",
-              "RelativeToolTip": "Extensions\\MaterialUnitExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T01:00:03.28Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 55,
-              "Title": "MachineAirDuctMode.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineAirDuctMode.cs",
-              "RelativeDocumentMoniker": "State\\MachineAirDuctMode.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MachineAirDuctMode.cs",
-              "RelativeToolTip": "State\\MachineAirDuctMode.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T02:18:00.067Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 57,
-              "Title": "SimpleWebSocket.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\SimpleWebSocket.cs",
-              "RelativeDocumentMoniker": "Utilities\\SimpleWebSocket.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Utilities\\SimpleWebSocket.cs",
-              "RelativeToolTip": "Utilities\\SimpleWebSocket.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-20T22:30:48.437Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 56,
-              "Title": "Material.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Material.cs",
-              "RelativeDocumentMoniker": "State\\Material.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\Material.cs",
-              "RelativeToolTip": "State\\Material.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAgwCkAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:52:42.224Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 58,
-              "Title": "JsonElementExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\JsonElementExtensions.cs",
-              "RelativeDocumentMoniker": "Extensions\\JsonElementExtensions.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Extensions\\JsonElementExtensions.cs",
-              "RelativeToolTip": "Extensions\\JsonElementExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-18T02:37:32.247Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 59,
-              "Title": "OMEPlugin.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\OMEPlugin.cs",
-              "RelativeDocumentMoniker": "Plugins\\OME\\OMEPlugin.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\OMEPlugin.cs",
-              "RelativeToolTip": "Plugins\\OME\\OMEPlugin.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAjwEQAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-17T21:53:55.19Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 60,
-              "Title": "TrackedGenerator.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\TrackedGenerator.cs",
-              "RelativeDocumentMoniker": "..\\SourceGenerators\\TrackedGenerator.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\TrackedGenerator.cs",
-              "RelativeToolTip": "..\\SourceGenerators\\TrackedGenerator.cs",
-              "ViewState": "AgIAAFYBAAAAAAAAAAAIwGkBAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T20:47:29.519Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 61,
-              "Title": "BBLEspLANCameraStreamer.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLEspLANCameraStreamer.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAIwB0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-23T19:11:07.628Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 62,
-              "Title": "BBLCerts.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLCerts.cs",
-              "RelativeDocumentMoniker": "Connectors\\BambuLab\\BBLCerts.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Connectors\\BambuLab\\BBLCerts.cs",
-              "RelativeToolTip": "Connectors\\BambuLab\\BBLCerts.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T20:52:26.398Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 63,
               "Title": "SourceGenerators.csproj",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\SourceGenerators.csproj",
               "RelativeDocumentMoniker": "..\\SourceGenerators\\SourceGenerators.csproj",
               "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\SourceGenerators.csproj",
               "RelativeToolTip": "..\\SourceGenerators\\SourceGenerators.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-01-20T21:13:25.764Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
-              "Title": "IPlugin.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\IPlugin.cs",
-              "RelativeDocumentMoniker": "Plugins\\IPlugin.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\IPlugin.cs",
-              "RelativeToolTip": "Plugins\\IPlugin.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBEAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 63,
+              "Title": "PrintJob.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\540b9c21-0634-12ea-06c5-49311b0ce270\\PrintJob.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\540b9c21-0634-12ea-06c5-49311b0ce270\\PrintJob.Update.g.cs",
+              "ToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAADYAAAAAAAAAAAAlwEoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-17T22:45:44.262Z"
+              "OverriddenToolTip": "PrintJob.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-26T22:14:28.979Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 64,
+              "Title": "TrackedGenerator.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\TrackedGenerator.cs",
+              "RelativeDocumentMoniker": "..\\SourceGenerators\\TrackedGenerator.cs",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\TrackedGenerator.cs",
+              "RelativeToolTip": "..\\SourceGenerators\\TrackedGenerator.cs",
+              "ViewState": "AgIAALEAAAAAAAAAAAAiwMwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:47:29.519Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 65,
+              "Title": "MaterialUnit.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\772f0b77-3a7e-401d-212b-e69462bfc6c5\\MaterialUnit.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\772f0b77-3a7e-401d-212b-e69462bfc6c5\\MaterialUnit.Update.g.cs",
+              "ToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MaterialUnit.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-26T21:51:26.284Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 66,
+              "Title": "MaterialUnitA.Update.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\cc68ed23-c3e8-0226-b907-cfa758ea4414\\MaterialUnitA.Update.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\cc68ed23-c3e8-0226-b907-cfa758ea4414\\MaterialUnitA.Update.g.cs",
+              "ToolTip": "MaterialUnitA.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAcwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "MaterialUnitA.Update.g.cs [generated by Connect3Dp.SourceGeneration.UpdateGen.UpdateGenerator]",
+              "WhenOpened": "2026-01-26T21:30:16.192Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 67,
+              "Title": "TrackedMachineState.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\22b15830-098f-ecbc-3dcf-496d7ccb4ae3\\TrackedMachineState.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\22b15830-098f-ecbc-3dcf-496d7ccb4ae3\\TrackedMachineState.g.cs",
+              "ToolTip": "TrackedMachineState.g.cs [generated by Connect3Dp.SourceGeneration.TrackedGenerator]",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenToolTip": "TrackedMachineState.g.cs [generated by Connect3Dp.SourceGeneration.TrackedGenerator]",
+              "WhenOpened": "2026-01-26T19:56:51.528Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 68,
+              "Title": "TrackedPrintJob.g.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\b52e8243db92238e6e07e29b20371e57cad92798\\TrackedPrintJob.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\b52e8243db92238e6e07e29b20371e57cad92798\\TrackedPrintJob.g.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\b52e8243db92238e6e07e29b20371e57cad92798\\TrackedPrintJob.g.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\b52e8243db92238e6e07e29b20371e57cad92798\\TrackedPrintJob.g.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAIBJwCEAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-26T19:26:29.528Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 69,
+              "Title": "AsyncMethodBuilderCore.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\702a8204183df2495eb5a66e4a7701ef93caeaab61cfef4cb982c28aa4a63230\\src\\libraries\\System.Private.CoreLib\\src\\System\\Runtime\\CompilerServices\\AsyncMethodBuilderCore.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAowDYAAAAIAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T02:51:48.079Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 70,
+              "Title": ".gitignore",
+              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore",
+              "RelativeDocumentMoniker": "..\\.gitignore",
+              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\.gitignore",
+              "RelativeToolTip": "..\\.gitignore",
+              "ViewState": "AgIAADAAAAAAAAAAAIBJwCAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-01-25T01:57:43.967Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 73,
+              "Title": "JsonConverter.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\3f6f28ec7e978ca105a5b7e8386cd8ed2c1b47e859d6feaf95871dee721e0ab4\\JsonConverter.cs",
+              "ViewState": "AgIAAEYCAAAAAAAAAAAQwFwCAAACAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-24T21:40:40.459Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 71,
+              "Title": "JsonPropertyInfo.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\d4721a1426ff1c53508e30d7cda817a228ac1847fc5b311bc5347dade453065b\\JsonPropertyInfo.cs",
+              "ViewState": "AgIAACMDAAAAAAAAAAAQwFgDAABZAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-24T21:39:51.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 72,
+              "Title": "IPAddress.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\SourceServer\\d22e5484bd66bc44bf18cd132546ee607de88578dde73600fe7d4c48e77c5db9\\src\\libraries\\System.Net.Primitives\\src\\System\\Net\\IPAddress.cs",
+              "ViewState": "AgIAAF8BAAAAAAAAAAAQwIcBAAAUAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-24T21:39:56.618Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 74,
+              "Title": "ObjectDefaultConverter.cs",
+              "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
+              "ToolTip": "C:\\Users\\comis\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\1a56ca57979d2f13c4edc56e33f152093565df3179a588746a0241d8eee6c789\\ObjectDefaultConverter.cs",
+              "ViewState": "AgIAAOEAAAAAAAAAAAAQwPsAAABPAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-24T21:40:37.676Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 78,
               "Title": "P2S.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Tests\\P2S.cs",
               "RelativeDocumentMoniker": "..\\Tests\\P2S.cs",
@@ -1130,7 +1250,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 75,
+              "DocumentIndex": 79,
               "Title": "TrackedGenerator.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Tracked\\TrackedGenerator.cs",
               "RelativeDocumentMoniker": "..\\Tracked\\TrackedGenerator.cs",
@@ -1141,55 +1261,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
-              "Title": "TrackedDictionary.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Tracked\\TrackedDictionary.cs",
-              "RelativeDocumentMoniker": "Tracked\\TrackedDictionary.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Tracked\\TrackedDictionary.cs",
-              "RelativeToolTip": "Tracked\\TrackedDictionary.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T20:29:43.432Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 67,
-              "Title": "TrackedList.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Tracked\\TrackedList.cs",
-              "RelativeDocumentMoniker": "Tracked\\TrackedList.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Tracked\\TrackedList.cs",
-              "RelativeToolTip": "Tracked\\TrackedList.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:55:27.655Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 65,
-              "Title": "MachineException.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Exceptions\\MachineException.cs",
-              "RelativeDocumentMoniker": "Exceptions\\MachineException.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Exceptions\\MachineException.cs",
-              "RelativeToolTip": "Exceptions\\MachineException.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T00:11:37.351Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 68,
-              "Title": "MaterialColor.cs",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialColor.cs",
-              "RelativeDocumentMoniker": "State\\MaterialColor.cs",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\State\\MaterialColor.cs",
-              "RelativeToolTip": "State\\MaterialColor.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T23:53:08.509Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 76,
+              "DocumentIndex": 80,
               "Title": "MSTestSettings.cs",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Tests\\MSTestSettings.cs",
               "RelativeDocumentMoniker": "..\\Tests\\MSTestSettings.cs",
@@ -1200,55 +1272,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 75,
               "Title": "PartialPrintJob_IsWhole.g.cs",
               "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5ae40d97-13fd-802c-0bf3-739ef6401470\\PartialPrintJob_IsWhole.g.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\5ae40d97-13fd-802c-0bf3-739ef6401470\\PartialPrintJob_IsWhole.g.cs",
               "ToolTip": "PartialPrintJob_IsWhole.g.cs [generated by Connect3Dp.SourceGeneration.WholeGenerator]",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenToolTip": "PartialPrintJob_IsWhole.g.cs [generated by Connect3Dp.SourceGeneration.WholeGenerator]",
               "WhenOpened": "2026-01-18T03:44:24.023Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 76,
               "Title": "PartialPrintJob.g.cs",
               "DocumentMoniker": "C:\\Users\\comis\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a1ea8ff2-8b60-d777-b5f0-15ab3053b0a8\\PartialPrintJob.g.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\VSGeneratedDocuments\\a1ea8ff2-8b60-d777-b5f0-15ab3053b0a8\\PartialPrintJob.g.cs",
               "ToolTip": "PartialPrintJob.g.cs [generated by PartialSourceGen.Generators.PartialIncrementalSourceGenerator]",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenToolTip": "PartialPrintJob.g.cs [generated by PartialSourceGen.Generators.PartialIncrementalSourceGenerator]",
               "WhenOpened": "2026-01-18T03:46:03.335Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
-              "Title": "Server.xml",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\origin_conf\\Server.xml",
-              "RelativeDocumentMoniker": "Plugins\\OME\\origin_conf\\Server.xml",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\origin_conf\\Server.xml",
-              "RelativeToolTip": "Plugins\\OME\\origin_conf\\Server.xml",
-              "ViewState": "AgIAADMAAAAAAAAAAAArwJwAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
-              "WhenOpened": "2026-01-17T20:29:54.638Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 72,
-              "Title": "README.md",
-              "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\README.md",
-              "RelativeDocumentMoniker": "Plugins\\OME\\README.md",
-              "ToolTip": "C:\\Users\\comis\\Documents\\Connect3Dp\\Connect3Dp\\Plugins\\OME\\README.md",
-              "RelativeToolTip": "Plugins\\OME\\README.md",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-01-17T20:57:07.686Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 73,
+              "DocumentIndex": 77,
               "Title": "README.md",
               "DocumentMoniker": "C:\\Users\\comis\\Documents\\Connect3Dp\\README.md",
               "RelativeDocumentMoniker": "..\\README.md",

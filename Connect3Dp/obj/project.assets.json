@@ -749,6 +749,16 @@
       },
       "PartialSourceGen/0.0.20": {
         "type": "package"
+      },
+      "Connect3Dp.SourceGeneration/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "compile": {
+          "bin/placeholder/Connect3Dp.SourceGeneration.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Connect3Dp.SourceGeneration.dll": {}
+        }
       }
     }
   },
@@ -1800,10 +1810,16 @@
         "partialsourcegen.0.0.20.nupkg.sha512",
         "partialsourcegen.nuspec"
       ]
+    },
+    "Connect3Dp.SourceGeneration/1.0.0": {
+      "type": "project",
+      "path": "../SourceGenerators/SourceGenerators.csproj",
+      "msbuildProject": "../SourceGenerators/SourceGenerators.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Connect3Dp.SourceGeneration >= 1.0.0",
       "Cronos >= 0.11.1",
       "FluentFTP >= 53.0.2",
       "FluentFTP.GnuTLS >= 1.0.37",
@@ -1844,7 +1860,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\SourceGenerators.csproj": {
+              "projectPath": "C:\\Users\\comis\\Documents\\Connect3Dp\\SourceGenerators\\SourceGenerators.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -12,7 +12,7 @@
             IReadOnlyDictionary<TKey, TValue> Removed
         );
 
-        protected override Changes Use_Internal()
+        protected override Changes LastValue()
         {
             var current = _Getter();
 

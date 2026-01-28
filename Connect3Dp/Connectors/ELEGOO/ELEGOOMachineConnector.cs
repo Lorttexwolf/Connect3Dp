@@ -49,7 +49,7 @@ namespace Connect3Dp.Connectors.ELEGOO
 
             // TODO, do Discovery, configure Model, and etc from Discovery payload.
 
-            CommitState(changes => changes.SetConnected(true));
+            CommitState(changes => changes.SetIsConnected(true));
         }
     }
 }

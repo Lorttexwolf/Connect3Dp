@@ -1,0 +1,6 @@
+@Connect3Dp_HostAddress = http://localhost:5149
+
+GET {{Connect3Dp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

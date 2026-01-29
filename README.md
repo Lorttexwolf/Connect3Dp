@@ -23,5 +23,7 @@ A C# Library providing the states, objects, and drivers to communicate with the 
 #### Reverse Engineering Documents
 
 [Bambu Lab](./Research/BambuLab/README.md)
+
 [Creality K1C](./Research/Creality/CrealityK1C.md)
+
 [ELEGOO Centauri Carbon / SDCP](./Research/Elegoo/README.md)

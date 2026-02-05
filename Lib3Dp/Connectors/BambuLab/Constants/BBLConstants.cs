@@ -1,16 +1,17 @@
 ﻿using Lib3Dp.State;
+using Lib3Dp.Constants;
 
 namespace Lib3Dp.Connectors.BambuLab.Constants
 {
 	public class BBLConstants
 	{
+		public const ushort NotLoadedID = 255;
 		public const ushort ExternalTrayID = 254;
-		public const string ExternalTrayMUID = "External";
+		public const string ExternalTrayMMID = "External";
 		public const int ExternalTraySlotNumber = 0;
-		public readonly static MaterialLocation ExternalTrayLocation = new(ExternalTrayMUID, ExternalTraySlotNumber);
+		public readonly static SpoolLocation ExternalTrayLocation = new(ExternalTrayMMID, ExternalTraySlotNumber);
 
 		public const string ModelX1C = "X1C";
-		public const string ModelX1 = "X1";
 		public const string ModelX1E = "X1E";
 		public const string ModelP1P = "P1P";
 		public const string ModelP1S = "P1S";
@@ -19,11 +20,25 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 		public const string ModelA1Mini = "A1 Mini";
 		public const string ModelH2D = "H2D";
 
+		public static bool HasMQTTDevicesObject(string modelName)
+		{
+			return modelName switch
+			{
+				ModelX1C => false,
+				ModelX1E => false,
+				ModelP1P => false,
+				ModelP1S => false,
+				ModelA1 => false,
+				ModelA1Mini => false,
+				ModelH2D => false,
+				_ => throw new Exception($"Unknown BBL model of {modelName}")
+			};
+		}
+
 		public static string GetModelFromSerialNumber(string serialNumber)
 		{
 			return serialNumber[..3] switch
 			{
-				"00W" => ModelX1,
 				"00M" => ModelX1C,
 				"03W" => ModelX1E,
 				"01S" => ModelP1P,
@@ -35,6 +50,79 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 				_ => throw new Exception($"Unknown model of {serialNumber} ({serialNumber[..3]})! Is the serial number correct?")
 			};
 		}
+
+		public static HeatingConstraints? GetHeatingConstraintsFromElementName(string elementName, string modelName)
+		{
+			return modelName switch
+			{
+				ModelX1C => GetHeatingConstraintsFromElementNameModelX1C(elementName),
+				ModelX1E => GetHeatingConstraintsFromElementNameModelX1E(elementName),
+				ModelP1P => GetHeatingConstraintsFromElementNameModelP1Series(elementName),
+				ModelP1S => GetHeatingConstraintsFromElementNameModelP1Series(elementName),
+				ModelP2S => GetHeatingConstraintsFromElementNameModelP2S(elementName),
+				ModelA1 => GetHeatingConstraintsFromElementNameModelA1Series(elementName),
+				ModelA1Mini => GetHeatingConstraintsFromElementNameModelA1Series(elementName),
+				ModelH2D => GetHeatingConstraintsFromElementNameModelH2Series(elementName),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelX1C(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 110),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 300),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelX1E(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 120),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 320),
+				HeatingElementNames.Chamber => new HeatingConstraints(40, 60),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelP1Series(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 100),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 300),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelA1Series(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 100),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 300),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelP2S(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 110),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 300),
+				_ => null
+			};
+		}
+		private static HeatingConstraints? GetHeatingConstraintsFromElementNameModelH2Series(string elementName)
+		{
+			return elementName switch
+			{
+				HeatingElementNames.Bed => new HeatingConstraints(20, 120),
+				HeatingElementNames.Nozzle => new HeatingConstraints(20, 350),
+				HeatingElementNames.Chamber => new HeatingConstraints(40, 65),
+				_ => null
+			};
+		}
+
 
 		public static bool IsSDCardOrUSBRequired(string machineModel)
 		{
@@ -90,13 +178,13 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 			};
 		}
 
-		public static MaterialUnitFeatures GetAMSFeaturesFromModel(string AMSModel)
+		public static MaterialUnitCapabilities GetAMSFeaturesFromModel(string AMSModel)
 		{
 			return AMSModel switch
 			{
-				ModelAMS => MaterialUnitFeatures.AutomaticFeeding | MaterialUnitFeatures.Humidity | MaterialUnitFeatures.Temperature,
-				ModelAMSHT => MaterialUnitFeatures.AutomaticFeeding | MaterialUnitFeatures.Humidity | MaterialUnitFeatures.Temperature | MaterialUnitFeatures.Heating | MaterialUnitFeatures.AutomaticFeeding | MaterialUnitFeatures.Humidity | MaterialUnitFeatures.Heating_CanSpin,
-				ModelAMS2Pro => MaterialUnitFeatures.AutomaticFeeding | MaterialUnitFeatures.Humidity | MaterialUnitFeatures.Temperature | MaterialUnitFeatures.Heating | MaterialUnitFeatures.AutomaticFeeding | MaterialUnitFeatures.Humidity | MaterialUnitFeatures.Heating_CanSpin,
+				ModelAMS => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature,
+				ModelAMSHT => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature | MaterialUnitCapabilities.Heating | MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Heating_CanSpin,
+				ModelAMS2Pro => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature | MaterialUnitCapabilities.Heating | MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Heating_CanSpin,
 				_ => throw new Exception($"Unknown AMS model of {AMSModel}")
 			};
 		}
@@ -126,7 +214,7 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 
 			public static readonly string[] WithClimateControl = [ModelP2S];
 
-			public static readonly string[] WithRTSPSCamera = [ModelX1C, ModelX1E, ModelH2D, ModelP2S, ModelX1];
+			public static readonly string[] WithRTSPSCamera = [ModelX1C, ModelX1E, ModelH2D, ModelP2S];
 
 			public static readonly string[] With30FPMCamera = [ModelP1P, ModelP1S, ModelA1, ModelA1Mini];
 		}

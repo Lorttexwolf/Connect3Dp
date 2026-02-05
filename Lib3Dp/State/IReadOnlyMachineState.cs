@@ -12,7 +12,10 @@ namespace Lib3Dp.State
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineStatus Status { get; }
 		IReadOnlyMachinePrintJob? Job { get; }
 		IEnumerable<HistoricPrintJob> JobHistory { get; }
-		IEnumerable<MachineNozzle> Nozzles { get; }
+		IReadOnlySet<LocalPrintJob> LocalJobs { get; }
+		IEnumerable<ScheduledPrint> ScheduledPrints { get; }
+		IEnumerable<IMachineExtruder> Extruders { get; }
+		IEnumerable<IMachineNozzle> Nozzles { get; }
 		IEnumerable<IReadOnlyMaterialUnit> MaterialUnits { get; }
 		IEnumerable<MachineMessage> Messages { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }

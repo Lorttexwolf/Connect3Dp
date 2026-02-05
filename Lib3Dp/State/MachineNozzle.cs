@@ -2,12 +2,13 @@
 
 namespace Lib3Dp.State
 {
+
 	[GeneratePartialBuilder]
-	public class MachineNozzle : IEquatable<MachineNozzle?>
+	internal class MachineNozzle : IMachineNozzle, IEquatable<MachineNozzle?>
 	{
+		[PartialBuilderDictKey]
 		public required int Number { get; set; }
 		public required double Diameter { get; set; }
-		public MaterialLocation? Material { get; set; }
 
 		public override bool Equals(object? obj)
 		{
@@ -19,6 +20,11 @@ namespace Lib3Dp.State
 			return other is not null &&
 				   Number == other.Number &&
 				   Diameter == other.Diameter;
+		}
+
+		public bool Equals(IMachineNozzle? other)
+		{
+			return Equals(other as MachineNozzle);
 		}
 
 		public override int GetHashCode()

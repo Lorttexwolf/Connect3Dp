@@ -12,6 +12,9 @@ namespace Lib3Dp.State
 		public MachineFile? Thumbnail { get; set; }
 		public MachineFile? File { get; set; }
 		public string? Stage { get; set; }
+		public Dictionary<SpoolLocation, int>? SpoolMaterialUsages { get; set; }
+
+		IReadOnlyDictionary<SpoolLocation, int>? IReadOnlyMachinePrintJob.MaterialUsages => SpoolMaterialUsages;
 
 		public object Clone()
 		{

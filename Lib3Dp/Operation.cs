@@ -199,6 +199,8 @@
 		private readonly Func<CancellationToken, CompletionStatus> _checkCompletion;
 		private readonly Func<CancellationToken, Task>? _undoAction;
 
+		// TODO: Prefix condition?
+
 		public RunnableOperation(
 			Func<CancellationToken, Task> execute,
 			Func<CancellationToken, CompletionStatus> isSuccess,

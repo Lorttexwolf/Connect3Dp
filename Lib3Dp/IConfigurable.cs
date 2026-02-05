@@ -15,4 +15,9 @@ namespace Lib3Dp
 	{
 		string ConnectorTypeFullName { get; }
 	}
+
+	public interface IConfigurable
+	{
+		object GetConfiguration();
+	}
 }

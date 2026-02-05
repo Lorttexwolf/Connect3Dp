@@ -1,5 +1,8 @@
 
 using Lib3Dp.Connectors;
+using Lib3Dp.Connectors.BambuLab;
+using System.Net;
+using System.Text.Json;
 
 namespace Connect3Dp
 {
@@ -7,6 +10,10 @@ namespace Connect3Dp
 	{
 		public static void Main(string[] args)
 		{
+			var P2S = BBLMachineConnector.LAN("Mr. Worldwide", "22E8AJ591501848", "744d0749", IPAddress.Parse("192.168.1.183"));
+
+			_ = P2S.Connect();
+
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
@@ -15,6 +22,18 @@ namespace Connect3Dp
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+
+			//builder.Services.Configure<Connect3DpSettings>(config =>
+			//{
+			//	config.ConfigFilePath = "config.json";
+			//});
+
+			// Check Enviroment
+			// 1. Load with File-Based
+			// 2. Load with MySQL Lite.
+
+			//builder.Services.AddHostedService<MachineService>();
+			//builder.Services.AddSingleton<MachineWebSocketService>();
 
 			var app = builder.Build();
 
@@ -28,6 +47,10 @@ namespace Connect3Dp
 			app.UseHttpsRedirection();
 			//app.UseAuthorization();
 
+			//app.Services.GetService<MachineWebSocketService>();
+
+			app.MapGet("/machine", () => P2S.State);
+
 			app.Use(async (context, next) =>
 			{
 				if (context.Request.Path == "/ws")
@@ -36,6 +59,8 @@ namespace Connect3Dp
 					{
 						using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 						//await Echo(webSocket);
+
+
 					}
 					else
 					{

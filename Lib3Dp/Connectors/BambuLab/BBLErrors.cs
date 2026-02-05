@@ -22,7 +22,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			DownloadedErrors = [];
 		}
 
-		internal static bool TryGetHMS(BBLMachineConnector machine, string ecode, [NotNullWhen(true)] out string? intro)
+		internal static bool TryGetHMS(BBLMachineConnection machine, string ecode, [NotNullWhen(true)] out string? intro)
 		{
 			intro = null;
 
@@ -35,7 +35,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			return task.Result.HMS.TryGetValue(ecode, out intro);
 		}
 
-		internal static bool TryGetDevice(BBLMachineConnector machine, string ecode, [NotNullWhen(true)] out string? intro)
+		internal static bool TryGetDevice(BBLMachineConnection machine, string ecode, [NotNullWhen(true)] out string? intro)
 		{
 			intro = null;
 
@@ -51,7 +51,7 @@ namespace Lib3Dp.Connectors.BambuLab
 		/// <summary>
 		/// Downloads the HMS, and Device error codes from BBL if not downloaded already.
 		/// </summary>
-		internal static void DownloadIfRequired(BBLMachineConnector forMachine)
+		internal static void DownloadIfRequired(BBLMachineConnection forMachine)
 		{
 			DownloadedErrors.GetOrAdd(
 				forMachine.PrefixSerialNumber,

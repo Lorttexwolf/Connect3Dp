@@ -9,5 +9,11 @@
 		int PercentageComplete { get; }
 		TimeSpan RemainingTime { get; }
 		TimeSpan TotalTime { get; }
+
+		/// <summary>
+		/// Maps each material source used by this print job to the amount consumed in grams.
+		/// </summary>
+		IReadOnlyDictionary<SpoolLocation, int>? MaterialUsages { get; }
+
 	}
 }

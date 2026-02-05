@@ -39,6 +39,11 @@ namespace Lib3Dp.State
 		/// </summary>
 		LocalJobs = 1 << 17,
 		/// <summary>
+		/// The ability to modify the bed temp, chamber temps and etc. 
+		/// TODO: IMPLEMENT
+		/// </summary>
+		Temps = 1 << 19,
+		/// <summary>
 		/// Fans
 		/// </summary>
 		Fans = 1 << 11,

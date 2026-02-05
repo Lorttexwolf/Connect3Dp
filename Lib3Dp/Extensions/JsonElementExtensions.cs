@@ -40,7 +40,7 @@ namespace Lib3Dp.Extensions
 		/// <summary>
 		/// Tries to get a string value from a property chain
 		/// </summary>
-		public static bool TryGetString(this JsonElement element, [NotNullWhen(true)] out string value, params string[] propertyPath)
+		public static bool TryGetString(this JsonElement element, [NotNullWhen(true)] out string? value, params string[] propertyPath)
 		{
 			value = default;
 

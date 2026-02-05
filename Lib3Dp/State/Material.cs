@@ -2,6 +2,7 @@
 
 namespace Lib3Dp.State
 {
+
 	[GeneratePartialBuilder]
 	public partial class Material : IEquatable<Material?>
 	{
@@ -25,8 +26,8 @@ namespace Lib3Dp.State
 		public bool Equals(Material? other)
 		{
 			return other is not null &&
-				   Name == other.Name &&
-				   EqualityComparer<MaterialColor>.Default.Equals(Color, other.Color);
+				   Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) &&
+				   Color.IsSimilarTo(other.Color);
 		}
 
 		public override int GetHashCode()

@@ -6,16 +6,16 @@ namespace Lib3Dp.Extensions
 {
 	public static class MaterialUnitExtensions
 	{
-		public static bool HasFeature(this IReadOnlyMaterialUnit state, MaterialUnitFeatures desiredFeature)
+		public static bool HasFeature(this IReadOnlyMaterialUnit state, MaterialUnitCapabilities desiredFeature)
 		{
-			return (state.Features & desiredFeature) != MaterialUnitFeatures.None;
+			return (state.Capabilities & desiredFeature) != MaterialUnitCapabilities.None;
 		}
 
 		/// <summary>
 		/// <see cref="MachineException"/> is thrown when the current machine does not support the <paramref name="desiredFeature"/>
 		/// </summary>
 		/// <exception cref="MachineException"></exception>
-		public static void EnsureHasFeature(this IReadOnlyMaterialUnit state, MaterialUnitFeatures desiredFeature)
+		public static void EnsureHasFeature(this IReadOnlyMaterialUnit state, MaterialUnitCapabilities desiredFeature)
 		{
 			if (!state.HasFeature(desiredFeature))
 			{

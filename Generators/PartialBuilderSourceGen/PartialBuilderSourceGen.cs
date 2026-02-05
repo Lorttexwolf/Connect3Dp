@@ -10,23 +10,32 @@ namespace PartialBuilderSourceGen
 	{
 		public void Initialize(IncrementalGeneratorInitializationContext context)
 		{
-			var classes = context.SyntaxProvider
-				.ForAttributeWithMetadataName(
-					typeof(GeneratePartialBuilderAttribute).FullName!,
-					static (n, _) => n is ClassDeclarationSyntax,
-					static (ctx, _) => (INamedTypeSymbol)ctx.TargetSymbol);
+			var classes = context.SyntaxProvider.ForAttributeWithMetadataName(
+				typeof(GeneratePartialBuilderAttribute).FullName!,
+				static (n, _) => n is ClassDeclarationSyntax,
+				static (ctx, _) => (INamedTypeSymbol)ctx.TargetSymbol);
 
-			context.RegisterSourceOutput(classes, static (ctx, type) =>
-			{
-				var source = UpdateEmitter.Emit(type);
-				ctx.AddSource($"{type.Name}.Update.g.cs", source);
-			});
+			var dictKeyAttributeSymbol = context.CompilationProvider.Select(static (compilation, _) => compilation.GetTypeByMetadataName("PartialBuilderSourceGen.PartialBuilderDictKey"));
+
+			var combined = classes.Combine(dictKeyAttributeSymbol);
+
+			context.RegisterSourceOutput(
+				combined,
+				static (ctx, pair) =>
+				{
+					var (type, dictKeyAttr) = pair;
+
+					if (dictKeyAttr is null) return;
+
+					var source = UpdateEmitter.Emit(type, dictKeyAttr);
+					ctx.AddSource($"{type.Name}.Update.g.cs", source);
+				});
 		}
 	}
 
 	internal static class UpdateEmitter
 	{
-		public static string Emit(INamedTypeSymbol type)
+		public static string Emit(INamedTypeSymbol type, INamedTypeSymbol partialBuilderDictKeySymbol)
 		{
 			var ns = type.ContainingNamespace.IsGlobalNamespace
 				? null
@@ -43,13 +52,13 @@ namespace PartialBuilderSourceGen
 				sb.AppendLine();
 			}
 
-			EmitUpdateClass(sb, type, updateName);
+			EmitUpdateClass(sb, type, updateName, partialBuilderDictKeySymbol);
 			EmitAppendUpdate(sb, type, updateName);
 
 			return sb.ToString();
 		}
 
-		private static void EmitUpdateClass(StringBuilder sb, INamedTypeSymbol type, string updateName)
+		private static void EmitUpdateClass(StringBuilder sb, INamedTypeSymbol type, string updateName, INamedTypeSymbol partialBuilderDictKeySymbol)
 		{
 			sb.AppendLine($"{type.DeclaredAccessibility.ToString().ToLower()} sealed class {updateName}");
 			sb.AppendLine("{");
@@ -64,7 +73,7 @@ namespace PartialBuilderSourceGen
 			sb.AppendLine();
 
 			foreach (var p in props)
-				EmitUpdateMethods(sb, p, updateName);
+				EmitUpdateMethods(sb, p, updateName, partialBuilderDictKeySymbol);
 
 			EmitTryCreate(sb, type);
 
@@ -77,7 +86,7 @@ namespace PartialBuilderSourceGen
 			{
 				if (TypeHelpers.IsDictionary(p.Type, out var key, out var value) && p.Type is INamedTypeSymbol dict)
 				{
-					if (HasUpdater(dict.TypeArguments[1], out var updaterName))
+					if (TypeHelpers.HasUpdater(dict.TypeArguments[1], out var updaterName))
 					{
 						sb.AppendLine($"    public Dictionary<{key}, {updaterName}>? {p.Name}ToSet {{ get; private set; }} = [];");
 					}
@@ -99,7 +108,7 @@ namespace PartialBuilderSourceGen
 			{
 				if (TypeHelpers.IsSet(p.Type, out var elem) && p.Type is INamedTypeSymbol set)
 				{
-					if (HasUpdater(set.TypeArguments[0], out var setUpdater))
+					if (TypeHelpers.HasUpdater(set.TypeArguments[0], out var setUpdater))
 					{
 						sb.AppendLine($"    public HashSet<{setUpdater}>? {p.Name}Updates {{ get; private set; }} = [];");
 					}
@@ -116,7 +125,7 @@ namespace PartialBuilderSourceGen
 
 			#region Classes, structs, and Nullables
 
-			if (!p.Type.IsValueType && HasUpdater(p.Type, out var updater))
+			if (!p.Type.IsValueType && TypeHelpers.HasUpdater(p.Type, out var updater))
 			{
 				// Class, and is an updater.
 
@@ -148,55 +157,81 @@ namespace PartialBuilderSourceGen
 			#endregion
 		}
 
-		private static void EmitUpdateMethods(StringBuilder sb, IPropertySymbol p, string updateName)
+		private static void EmitUpdateMethods(StringBuilder sb, IPropertySymbol p, string updateName, INamedTypeSymbol partialBuilderDictKeySymbol)
 		{
-			bool hasUpdater = HasUpdater(p.Type, out var updaterName);
+			bool hasUpdater = TypeHelpers.HasUpdater(p.Type, out var updaterName);
 
 			#region Dictionary
 
 			if (TypeHelpers.IsDictionary(p.Type, out var key, out _) && p.Type is INamedTypeSymbol dict)
 			{
-				hasUpdater = HasUpdater(dict.TypeArguments[1], out updaterName);
+				hasUpdater = TypeHelpers.HasUpdater(dict.TypeArguments[1], out updaterName);
 
 				if (hasUpdater)
 				{
-					sb.AppendLine($$"""
-                    public {{updateName}} Update{{p.Name}}({{key}} key, Action<{{updaterName}}> configure)
-                    {
-                        if (!{{p.Name}}ToSet.TryGetValue(key, out var update))
-                        {
-                            update = new {{updaterName}}();
-                            {{p.Name}}ToSet[key] = update;
-                        }
+					var dictKeyProp = dict.TypeArguments[1]
+						.GetMembers()
+						.OfType<IPropertySymbol>()
+						.FirstOrDefault(prop => prop.GetAttributes().Any(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, partialBuilderDictKeySymbol)));
 
-                        configure(update);
-                        return this;
-                    }
-                    """);
+
+					sb.AppendLine($$"""
+						public {{updateName}} Update{{p.Name}}({{key}} key, Action<{{updaterName}}> configure)
+						{
+							if (!{{p.Name}}ToSet.TryGetValue(key, out var update))
+							{
+					""");
+
+					if (dictKeyProp is not null)
+					{
+						sb.AppendLine($$"""
+									update = new {{updaterName}}();
+
+									update.Set{{dictKeyProp.Name}}(key);
+						""");
+					}
+					else
+					{
+						sb.AppendLine($$"""
+									update = new {{updaterName}}();
+						""");
+					}
+
+					sb.AppendLine($$"""
+								{{p.Name}}ToSet[key] = update;
+							}
+
+							configure(update);
+							return this;
+						}
+
+					""");
 				}
 				else
 				{
 					sb.AppendLine($$"""
-                    public {{updateName}} Set{{p.Name}}({{key}} key, {{dict.TypeArguments[1].Name}} val)
-                    {
-                        {{p.Name}}ToSet ??= new Dictionary<{{key}}, {{dict.TypeArguments[1].Name}}>();
+						public {{updateName}} Set{{p.Name}}({{key}} key, {{dict.TypeArguments[1].Name}} val)
+						{
+							{{p.Name}}ToSet ??= new Dictionary<{{key}}, {{dict.TypeArguments[1].Name}}>();
 
-                        {{p.Name}}ToSet[key] = val;
+							{{p.Name}}ToSet[key] = val;
 
-                        return this;
-                    }
-                    """);
+							return this;
+						}
+					
+					""");
 
 					sb.AppendLine($$"""
-                    public {{updateName}} Remove{{p.Name}}({{key}} key, {{dict.TypeArguments[1].Name}} val)
-                    {
-                        {{p.Name}}ToRemove ??= new HashSet<{{key}}>();
+						public {{updateName}} Remove{{p.Name}}({{key}} key, {{dict.TypeArguments[1].Name}} val)
+						{
+							{{p.Name}}ToRemove ??= new HashSet<{{key}}>();
 
-                        {{p.Name}}ToRemove.Add(key);
+							{{p.Name}}ToRemove.Add(key);
 
-                        return this;
-                    }
-                    """);
+							return this;
+						}
+
+					""");
 				}
 
 				return;
@@ -208,7 +243,7 @@ namespace PartialBuilderSourceGen
 
 			if (TypeHelpers.IsSet(p.Type, out _) && p.Type is INamedTypeSymbol set)
 			{
-				hasUpdater = HasUpdater(set.TypeArguments[0], out updaterName);
+				hasUpdater = TypeHelpers.HasUpdater(set.TypeArguments[0], out updaterName);
 
 				var valType = set.TypeArguments[0];
 				var valTypeName = valType.Name;
@@ -217,40 +252,43 @@ namespace PartialBuilderSourceGen
 				if (hasUpdater)
 				{
 					sb.AppendLine($$"""
-                    public {{updateName}} Update{{p.Name}}(Action<{{updaterName}}> configure)
-                    {
-                        if (configure == null)
-                            throw new ArgumentNullException(nameof(configure));
+						public {{updateName}} Update{{p.Name}}(Action<{{updaterName}}> configure)
+						{
+							{{p.Name}}Updates ??= new HashSet<{{updaterName}}>();
+							var update = new {{updaterName}}();
 
-                        {{p.Name}}Updates ??= new HashSet<{{updaterName}}>();
-                        var update = new {{updaterName}}();
-                        configure(update);
-                        {{p.Name}}Updates.Add(update);
-                        return this;
-                    }
-                    """);
+							configure(update);
+							{{p.Name}}Updates.Add(update);
+
+							return this;
+						}
+					
+					""");
 				}
 				else
 				{
 					sb.AppendLine($$"""
-                    public {{updateName}} Set{{pName}}({{valTypeName}} {{pName.ToLowerInvariant()}})
-                    {
-                        {{p.Name}}ToSet ??= new HashSet<{{valTypeName}}>();
+						public {{updateName}} Set{{pName}}({{valTypeName}} {{pName.ToLowerInvariant()}})
+						{
+							{{p.Name}}ToSet ??= new HashSet<{{valTypeName}}>();
 
-                        {{p.Name}}ToSet.Add({{pName.ToLowerInvariant()}});
-                        return this;
-                    }
-                    """);
+							{{p.Name}}ToSet.Add({{pName.ToLowerInvariant()}});
+
+							return this;
+						}
+				
+					""");
 
 					sb.AppendLine($$"""
-                    public {{updateName}} Remove{{pName}}({{valTypeName}} {{pName.ToLowerInvariant()}})
-                    {
-                        {{p.Name}}ToRemove ??= new HashSet<{{valTypeName}}>();
+						public {{updateName}} Remove{{pName}}({{valTypeName}} {{pName.ToLowerInvariant()}})
+						{
+							{{p.Name}}ToRemove ??= new HashSet<{{valTypeName}}>();
 
-                        {{p.Name}}ToRemove.Add({{pName.ToLowerInvariant()}});
-                        return this;
-                    }
-                    """);
+							{{p.Name}}ToRemove.Add({{pName.ToLowerInvariant()}});
+							return this;
+						}
+					
+					""");
 				}
 
 				return;
@@ -264,94 +302,43 @@ namespace PartialBuilderSourceGen
 				if (hasUpdater)
 				{
 					sb.AppendLine($$"""
-
-                    public {{updateName}} Update{{p.Name}}(Action<{{updaterName}}> configure)
-                    {
-                        {{p.Name}} ??= new {{updaterName}}();
-                        configure({{p.Name}});
-                        return this;
-                    }
-
-                    """);
+						public {{updateName}} Update{{p.Name}}(Action<{{updaterName}}> configure)
+						{
+							{{p.Name}}IsSet = true;
+							{{p.Name}} ??= new {{updaterName}}();
+							configure({{p.Name}});
+							return this;
+						}
+						
+					""");
 				}
 				else
 				{
 					sb.AppendLine($$"""
-
-                    public {{updateName}} Set{{p.Name}}({{(p.IsNullable() ? p.Type : $"{p.Type}?")}} valueToSet)
-                    {
-                        {{p.Name}}IsSet = true;
-                        {{p.Name}} = valueToSet;
-
-                        return this;
-                    }
-
-                    """);
+						public {{updateName}} Set{{p.Name}}({{(p.IsNullable() ? p.Type : $"{p.Type}?")}} valueToSet)
+						{
+							{{p.Name}}IsSet = true;
+							{{p.Name}} = valueToSet;
+							return this;
+						}
+						
+					""");
 				}
 
 				// Removal
 
 				sb.AppendLine($$"""
-
-                public {{updateName}} Remove{{p.Name}}()
-                {
-                    {{p.Name}}IsSet = true;
-                    {{p.Name}} = null;
-                    return this;
-                }
-
-                """);
+					public {{updateName}} Remove{{p.Name}}()
+					{
+						{{p.Name}}IsSet = true;
+						{{p.Name}} = null;
+						return this;
+					}
+				
+				""");
 
 
 			}
-
-			//if (!p.Type.IsValueType && hasUpdater)
-			//{
-			//    sb.AppendLine($$"""
-			//        public {{updateName}} Update{{p.Name}}(Action<{{updaterName}}> configure)
-			//        {
-			//            if (configure == null)
-			//                throw new ArgumentNullException(nameof(configure));
-
-			//            {{p.Name}}Update ??= new {{updaterName}}();
-			//            configure({{p.Name}}Update);
-			//            return this;
-			//        }
-			//        """);
-			//}
-
-			//if (hasUpdater)
-			//{
-			//    if (p.NullableAnnotation.HasFlag(NullableAnnotation.Annotated) && !hasUpdater)
-			//    {
-			//        sb.AppendLine($$"""
-			//        public {{updateName}} Remove{{p.Name}}()
-			//        {
-			//            {{p.Name}}IsSet = true;
-			//            {{p.Name}} = null;
-			//            return this;
-			//        }
-
-			//        """);
-			//    }
-			//}
-			//else
-			//{
-			//    // Fallback setter
-			//    sb.AppendLine($"    public {updateName} Set{p.Name}({p.Type} value)");
-			//    sb.AppendLine("    {");
-
-			//    if (p.Type.IsValueType && !p.NullableAnnotation.HasFlag(NullableAnnotation.Annotated))
-			//        sb.AppendLine($"        {p.Name} = value;");
-			//    else
-			//    {
-			//        sb.AppendLine($"        {p.Name}IsSet = true;");
-			//        sb.AppendLine($"        {p.Name} = value;");
-			//    }
-
-			//    sb.AppendLine("        return this;");
-			//    sb.AppendLine("    }");
-			//}
 
 			#endregion
 		}
@@ -363,14 +350,23 @@ namespace PartialBuilderSourceGen
 				.Where(p => p.DeclaredAccessibility == Accessibility.Public && p.IsRequired)
 				.ToArray();
 
-			sb.AppendLine();
 			sb.AppendLine($"    public bool TryCreate(out {type.Name}? result)");
 			sb.AppendLine("    {");
 			sb.AppendLine("        result = null;");
+			sb.AppendLine();
 
 			foreach (var p in requiredProps)
 			{
-				sb.AppendLine($"        if (!{p.Name}IsSet) return false;");
+				if (TypeHelpers.HasUpdater(p.Type, out var propUpdaterName))
+				{
+					// If required property is an updater, must attempt to run TryCreate.
+
+					sb.AppendLine($"\t\tif(!{p.Name}IsSet || !this.{p.Name}.TryCreate(out var created{p.Name})) return false;");
+				}
+				else
+				{
+					sb.AppendLine($"        if (!{p.Name}IsSet) return false;");
+				}
 			}
 
 			sb.AppendLine();
@@ -381,23 +377,36 @@ namespace PartialBuilderSourceGen
 			{
 				var p = requiredProps[i];
 
-				sb.Append($"            {p.Name} = this.{p.Name}");
+				if (TypeHelpers.HasUpdater(p.Type, out var requiredPropUpdaterName))
+				{
+					sb.AppendLine($"\t\t\t{p.Name} = created{p.Name}");
+				}
+				else
+				{
+					sb.Append($"            {p.Name} = this.{p.Name}");
 
-
-				if (p.Type.IsValueType)
-					sb.Append(".Value");
+					if (p.Type.IsValueType)
+					{
+						sb.Append(".Value");
+					}
+				}
 
 				if (i < requiredProps.Length - 1)
+				{
 					sb.Append(",");
+				}
 
 				sb.AppendLine();
+
 			}
 
-			sb.AppendLine("        };");
+			sb.AppendLine("\t\t};");
 			sb.AppendLine();
-			sb.AppendLine("        this.AppendUpdate(result);");
-			sb.AppendLine("        return true;");
-			sb.AppendLine("    }");
+			sb.AppendLine("\t\tthis.AppendUpdate(result);");
+			sb.AppendLine();
+			sb.AppendLine("\t\treturn true;");
+			sb.AppendLine("\t}");
+			sb.AppendLine();
 		}
 
 		private static void EmitAppendUpdate(StringBuilder sb, INamedTypeSymbol type, string updateName)
@@ -413,65 +422,60 @@ namespace PartialBuilderSourceGen
 
 			foreach (var p in props)
 			{
-				if (TypeHelpers.IsDictionary(p.Type, out _, out _) && p.Type is INamedTypeSymbol dict && HasUpdater(dict.TypeArguments[1], out _))
+				if (TypeHelpers.IsDictionary(p.Type, out _, out _) && p.Type is INamedTypeSymbol dict && TypeHelpers.HasUpdater(dict.TypeArguments[1], out _))
 				{
 
 					sb.AppendLine($$"""
+							if (this.{{p.Name}}ToSet != null || this.{{p.Name}}ToRemove != null)
+							{
+								if (this.{{p.Name}}ToSet != null)
+								{
+									foreach (var kvp in this.{{p.Name}}ToSet)
+									{
+										if ({{inName}}.{{p.Name}}.TryGetValue(kvp.Key, out var existing))
+										{
+											kvp.Value.AppendUpdate(existing);
+										}
+										else if (kvp.Value.TryCreate(out var created))
+										{
+											{{inName}}.{{p.Name}}[kvp.Key] = created;
+										}
+									}
+								}
 
+								if (this.{{p.Name}}ToRemove != null)
+								{
+									foreach (var valueToRemove in this.{{p.Name}}ToRemove)
+									{
+										{{inName}}.{{p.Name}}.Remove(valueToRemove);
+									}
+								}
+							}
 
-                    if (this.{{p.Name}}ToSet != null || this.{{p.Name}}ToRemove != null)
-                    {
-                        if (this.{{p.Name}}ToSet != null)
-                        {
-                            foreach (var kvp in this.{{p.Name}}ToSet)
-                            {
-                                if ({{inName}}.{{p.Name}}.TryGetValue(kvp.Key, out var existing))
-                                {
-                                    kvp.Value.AppendUpdate(existing);
-                                }
-                                else if (kvp.Value.TryCreate(out var created))
-                                {
-                                    {{inName}}.{{p.Name}}[kvp.Key] = created;
-                                }
-                            }
-                        }
-
-                        if (this.{{p.Name}}ToRemove != null)
-                        {
-                            foreach (var valueToRemove in this.{{p.Name}}ToRemove)
-                            {
-                                {{inName}}.{{p.Name}}.Remove(valueToRemove);
-                            }
-                        }
-                    }
-
-                    """);
+					""");
 
 					continue;
-
-					//sb.AppendLine($"        if ({inName}.{p.Name} != null)");
-					//sb.AppendLine($"            foreach (var kv in this.{p.Name}ToSet)");
-					//sb.AppendLine($"                if ({inName}.{p.Name}.TryGetValue(kv.Key, out var existing)) kv.Value.AppendUpdate(existing);");
-					//sb.AppendLine($"                else if (kv.Value.TryCreate(out var created)) {inName}.{p.Name}[kv.Key] = created;");
 				}
 
-				if (TypeHelpers.IsSet(p.Type, out _) && p.Type is INamedTypeSymbol set && HasUpdater(set.TypeArguments[0], out _))
+				if (TypeHelpers.IsSet(p.Type, out _) && p.Type is INamedTypeSymbol set && TypeHelpers.HasUpdater(set.TypeArguments[0], out _))
 				{
 					sb.AppendLine($"        if (this.{p.Name}ToSet != null)");
 					sb.AppendLine($"            foreach (var u in this.{p.Name}ToSet)");
 					sb.AppendLine($"                if (u.TryCreate(out var created))");
 					sb.AppendLine($"                    {inName}.{p.Name}.Add(created);");
+					sb.AppendLine();
 
 					continue;
 				}
 
-				if (HasUpdater(p.Type, out _))
+				if (TypeHelpers.HasUpdater(p.Type, out _))
 				{
 					sb.AppendLine($"        if (this.{p.Name} != null)");
 					sb.AppendLine($"            if ({inName}.{p.Name} != null)");
 					sb.AppendLine($"                this.{p.Name}.AppendUpdate({inName}.{p.Name});");
 					sb.AppendLine($"            else if (this.{p.Name}.TryCreate(out var created))");
 					sb.AppendLine($"                {inName}.{p.Name} = created;");
+					sb.AppendLine();
 
 					continue;
 				}
@@ -481,18 +485,23 @@ namespace PartialBuilderSourceGen
 					sb.AppendLine($"        if (this.{p.Name}ToSet != null)");
 					sb.AppendLine($"            foreach (var kv in this.{p.Name}ToSet)");
 					sb.AppendLine($"                {inName}.{p.Name}[kv.Key] = kv.Value;");
+					sb.AppendLine();
 
 					sb.AppendLine($"        if (this.{p.Name}ToRemove != null)");
 					sb.AppendLine($"            foreach (var k in this.{p.Name}ToRemove)");
 					sb.AppendLine($"                {inName}.{p.Name}.Remove(k);");
+					sb.AppendLine();
 				}
 				else if (TypeHelpers.IsSet(p.Type, out _))
 				{
 					sb.AppendLine($"        if (this.{p.Name}ToSet != null)");
 					sb.AppendLine($"            {inName}.{p.Name}.UnionWith(this.{p.Name}ToSet);");
+					sb.AppendLine();
 
 					sb.AppendLine($"        if (this.{p.Name}ToRemove != null)");
 					sb.AppendLine($"            {inName}.{p.Name}.ExceptWith(this.{p.Name}ToRemove);");
+					sb.AppendLine();
+
 				}
 				else
 				{
@@ -504,6 +513,7 @@ namespace PartialBuilderSourceGen
 					{
 						sb.AppendLine($"        if (this.{p.Name}IsSet) {inName}.{p.Name} = this.{p.Name};");
 					}
+					sb.AppendLine();
 				}
 			}
 
@@ -593,24 +603,6 @@ namespace PartialBuilderSourceGen
 		//    sb.AppendLine("    }");
 		//    sb.AppendLine("}");
 		//}
-
-		public static bool HasUpdater(ITypeSymbol type, out string updateTypeName)
-		{
-			updateTypeName = null!;
-			if (type is not INamedTypeSymbol named) return false;
-
-			foreach (var attr in named.GetAttributes())
-			{
-				if (attr.AttributeClass?.ToDisplayString()
-					== typeof(GeneratePartialBuilderAttribute).FullName)
-				{
-					updateTypeName = named.Name + "Update";
-					return true;
-				}
-			}
-
-			return false;
-		}
 	}
 
 	internal static class TypeHelpers
@@ -637,6 +629,24 @@ namespace PartialBuilderSourceGen
 				return true;
 			}
 			element = null!;
+			return false;
+		}
+
+		public static bool HasUpdater(ITypeSymbol type, out string updateTypeName)
+		{
+			updateTypeName = null!;
+			if (type is not INamedTypeSymbol named) return false;
+
+			foreach (var attr in named.GetAttributes())
+			{
+				if (attr.AttributeClass?.ToDisplayString()
+					== typeof(GeneratePartialBuilderAttribute).FullName)
+				{
+					updateTypeName = named.Name + "Update";
+					return true;
+				}
+			}
+
 			return false;
 		}
 	}

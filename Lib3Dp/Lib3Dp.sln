@@ -11,6 +11,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialBuilderSourceGen", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrackedSourceGen", "..\Generators\TrackedSourceGen\TrackedSourceGen.csproj", "{88A2F0E6-5BA6-EA44-5F00-F847326DF993}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Research", "Research", "{C4A88ECF-4585-4E22-AEFF-286992250792}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BambuLab", "BambuLab", "{CC290229-EAE5-46BD-8BAB-E73B06F24A2B}"
+	ProjectSection(SolutionItems) = preProject
+		..\Research\BambuLab\README.md = ..\Research\BambuLab\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ELEGOO", "ELEGOO", "{156A7655-7990-469A-B5E7-0A04B1F5B784}"
+	ProjectSection(SolutionItems) = preProject
+		..\Research\Elegoo\README.md = ..\Research\Elegoo\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Creality", "Creality", "{8A5AAA53-AA37-4732-91B1-7204A656D55D}"
+	ProjectSection(SolutionItems) = preProject
+		..\Research\Creality\CrealityK1C.md = ..\Research\Creality\CrealityK1C.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JSON", "JSON", "{5C9F7A7D-1384-4D99-B3FB-4D48DA677B0A}"
+	ProjectSection(SolutionItems) = preProject
+		A1.json = A1.json
+		H2C.json = H2C.json
+		H2D.json = H2D.json
+		P1P.json = P1P.json
+		P2S.json = P2S.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +62,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9F1DCE8D-8C44-7432-FCC7-DFB2B9B30B38} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{88A2F0E6-5BA6-EA44-5F00-F847326DF993} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{CC290229-EAE5-46BD-8BAB-E73B06F24A2B} = {C4A88ECF-4585-4E22-AEFF-286992250792}
+		{156A7655-7990-469A-B5E7-0A04B1F5B784} = {C4A88ECF-4585-4E22-AEFF-286992250792}
+		{8A5AAA53-AA37-4732-91B1-7204A656D55D} = {C4A88ECF-4585-4E22-AEFF-286992250792}
+		{5C9F7A7D-1384-4D99-B3FB-4D48DA677B0A} = {CC290229-EAE5-46BD-8BAB-E73B06F24A2B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0F6AB682-1EF7-423F-8EF2-09B17011A937}

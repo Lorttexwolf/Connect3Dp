@@ -1,10 +1,14 @@
 ﻿using Lib3Dp.Connectors.BambuLab.Constants;
+using Lib3Dp.Connectors.BambuLab.Files;
+using Lib3Dp.Connectors.BambuLab.FTP;
+using Lib3Dp.Connectors.BambuLab.MQTT;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Lib3Dp.Connectors.BambuLab
 {
@@ -15,10 +19,10 @@ namespace Lib3Dp.Connectors.BambuLab
 		public required string AccessCode { get; init; }
 		public string? Nickname { get; init; }
 
-		public string ConnectorTypeFullName { get; } = typeof(BBLMachineConnector).FullName!;
+		public string ConnectorTypeFullName { get; } = typeof(BBLMachineConnection).FullName!;
 	}
 
-	public class BBLMachineConnector : MachineConnection, IConfigurableConnector
+	public class BBLMachineConnection : MachineConnection, IConfigurableConnector
 	{
 		public IPAddress Address { get; }
 		public string SerialNumber { get; }
@@ -32,7 +36,7 @@ namespace Lib3Dp.Connectors.BambuLab
 		private bool HasUSBOrSDCard;
 		private readonly bool IsUSBOrSDCardRequired;
 
-		private BBLMachineConnector(string? nickname, string sn, string accessCode, IPAddress address) : base(nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
+		private BBLMachineConnection(string? nickname, string sn, string accessCode, IPAddress address) : base(nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
 		{
 			this.Address = address;
 			this.SerialNumber = sn;
@@ -44,20 +48,57 @@ namespace Lib3Dp.Connectors.BambuLab
 			this.IsUSBOrSDCardRequired = BBLConstants.IsSDCardOrUSBRequired(BBLConstants.GetModelFromSerialNumber(sn));
 
 			this.MQTT.OnData += MQTT_OnData;
+			this.FTP.OnLocal3MFAdded += FTP_OnLocal3MFAdded;
+			this.FTP.OnLocal3MFRemoved += FTP_OnLocal3MFRemoved;
+		}
 
-			_ = new PeriodicAsyncAction(TimeSpan.FromSeconds(30), async () =>
+		private void FTP_OnLocal3MFRemoved(string[] obj)
+		{
+			var stateChanges = new MachineStateUpdate();
+
+			foreach (var removed in obj)
 			{
-				if (!this.State.IsConnected) return;
+				var jobToRemove = this.State.LocalJobs.FirstOrDefault(j => j.Path.Equals(removed, StringComparison.OrdinalIgnoreCase));
 
-				var sb = new StringBuilder("3MF Files on SD Card / USB:\n");
-
-				foreach (var item3MF in await this.FTP.List3MFFiles())
+				if (jobToRemove == null)
 				{
-					sb.AppendLine($"|\t{item3MF}");
+					// We didn't have it in the first place?
+					continue;
 				}
 
-				Logger.OfCategory("Bleh, 3MF").Trace(sb.ToString());
-			});
+				Console.WriteLine($"Removed Local Job {removed} from State");
+
+				stateChanges.RemoveLocalJobs(jobToRemove);
+			}
+
+			this.CommitState(stateChanges);
+		}
+
+		private void FTP_OnLocal3MFAdded(string addedPath, BambuLab3MF bbl3MF)
+		{
+			try
+			{
+				var stateChanges = new MachineStateUpdate();
+
+				var matsUsed = bbl3MF.Filaments.ToDictionary(f => f.Id, f => new MaterialToPrint(f.Filament, (int)f.UsedGrams, f.NozzleDiameter))!;
+
+				var localJob = new LocalPrintJob(
+					Path.GetFileNameWithoutExtension(addedPath), 
+					addedPath, 
+					(int)bbl3MF.TotalFilamentGrams, 
+					bbl3MF.PredictedTime,
+					matsUsed);
+
+				stateChanges.SetLocalJobs(localJob);
+
+				this.CommitState(stateChanges);
+
+				Console.WriteLine($"Added Local Job {addedPath} to State");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Failed to add Local Job {addedPath} to State\n{ex}");
+			}
 		}
 
 		private void MQTT_OnData(BBLMQTTData data)
@@ -163,14 +204,14 @@ namespace Lib3Dp.Connectors.BambuLab
 					data.Changes.UpdateCurrentJob(c => c.SetFile(file3MF));
 				}
 
-				if (job.Thumbnail == null)
-				{
-					// TODO: Verify the location of files on FTP.
+				//if (job.Thumbnail == null)
+				//{
+				//	// TODO: Verify the location of files on FTP.
 
-					var thumbnailFile = new BBLMachineThumbnailFile(this, $"{job.Name}");
+				//	var thumbnailFile = new BBLMachineThumbnailFile(this, $"{job.Name}");
 
-					data.Changes.UpdateCurrentJob(c => c.SetThumbnail(thumbnailFile));
-				}
+				//	data.Changes.UpdateCurrentJob(c => c.SetThumbnail(thumbnailFile));
+				//}
 			}
 
 			// Append to the Print History.
@@ -193,6 +234,55 @@ namespace Lib3Dp.Connectors.BambuLab
 		protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
 		{
 			await Task.WhenAll(this.MQTT.Connect(cancellationToken), this.FTP.Connect());
+		}
+
+		protected override Task PrintLocal_Internal(string localPath, PrintOptions options, CancellationToken cancellationToken = default)
+		{
+			// Convert abstract PrintOptions to BBL-specific options
+			Dictionary<int, AMSSlot>? amsMapping = null;
+			
+			if (options.MaterialMap != null && options.MaterialMap.Count > 0)
+			{
+				amsMapping = new Dictionary<int, AMSSlot>();
+				
+				foreach (var kvp in options.MaterialMap)
+				{
+					// Convert MMID (AMS serial number) to ams_id (integer)
+					if (MQTT.TryGetAMSIdFromSN(kvp.Value.MMID, out int amsId))
+					{
+						amsMapping[kvp.Key] = new AMSSlot(amsId, kvp.Value.Slot);
+					}
+					else
+					{
+						throw new InvalidOperationException($"Unable to resolve AMS ID for Material Unit '{kvp.Value.MMID}'. The AMS mapping may not be available yet.");
+					}
+				}
+			}
+
+			var bblPrintOptions = new BBLPrintOptions(
+				PlateIndex: 1,
+				FileName: localPath,
+				JobId: $"Lib3Dp-{DateTime.Now.Ticks}",
+				ProjectFilamentCount: options.MaterialMap?.Count ?? 1,
+				BedLeveling: options.LevelBed,
+				FlowCalibration: options.FlowCalibration,
+				VibrationCalibration: options.VibrationCalibration,
+				LayerInspect: options.InspectFirstLayer,
+				Timelapse: false,
+				AMSMapping: amsMapping
+			);
+
+			return this.MQTT.PublishPrint(bblPrintOptions);
+		}
+
+		protected override Task Pause_Internal(CancellationToken cancellationToken = default)
+		{
+			return this.MQTT.PublishPause();
+		}
+
+		protected override Task Resume_Internal(CancellationToken cancellationToken = default)
+		{
+			return this.MQTT.PublishResume();
 		}
 
 		protected override Task Stop_Internal(CancellationToken cancellationToken = default)
@@ -230,9 +320,14 @@ namespace Lib3Dp.Connectors.BambuLab
 			return this.MQTT.PublishHVACModeCommand(mode);
 		}
 
-		public static BBLMachineConnector LAN(string? nickname, string sn, string accessCode, IPAddress address)
+		protected override Task ClearBed_Internal(CancellationToken cancellationToken = default)
 		{
-			return new BBLMachineConnector(nickname, sn, accessCode, address);
+			return this.MQTT.PublishClearBed();
+		}
+
+		public static BBLMachineConnection LAN(string? nickname, string sn, string accessCode, IPAddress address)
+		{
+			return new BBLMachineConnection(nickname, sn, accessCode, address);
 		}
 
 		#region Configuration
@@ -266,7 +361,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 		#region Files
 
-		public class BBLMachineFile(BBLMachineConnector machine, string fileName, string appendedID) : MachineFile($"BBL/{machine.State.ID}/{appendedID}", machine)
+		public class BBLMachineFile(BBLMachineConnection machine, string fileName, string appendedID) : MachineFile($"BBL/{machine.State.ID}/{appendedID}", machine)
 		{
 			public string FileName { get; } = fileName;
 			private string AppendedID { get; } = appendedID;
@@ -275,62 +370,38 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			protected override Task<bool> DoDownload(Stream outStream)
 			{
-				return ((BBLMachineConnector)Machine).FTP.DownloadStream(outStream, FileName);
+				return ((BBLMachineConnection)Machine).FTP.FTP.DownloadStream(outStream, FileName);
 			}
 
 			public override object Clone()
 			{
-				return new BBLMachineFile((BBLMachineConnector)this.Machine, this.FileName, this.AppendedID);
+				return new BBLMachineFile((BBLMachineConnection)this.Machine, this.FileName, this.AppendedID);
 			}
 		}
 
-		public class BBLMachineThumbnailFile(BBLMachineConnector machine, string File3MFName, int PlateNumber = 1, BBLMachineThumbnailFile.Positions Position = BBLMachineThumbnailFile.Positions.Diagonal) : BBLMachineFile(machine, File3MFName, "Thumbnail")
-		{
-			public int PlateNumber { get; } = PlateNumber;
-			public Positions Position { get; } = Position;
+		//public class BBLMachineThumbnailFile(BBLMachineConnection machine, string File3MFName, int PlateNumber = 1, BambuLab3MF.ThumbnailPositions Position = BambuLab3MF.ThumbnailPositions.Diagonal) : BBLMachineFile(machine, File3MFName, "Thumbnail")
+		//{
+		//	public int PlateNumber { get; } = PlateNumber;
+		//	public BambuLab3MF.ThumbnailPositions Position { get; } = Position;
 
-			public override string? MimeType => "image/png";
+		//	public override string? MimeType => "image/png";
 
-			protected override async Task<bool> DoDownload(Stream outStream)
-			{
-				using var stream3MF = new MemoryStream();
+		//	protected override async Task<bool> DoDownload(Stream outStream)
+		//	{
+		//		using var stream3MF = new MemoryStream();
 
-				if (!await base.DoDownload(stream3MF)) return false;
+		//		if (!await base.DoDownload(stream3MF)) return false;
 
-				stream3MF.Position = 0;
+		//		await BambuLab3MF.GetThumbnailEntry(stream3MF, outStream, Position, PlateNumber);
 
-				using var zip = new ZipArchive(stream3MF, ZipArchiveMode.Read);
+		//		return true;
+		//	}
 
-				var entry = zip.GetEntry(GetThumbnailEntryPath());
-				if (entry is null) return false;
-
-				if (outStream.CanSeek) outStream.SetLength(0);
-
-				using var entryStream = entry.Open();
-				await entryStream.CopyToAsync(outStream);
-				await outStream.FlushAsync();
-
-				return true;
-			}
-
-			private string GetThumbnailEntryPath() => $"Metadata/{Position switch
-			{
-				Positions.Diagonal => $"plate_{PlateNumber}_small",
-				Positions.Top => $"top_{PlateNumber}",
-				_ => throw new ArgumentOutOfRangeException(nameof(Position))
-			}}.png";
-
-			public override object Clone()
-			{
-				return new BBLMachineThumbnailFile((BBLMachineConnector)this.Machine, this.FileName, this.PlateNumber, this.Position);
-			}
-
-			public enum Positions
-			{
-				Diagonal = 0,
-				Top = 1
-			}
-		}
+		//	public override object Clone()
+		//	{
+		//		return new BBLMachineThumbnailFile((BBLMachineConnection)this.Machine, this.FileName, this.PlateNumber, this.Position);
+		//	}
+		//}
 
 		#endregion
 	}

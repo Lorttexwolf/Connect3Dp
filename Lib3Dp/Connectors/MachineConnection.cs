@@ -111,7 +111,7 @@ namespace Lib3Dp.Connectors
 		/// </summary>
 		protected abstract Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream);
 
-		internal void PreprocessState(MachineStateUpdate updatedState, out IEnumerable<string> issues)
+		internal static void PreprocessState(MachineStateUpdate updatedState, out IEnumerable<string> issues)
 		{
 			var foundIssues = new List<string>();
 			issues = foundIssues;
@@ -198,18 +198,19 @@ namespace Lib3Dp.Connectors
 
 			updatedState.AppendUpdate(this._State, out var changes);
 
-			// Poll Changes
+			// Append to Print History
 
-			if (changes.IsConnectedHasChanged)
+			var justEnded = changes.StatusHasChanged && State.Status is MachineStatus.Printed or MachineStatus.Canceled && changes.StatusPrevious is MachineStatus.Printing;
+
+			if (justEnded && State.Job is not null)
 			{
-				if (_State.IsConnected)
-				{
-					Logger.Info($"Machine {this.State.Nickname} ({this.State.ID}) Connected!");
-				}
-				else
-				{
-					Logger.Warning($"Machine {this.State.Nickname} ({this.State.ID}) Disconnected!");
-				}
+				updatedState.SetJobHistory(new HistoricPrintJob(
+					State.Job.Name, 
+					State.Status is MachineStatus.Printed, 
+					DateTime.Now, 
+					State.Job.TotalTime - State.Job.RemainingTime,
+					State.Job.Thumbnail,
+					State.Job.File));
 			}
 
 			// Scheduling

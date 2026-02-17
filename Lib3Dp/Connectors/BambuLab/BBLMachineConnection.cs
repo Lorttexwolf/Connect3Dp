@@ -272,7 +272,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			// We will decide which features are available on this machine depending on the model!
 
-			string model = this.State.Model;
+			string model = this.State.Model!;
 
 			// All models have automatic bed-leveling capability.
 			machineFeatures |= MachineCapabilities.Print_Options_BedLevel;
@@ -320,37 +320,6 @@ namespace Lib3Dp.Connectors.BambuLab
 			}
 
 			data.Changes.SetCapabilities(machineFeatures);
-
-			// Append Files to the Print Job
-
-			var job = this.State.Job;
-
-			if (job != null)
-			{
-				if (job.File.HasValue)
-				{
-					data.Changes.UpdateCurrentJob(c => c.SetFile(job.File.Value));
-				}
-
-				if (job.Thumbnail.HasValue)
-				{
-					data.Changes.UpdateCurrentJob(c => c.SetThumbnail(job.Thumbnail.Value));
-				}
-			}
-
-			// Append to the Print History.
-
-			if (data.Changes.IsConnectedIsSet && this.State.Status == MachineStatus.Printing)
-			{
-				if (data.Changes.Status == MachineStatus.Printed)
-				{
-					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail ?? null, job.File ?? null));
-				}
-				else if (data.Changes.Status == MachineStatus.Canceled)
-				{
-					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail ?? null, job.File ?? null));
-				}
-			}
 
 			CommitState(data.Changes);
 		}

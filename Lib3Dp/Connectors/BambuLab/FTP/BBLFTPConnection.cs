@@ -5,7 +5,10 @@ using Lib3Dp.Connectors.BambuLab.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Net;
+using System.Security.Cryptography;
+using System.Threading.Channels;
 
 namespace Lib3Dp.Connectors.BambuLab.FTP
 {
@@ -25,10 +28,26 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 		private readonly BlockingAsyncFtpMonitor Monitor;
 		private readonly CancellationTokenSource MonitorCancellationSource;
 
-		public event Action<string, BambuLab3MF>? OnLocal3MFAdded;
+		public event Action<string, string, BambuLab3MF>? OnLocal3MFAdded;
 		public event Action<string[]>? OnLocal3MFRemoved;
 
 		public bool IsConnected => FTP.IsConnected;
+
+		private const int MaxCacheSize = 100;
+
+		private readonly ConcurrentDictionary<string, BambuLab3MF> Cached3MF = new();
+		private readonly ConcurrentDictionary<string, string> PathToHash = new();
+
+		private readonly LinkedList<string> LRU = new();
+		private readonly object LRULock = new();
+
+		private readonly SemaphoreSlim FTPDownloadLock = new(1, 1);
+		private readonly SemaphoreSlim FTPReconnectLock = new(1, 1);
+
+		private readonly Channel<string> DownloadQueue =
+			Channel.CreateUnbounded<string>();
+
+		private readonly List<Task> DownloadWorkers = new();
 
 		public BBLFTPConnection(IPAddress address, string accessCode)
 		{
@@ -37,11 +56,6 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			FTP = new AsyncFtpClient(address.ToString(), "bblp", accessCode, port: 990, new FtpConfig()
 			{
 				EncryptionMode = FtpEncryptionMode.Explicit,
-				CustomStream = typeof(GnuTlsStream),
-				CustomStreamConfig = new GnuConfig()
-				{
-					
-				},
 				ValidateAnyCertificate = true
 			});
 
@@ -52,6 +66,7 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 				Recursive = true,
 				ChangeDetected = Monitor_ChangeDetected
 			};
+
 			this.MonitorCancellationSource = new();
 		}
 
@@ -59,26 +74,25 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 		{
 			Logger.Trace($"Monitor detected changes! {e}");
 
-			OnLocal3MFRemoved?.Invoke(e.Deleted.Where(e => e.EndsWith(".3mf")).ToArray());
+			var removed = e.Deleted.Where(e => e.EndsWith(".3mf")).ToArray();
+			OnLocal3MFRemoved?.Invoke(removed);
 
-			foreach (var addedFile in e.Added.Where(e => e.EndsWith(".3mf")))
+			foreach (var r in removed)
 			{
-				try
-				{
-					var bbl3MF = await this.Download3MF(addedFile);
+				PathToHash.TryRemove(r, out _);
+			}
 
-					OnLocal3MFAdded?.Invoke(addedFile, bbl3MF);
-				}
-				catch (Exception ex)
-				{
-					Logger.Error($"Error processing added 3MF file {addedFile}\n{ex}");
-				}
+			foreach (var added in e.Added.Where(e => e.EndsWith(".3mf")))
+			{
+				await DownloadQueue.Writer.WriteAsync(added);
 			}
 		}
 
-		public async Task Connect()
+		public async Task ConnectAsync()
 		{
 			await FTP.AutoConnect();
+
+			StartWorkers();
 
 			if (!this.Monitor.Active)
 			{
@@ -96,36 +110,154 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			}
 		}
 
-		public async Task<BambuLab3MF> Download3MF(string remotePath)
+		private void StartWorkers()
 		{
-			var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".3mf");
+			if (DownloadWorkers.Count > 0)
+				return;
+
+			for (int i = 0; i < 4; i++)
+			{
+				DownloadWorkers.Add(Task.Run(async () =>
+				{
+					await foreach (var path in DownloadQueue.Reader.ReadAllAsync())
+					{
+						try
+						{
+							var nPath = path[1..];
+
+							var bbl3MF = await Download3MF(path);
+
+							OnLocal3MFAdded?.Invoke(nPath, bbl3MF.Item2, bbl3MF.Item1);
+						}
+						catch (Exception ex)
+						{
+							Logger.Error($"Worker failed processing {path}\n{ex}");
+						}
+					}
+				}));
+			}
+		}
+
+		private async Task EnsureConnected()
+		{
+			if (FTP.IsConnected)
+				return;
+
+			await FTPReconnectLock.WaitAsync();
 
 			try
 			{
-				using var fs = new FileStream(tempPath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 81920, FileOptions.None);
-
-				await FTP.DownloadStream(fs, remotePath);
-
-				fs.Position = 0;
-
-				var result = BambuLab3MF.Load(fs);
-
-				return result;
-			}
-			catch
-			{
-				try { if (File.Exists(tempPath)) File.Delete(tempPath); } catch { }
-				throw;
+				if (!FTP.IsConnected)
+				{
+					Logger.Warning("FTP disconnected. Reconnecting...");
+					await FTP.AutoConnect();
+					Logger.Info("FTP reconnected.");
+				}
 			}
 			finally
 			{
-				try { if (File.Exists(tempPath)) File.Delete(tempPath); } catch { }
+				FTPReconnectLock.Release();
 			}
+		}
+
+		private void TouchLRU(string key)
+		{
+			lock (LRULock)
+			{
+				if (LRU.Contains(key))
+					LRU.Remove(key);
+
+				LRU.AddFirst(key);
+
+				if (LRU.Count > MaxCacheSize)
+				{
+					string evicted = LRU.Last!.Value;
+					LRU.RemoveLast();
+					Cached3MF.TryRemove(evicted, out _);
+				}
+			}
+		}
+
+		public async Task<string> DownloadFile(string remotePath, Stream destinationStream)
+		{
+			await EnsureConnected();
+
+			await FTPDownloadLock.WaitAsync();
+
+			try
+			{
+				await FTP.DownloadStream(destinationStream, remotePath);
+			}
+			finally
+			{
+				FTPDownloadLock.Release();
+			}
+
+			destinationStream.Position = 0;
+
+			string hash = ComputeHash(destinationStream);
+			destinationStream.Position = 0;
+
+			return hash;
+		}
+
+		public async Task<(BambuLab3MF, string)> Download3MF(string remotePath)
+		{
+			try
+			{
+				await EnsureConnected();
+
+				await using var fs = new FileStream(
+					Path.GetTempFileName(),
+					FileMode.Create,
+					FileAccess.ReadWrite,
+					FileShare.None,
+					81920,
+					FileOptions.DeleteOnClose | FileOptions.SequentialScan
+				);
+
+				var hash = await DownloadFile(remotePath, fs);
+
+				if (Cached3MF.TryGetValue(hash, out var cached))
+				{
+					PathToHash[remotePath] = hash;
+					TouchLRU(hash);
+					return (cached, hash);
+				}
+
+				var loaded = BambuLab3MF.Load(fs);
+
+				Cached3MF[hash] = loaded;
+				PathToHash[remotePath] = hash;
+				TouchLRU(hash);
+
+				return (loaded, hash);
+			}
+			catch
+			{
+				Logger.Warning($"FTP failed for {remotePath}. Attempting cache recovery.");
+
+				if (PathToHash.TryGetValue(remotePath, out var oldHash) && Cached3MF.TryGetValue(oldHash, out var cached))
+				{
+					return (cached, oldHash);
+				}
+
+				throw;
+			}
+		}
+
+		private static string ComputeHash(Stream stream)
+		{
+			using var sha = SHA256.Create();
+			byte[] hash = sha.ComputeHash(stream);
+			return Convert.ToHexString(hash);
 		}
 
 		public void Dispose()
 		{
 			MonitorCancellationSource.Cancel();
+			DownloadQueue.Writer.Complete();
+
 			Monitor.Dispose();
 			FTP.Dispose();
 

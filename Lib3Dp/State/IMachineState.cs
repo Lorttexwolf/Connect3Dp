@@ -2,7 +2,7 @@
 
 namespace Lib3Dp.State
 {
-	public interface IReadOnlyMachineState : IUniquelyIdentifiable
+	public interface IMachineState : IUniquelyIdentifiable
 	{
 		string? Brand { get; }
 		string? Model { get; }
@@ -10,14 +10,14 @@ namespace Lib3Dp.State
 		bool IsConnected { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineCapabilities Capabilities { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineStatus Status { get; }
-		IReadOnlyMachinePrintJob? Job { get; }
+		IMachinePrintJob? Job { get; }
 		IEnumerable<HistoricPrintJob> JobHistory { get; }
 		IReadOnlySet<LocalPrintJob> LocalJobs { get; }
 		IEnumerable<ScheduledPrint> ScheduledPrints { get; }
-		IEnumerable<IMachineExtruder> Extruders { get; }
-		IEnumerable<IMachineNozzle> Nozzles { get; }
-		IEnumerable<IReadOnlyMaterialUnit> MaterialUnits { get; }
-		IEnumerable<MachineMessage> Messages { get; }
+		IEnumerable<MachineExtruder> Extruders { get; }
+		IEnumerable<MachineNozzle> Nozzles { get; }
+		IEnumerable<IMaterialUnit> MaterialUnits { get; }
+		IEnumerable<MachineNotification> Notifications { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }
 		IReadOnlyDictionary<string, bool> Lights { get; }
 		IReadOnlyDictionary<string, int> Fans { get; }

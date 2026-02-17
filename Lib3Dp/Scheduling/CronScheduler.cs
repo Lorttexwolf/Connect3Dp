@@ -1,5 +1,11 @@
 ﻿using Cronos;
 using Lib3Dp.Utilities;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace Lib3Dp.Scheduling
 {
@@ -22,34 +28,40 @@ namespace Lib3Dp.Scheduling
 			Timer = new Timer(CheckScheduledTasks, null, TimeSpan.Zero, checkInterval);
 		}
 
-		public Guid Schedule(CronExpression expression, Action action)
+		public Guid Schedule(CronExpression expression, TimeZoneInfo timeZone, Action action)
 		{
-			return Schedule<object?>(expression, _ => action(), null);
+			return Schedule<object?>(expression, timeZone, _ => action(), null);
 		}
-		public Guid Schedule<TMetadata>(CronExpression expression, Action<TMetadata> action, TMetadata metadata)
+		public Guid Schedule<TMetadata>(CronExpression expression, TimeZoneInfo timeZone, Action<TMetadata> action, TMetadata metadata)
 		{
-			var task = new ScheduledTask<TMetadata>(Guid.NewGuid(), expression, action, metadata);
+			var task = new ScheduledTask<TMetadata>(Guid.NewGuid(), expression, timeZone, action, metadata);
 
 			lock (Lock)
 			{
 				Tasks.Add(task);
+				var next = task.Expression.GetNextOccurrence(DateTimeOffset.UtcNow, task.TimeZone);
+				task.NextRun = next;
 			}
 
 			return task.Id;
 		}
 
-		public Guid ScheduleAsync(CronExpression expression, Func<Task> action)
+		public Guid ScheduleAsync(CronExpression expression, TimeZoneInfo timeZone, Func<Task> action)
 		{
-			return ScheduleAsync<object?>(expression, _ => action(), null);
+			return ScheduleAsync<object?>(expression, timeZone, _ => action(), null);
 		}
-		public Guid ScheduleAsync<TMetadata>(CronExpression expression, Func<TMetadata, Task> action, TMetadata metadata)
+		public Guid ScheduleAsync<TMetadata>(CronExpression expression, TimeZoneInfo timeZone, Func<TMetadata, Task> action, TMetadata metadata, [CallerMemberName] string callerName = "")
 		{
-			var task = new AsyncScheduledTask<TMetadata>(Guid.NewGuid(), expression, action, metadata);
+			var task = new AsyncScheduledTask<TMetadata>(Guid.NewGuid(), expression, timeZone, action, metadata);
 
 			lock (Lock)
 			{
 				Tasks.Add(task);
+				var next = task.Expression.GetNextOccurrence(DateTimeOffset.UtcNow, task.TimeZone);
+				task.NextRun = next;
 			}
+
+			Logger.Trace($"Scheduled action called from {callerName}() to run next at {task.NextRun!.Value}");
 
 			return task.Id;
 		}
@@ -70,27 +82,40 @@ namespace Lib3Dp.Scheduling
 
 		public bool IsTaskRunning(Guid taskId)
 		{
-			var task = Tasks.FirstOrDefault(t => t.Id == taskId);
+			lock (Lock)
+			{
+				var task = Tasks.FirstOrDefault(t => t.Id == taskId);
 
-			return task != null && this.IsRunning;
+				return task != null && this.IsRunning;
+			}
 		}
 
 		private void CheckScheduledTasks(object? state)
 		{
 			if (IsDisposed) return;
 
-			var now = DateTime.Now;
+			var now = DateTimeOffset.UtcNow;
 
-			IEnumerable<IScheduledTask> tasksToRun;
+			List<IScheduledTask> tasksToRun = new();
 
+			// Collect due tasks and pre-schedule their next run while holding the lock to avoid double-scheduling.
 			lock (Lock)
 			{
-				tasksToRun = Tasks.Where(t => t.NextRun.HasValue && t.NextRun.Value <= now);
+				foreach (var t in Tasks)
+				{
+					if (t.NextRun.HasValue && t.NextRun.Value <= now)
+					{
+						tasksToRun.Add(t);
+						var next = t.Expression.GetNextOccurrence(now, t.TimeZone);
+						t.NextRun = next?.ToUniversalTime();
+					}
+				}
 			}
 
+			// Execute outside the lock
 			foreach (var task in tasksToRun)
 			{
-				ThreadPool.QueueUserWorkItem(_ =>
+				Task.Run(() =>
 				{
 					try
 					{
@@ -100,14 +125,7 @@ namespace Lib3Dp.Scheduling
 					}
 					catch (Exception ex)
 					{
-						Logger.Error($"An exception occurred in scheduled event GUID {task.Id}.\n{ex}");
-					}
-					finally
-					{
-						lock (Lock)
-						{
-							task.NextRun = task.Expression.GetNextOccurrence(now, TimeZoneInfo.Local);
-						}
+						Logger.Error(ex, $"An exception occurred in scheduled event GUID {task.Id}.");
 					}
 				});
 			}
@@ -134,15 +152,17 @@ namespace Lib3Dp.Scheduling
 		{
 			Guid Id { get; }
 			CronExpression Expression { get; }
-			DateTime? NextRun { get; set; }
+			TimeZoneInfo TimeZone { get; set; }
+			DateTimeOffset? NextRun { get; set; }
 			void Execute();
 		}
 
-		private class ScheduledTask<TMetadata>(Guid id, CronExpression expression, Action<TMetadata> action, TMetadata metadata) : IScheduledTask
+		private class ScheduledTask<TMetadata>(Guid id, CronExpression expression, TimeZoneInfo timeZone, Action<TMetadata> action, TMetadata metadata) : IScheduledTask
 		{
 			public Guid Id { get; } = id;
 			public CronExpression Expression { get; } = expression;
-			public DateTime? NextRun { get; set; } = expression.GetNextOccurrence(DateTime.Now, TimeZoneInfo.Local);
+			public DateTimeOffset? NextRun { get; set; }
+			public TimeZoneInfo TimeZone { get; set; } = timeZone;
 
 			private readonly Action<TMetadata> Action = action;
 			private readonly TMetadata Metadata = metadata;
@@ -150,16 +170,27 @@ namespace Lib3Dp.Scheduling
 			public void Execute() => Action(Metadata);
 		}
 
-		private class AsyncScheduledTask<TMetadata>(Guid id, CronExpression expression, Func<TMetadata, Task> action, TMetadata metadata) : IScheduledTask
+		private class AsyncScheduledTask<TMetadata>(Guid id, CronExpression expression, TimeZoneInfo timeZone, Func<TMetadata, Task> action, TMetadata metadata) : IScheduledTask
 		{
 			public Guid Id { get; } = id;
 			public CronExpression Expression { get; } = expression;
-			public DateTime? NextRun { get; set; } = expression.GetNextOccurrence(DateTime.Now, TimeZoneInfo.Local);
+			public DateTimeOffset? NextRun { get; set; }
+			public TimeZoneInfo TimeZone { get; set; } = timeZone;
 
 			private readonly Func<TMetadata, Task> Action = action;
 			private readonly TMetadata Metadata = metadata;
 
-			public void Execute() => Action(Metadata).GetAwaiter().GetResult();
+			public void Execute()
+			{
+				// Start the async work without blocking the caller thread. Log exceptions if the task faults.
+				var _ = Action(Metadata).ContinueWith(t =>
+				{
+					if (t.IsFaulted)
+					{
+						Logger.Error(t.Exception!, $"An exception occurred in scheduled async event GUID {Id}.");
+					}
+				}, TaskScheduler.Default);
+			}
 		}
 
 		#endregion

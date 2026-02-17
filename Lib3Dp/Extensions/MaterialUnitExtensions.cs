@@ -1,26 +1,27 @@
 ﻿using Lib3Dp.Constants;
 using Lib3Dp.Exceptions;
 using Lib3Dp.State;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Lib3Dp.Extensions
 {
 	public static class MaterialUnitExtensions
 	{
-		public static bool HasFeature(this IReadOnlyMaterialUnit state, MaterialUnitCapabilities desiredFeature)
+		public static bool HasFeature(this IMaterialUnit state, MUCapabilities desiredFeature)
 		{
-			return (state.Capabilities & desiredFeature) != MaterialUnitCapabilities.None;
+			return (state.Capabilities & desiredFeature) != MUCapabilities.None;
 		}
 
-		/// <summary>
-		/// <see cref="MachineException"/> is thrown when the current machine does not support the <paramref name="desiredFeature"/>
-		/// </summary>
-		/// <exception cref="MachineException"></exception>
-		public static void EnsureHasFeature(this IReadOnlyMaterialUnit state, MaterialUnitCapabilities desiredFeature)
+		public static bool IfNotCapable(this IMaterialUnit state, MUCapabilities desiredFeature, [NotNullWhen(true)] out MachineOperationResult? operationResult)
 		{
-			if (!state.HasFeature(desiredFeature))
+			if (state.HasFeature(desiredFeature))
 			{
-				throw new MachineException(MachineMessages.NoMUFeature(desiredFeature));
+				operationResult = null;
+				return false;
 			}
+
+			operationResult = MachineOperationResult.Fail(MachineMessages.NoMUFeature(desiredFeature));
+			return true;
 		}
 	}
 }

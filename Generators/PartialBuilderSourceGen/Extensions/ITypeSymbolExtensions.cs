@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Linq;
 
-namespace PartialBuilderSourceGen
+namespace PartialBuilderSourceGen.Extensions
 {
 	internal static class ITypeSymbolExtensions
 	{
@@ -18,6 +19,11 @@ namespace PartialBuilderSourceGen
 
 			return false;
 		}
-	}
 
+		public static bool HasAttribute(this ITypeSymbol symbol, string fullyQualifiedName)
+		{
+			return symbol.GetAttributes().Any(a => a.AttributeClass!.Name.Equals(fullyQualifiedName));
+
+		}
+	}
 }

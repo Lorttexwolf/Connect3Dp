@@ -1,4 +1,6 @@
-﻿using Lib3Dp.Utilities;
+﻿using Lib3Dp.Files;
+using Lib3Dp.State;
+using Lib3Dp.Utilities;
 
 namespace Lib3Dp.Connectors.ELEGOO
 {
@@ -17,12 +19,12 @@ namespace Lib3Dp.Connectors.ELEGOO
 	public class ELEGOOMachineConnector : MachineConnection
 	{
 		private readonly SimpleWebSocketClient Socket;
-		private readonly ELEGOOMachineConfiguration _Configuration;
+		private readonly ELEGOOMachineConfiguration Configuration;
 
-		public ELEGOOMachineConnector(ELEGOOMachineConfiguration configuration) : base(configuration.Nickname, configuration.Nickname, "ELEGOO", configuration.Model.ToString())
+		public ELEGOOMachineConnector(IMachineFileStore fileStore, ELEGOOMachineConfiguration configuration) : base(fileStore, configuration.Nickname, configuration.Nickname, "ELEGOO", configuration.Model.ToString())
 		{
-			this._Configuration = configuration;
-			this.Socket = new SimpleWebSocketClient(_Configuration.IPAddress);
+			this.Configuration = configuration;
+			this.Socket = new SimpleWebSocketClient(Configuration.IPAddress);
 
 			this.Socket.OnMessage += (message) =>
 			{
@@ -30,18 +32,24 @@ namespace Lib3Dp.Connectors.ELEGOO
 			};
 		}
 
-		public override object GetConfiguration()
+		protected override Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream)
 		{
 			throw new NotImplementedException();
 		}
 
-		protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
+		public override object GetConfiguration()
+		{	
+			throw new NotImplementedException();
+		}
+
+		protected override async Task Connect_Internal()
 		{
-			await this.Socket.ConnectAsync(cancellationToken);
+			await this.Socket.ConnectAsync();
 
 			// TODO, do Discovery, configure Model, and etc from Discovery payload.
 
 			CommitState(changes => changes.SetIsConnected(true));
 		}
+
 	}
 }

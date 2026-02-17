@@ -7,10 +7,6 @@ namespace Lib3Dp.State
 	{
 		None = 1 << 0,
 		/// <summary>
-		/// Prints (such as GCODE & 3MF) can be sent and started remotely.
-		/// </summary>
-		SendJob = 1 << 18,
-		/// <summary>
 		/// <see cref="LocalPrintJob">LocalPrintJobs</see> in <see cref="MachineState.LocalJobs"/> can be started remotely.
 		/// </summary>
 		StartLocalJob = 1 << 1,
@@ -30,10 +26,6 @@ namespace Lib3Dp.State
 		/// Connector will populate <see cref="MachineState.JobHistory"/> with <see cref="HistoricPrintJob"/> and update as prints are completed.
 		/// </summary>
 		PrintHistory = 1 << 14,
-		/// <summary>
-		/// Enables <see cref="MachineFile"/> associated with the given <see cref="MachineConnection"/> to execute <see cref="MachineFile.Download(Stream)"/>.
-		/// </summary>
-		FetchFiles = 1 << 16,
 		/// <summary>
 		/// Advertises the capability of reading the <see cref="LocalPrintJob"/> which are located on the given machine.
 		/// </summary>

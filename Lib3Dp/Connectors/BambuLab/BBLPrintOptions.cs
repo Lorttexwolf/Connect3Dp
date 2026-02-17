@@ -4,7 +4,7 @@
 			
 		int PlateIndex,
 		string FileName,
-		string JobId,
+		string MetadataId,
 		int ProjectFilamentCount,
 
 		bool BedLeveling,

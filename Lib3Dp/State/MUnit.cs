@@ -1,4 +1,5 @@
-﻿using PartialBuilderSourceGen;
+﻿using PartialBuilderSourceGen.Attributes;
+using PartialBuilderSourceGen.Attributes;
 using System.Text.Json.Serialization;
 
 namespace Lib3Dp.State
@@ -12,7 +13,7 @@ namespace Lib3Dp.State
 	}
 
 	[GeneratePartialBuilder]
-	public partial class MMUnit : IReadOnlyMaterialUnit
+	public partial class MUnit : IMaterialUnit
 	{
 		[PartialBuilderDictKey]
 		public required string ID { get; set; }
@@ -21,11 +22,11 @@ namespace Lib3Dp.State
 		public string? Model { get; set; }
 
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-		public MaterialUnitCapabilities Capabilities { get; internal set; }
+		public MUCapabilities Capabilities { get; internal set; }
 
 		public HeatingConstraints? HeatingConstraints { get; internal set; }
 
-		public Dictionary<int, Spool> Trays { get; } = [];
+		public Dictionary<int, Spool> Trays { get; set; } = [];
 
 		public double? HumidityPercent { get; set; }
 		public double? TemperatureC { get; set; }
@@ -34,8 +35,8 @@ namespace Lib3Dp.State
 
 		public HashSet<HeatingSchedule> HeatingSchedule { get; init; } = [];
 
-		IEnumerable<HeatingSchedule> IReadOnlyMaterialUnit.HeatingSchedule => HeatingSchedule;
-		IEnumerable<IReadOnlySpool> IReadOnlyMaterialUnit.Trays => Trays.Values;
+		IReadOnlyDictionary<int, Spool> IMaterialUnit.Trays => Trays;
+		IReadOnlySet<HeatingSchedule> IMaterialUnit.HeatingSchedule => HeatingSchedule;
 
 		public object GetConfiguration()
 		{
@@ -50,10 +51,10 @@ namespace Lib3Dp.State
 
 		public override bool Equals(object? obj)
 		{
-			return Equals(obj as MMUnit);
+			return Equals(obj as MUnit);
 		}
 
-		public bool Equals(MMUnit? other)
+		public bool Equals(MUnit? other)
 		{
 			return other is not null &&
 				   ID == other.ID &&
@@ -73,12 +74,12 @@ namespace Lib3Dp.State
 			return HashCode.Combine(ID, Capabilities, Capacity, Trays, HumidityPercent, TemperatureC, HeatingJob, HeatingSchedule);
 		}
 
-		public static bool operator ==(MMUnit? left, MMUnit? right)
+		public static bool operator ==(MUnit? left, MUnit? right)
 		{
-			return EqualityComparer<MMUnit>.Default.Equals(left, right);
+			return EqualityComparer<MUnit>.Default.Equals(left, right);
 		}
 
-		public static bool operator !=(MMUnit? left, MMUnit? right)
+		public static bool operator !=(MUnit? left, MUnit? right)
 		{
 			return !(left == right);
 		}

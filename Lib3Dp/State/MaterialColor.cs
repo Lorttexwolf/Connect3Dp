@@ -1,6 +1,6 @@
 ﻿namespace Lib3Dp.State
 {
-	public readonly struct MaterialColor
+	public readonly struct MaterialColor : IEquatable<MaterialColor>
 	{
 		public string? Name { get; }
 		public byte R { get; }
@@ -24,7 +24,12 @@
 
 			if (hex[0] == '#') hex = hex[1..];
 
-			if (hex.Length != 6) throw new ArgumentException("Filament color must be in Hex Color format", nameof(hexColor));
+			if (hex.Length == 8)
+			{
+				hex = hex.Slice(0, 6);
+			}
+
+			if (hex.Length != 6) throw new ArgumentException($"Filament color must be in Hex Color format: {hex}", nameof(hexColor));
 
 			if (!byte.TryParse(hex.Slice(0, 2), System.Globalization.NumberStyles.HexNumber, null, out byte r) ||
 				!byte.TryParse(hex.Slice(2, 2), System.Globalization.NumberStyles.HexNumber, null, out byte g) ||
@@ -45,14 +50,26 @@
 		/// <summary>
 		/// Returns true if colors are perceptually similar using Delta E (CIE76).
 		/// </summary>
-		public bool IsSimilarTo(MaterialColor other, double threshold = 3.5)
+		public bool IsSimilarTo(MaterialColor other, out double deltaE, double threshold = 40)
 		{
-			double dL = other.CIELabL - CIELabL;
-			double dA = other.CIELabA - CIELabA;
-			double dB = other.CIELabB - CIELabB;
-			double deltaE = Math.Sqrt(dL * dL + dA * dA + dB * dB);
+			deltaE = DeltaE(this, other);
 
 			return deltaE <= threshold;
+		}
+
+		public static double DeltaE(MaterialColor a, MaterialColor b)
+		{
+			double dL = b.CIELabL - a.CIELabL;
+			double dA = b.CIELabA - a.CIELabA;
+			double dB = b.CIELabB - a.CIELabB;
+			double deltaE = Math.Sqrt(dL * dL + dA * dA + dB * dB);
+
+			return deltaE;
+		}
+
+		public bool Equals(MaterialColor other)
+		{
+			return R == other.R && G == other.G && B == other.B;
 		}
 
 		private static (double L, double A, double B) ToLab(byte r, byte g, byte b)

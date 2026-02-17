@@ -55,7 +55,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			MQTTClient.ApplicationMessageReceivedAsync += OnMessage;
 		}
 
-		public async Task Connect(CancellationToken cancellationToken = default)
+		public async Task ConnectAsync(CancellationToken cancellationToken = default)
 		{
 			if (MQTTClient.IsConnected) return;
 
@@ -83,26 +83,31 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 		public async Task PublishPrint(BBLPrintOptions options)
 		{
+			// Verified for P2S
+
+			// NOTICE: For some reason job_id makes the local file on either the sdcard or usb drive to be removed.
+			// DO NOT USE JOB_ID
+			// DO NOT USE TASK_ID, YOUR INTERFACE WILL BREAK.
+
+			// For additional metadata subtask_id seems to be able to hold them.
+
 			var commandData = new JsonObject
 			{
 				{ "auto_bed_leveling", 2 },
 				{ "bed_leveling", options.BedLeveling },
-				{ "flow_cali", options.FlowCalibration },
-				{ "layer_inspect", options.LayerInspect },
-				{ "vibration_cali", options.VibrationCalibration },
-				{ "param", $"Metadata/plate_{options.PlateIndex}.gcode" },
-				{ "plate_idx", options.PlateIndex },
-				{ "job_type", 1 },
+				{ "cfg", "1" },
 				{ "extrude_cali_flag", 2 },
-				{ "extrude_cali_manual_mode", 1 },
-				{ "nozzle_offset_cali", 2 },
-				{ "subtask_name", options.FileName },
-				{ "url", $"ftp://{options.FileName}" }
-
-				//{ "job_id", "0" }, We can use custom IDs? Maybe how Bambu Farm works?
-				//{ "md5", "" },
-				//{ "no_cache", false },
-
+				{ "flow_cali", true },
+				{ "nozzle_mapping", new JsonArray() },
+				{ "nozzle_offset_cali", 0 },
+				{ "param", $"Metadata/plate_{options.PlateIndex}.gcode" },
+				{ "plate", options.PlateIndex },
+				{ "subtask_name", "" },
+				{ "task_type", 1 },
+				{ "subtask_id", options.MetadataId },
+				{ "timelapse", options.Timelapse },
+				{ "toolhead_offset_cali", false },
+				{ "url", $"file:///media/usb0/{options.FileName}" }
 			};
 
 			if (options.AMSMapping != null && options.AMSMapping.Count > 0)
@@ -278,6 +283,8 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				Changes = new MachineStateUpdate().SetIsConnected(false)
 			});
 
+			// TODO: Read ev.ConnectResults.ResultCode
+
 			if (PullAllChangesPeriodic != null)
 			{
 				await PullAllChangesPeriodic.DisposeAsync();
@@ -441,13 +448,13 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				//Logger.Trace($"{nameof(stg_cur)}: {stg_cur}");
 
-				data.Changes.UpdateCurrentJob(changes => changes.SetStage(stg_cur switch
+				data.Changes.UpdateCurrentJob(changes => changes.SetSubStage(stg_cur switch
 				{
 					BBLConstants.PrintStages.COOLING_CHAMBER => "Cooling Chamber",
 					BBLConstants.PrintStages.IDENTIFYING_BUILD_PLATE => "Identifying Build Plate",
 					BBLConstants.PrintStages.HOMING_TOOLHEAD_STAGE => "Homing Toolhead",
 					BBLConstants.PrintStages.CHANGING_FILAMENT => "Changing Filament",
-					_ => "Printing"
+					_ => null
 				}));
 			}
 
@@ -465,11 +472,25 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				data.Changes.UpdateCurrentJob(changes => changes.SetRemainingTime(remainingTimeSpan));
 			}
 
+			if (printJSON.TryGetString(out var metadata_id, "subtask_id")
+				&& PrefixedFixedLengthKeyValueMessage.TryParse(metadata_id, "Lib3Dp", out var metadata))
+			{
+				var encodedTotalTime = TimeSpan.FromMinutes(int.Parse(metadata.Values["Minutes"]));
+				var encodedPath = metadata.Values["Path"];
+				var encodedGramsUsed = int.Parse(metadata.Values["Grams"]);
+
+				data.Changes.UpdateCurrentJob(changes => changes
+					.SetTotalTime(encodedTotalTime)
+					.SetLocalPath(encodedPath)
+					.SetTotalMaterialUsage(encodedGramsUsed));
+			}
+
 			// Issue: Cannot calculate if machine has already finished its print.
 
-			if ((data.Changes.CurrentJob?.PercentageComplete.HasValue ?? false)
-				&& (data.Changes.CurrentJob?.RemainingTime.HasValue ?? false)
-				&& TryCalculateTotalTime(data.Changes.CurrentJob.RemainingTime.Value.TotalSeconds, data.Changes.CurrentJob.PercentageComplete.Value, out var calculatedTotalTime))
+			if (data.Changes.CurrentJob != null
+				&& data.Changes.CurrentJob.PercentageCompleteIsSet
+				&& data.Changes.CurrentJob.RemainingTimeIsSet
+				&& TryCalculateTotalTime(data.Changes.CurrentJob!.RemainingTime.TotalSeconds, data.Changes.CurrentJob.PercentageComplete, out var calculatedTotalTime))
 			{
 				data.Changes.UpdateCurrentJob(changes => changes.SetTotalTime(calculatedTotalTime.Value));
 			}
@@ -683,9 +704,9 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 		private void ProcessExtruderElement(JsonElement extruder, int number, ref BBLMQTTData data)
 		{
 			var heatingConstraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Nozzle, this.Model);
-			if (heatingConstraints != null)
+			if (heatingConstraints.HasValue)
 			{
-				data.Changes.UpdateExtruders(number, e => e.SetHeatingConstraint(heatingConstraints));
+				data.Changes.UpdateExtruders(number, e => e.SetHeatingConstraint(heatingConstraints.Value));
 			}
 
 			if (extruder.TryGetInt32(out var temp, "temp"))

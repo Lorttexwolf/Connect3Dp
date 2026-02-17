@@ -2,12 +2,13 @@
 using Lib3Dp.Connectors.BambuLab.Files;
 using Lib3Dp.Connectors.BambuLab.FTP;
 using Lib3Dp.Connectors.BambuLab.MQTT;
+using Lib3Dp.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net;
-using System.Text;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 
 namespace Lib3Dp.Connectors.BambuLab
@@ -36,7 +37,7 @@ namespace Lib3Dp.Connectors.BambuLab
 		private bool HasUSBOrSDCard;
 		private readonly bool IsUSBOrSDCardRequired;
 
-		private BBLMachineConnection(string? nickname, string sn, string accessCode, IPAddress address) : base(nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
+		private BBLMachineConnection(IMachineFileStore fileStore, string? nickname, string sn, string accessCode, IPAddress address) : base(fileStore, nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
 		{
 			this.Address = address;
 			this.SerialNumber = sn;
@@ -50,21 +51,151 @@ namespace Lib3Dp.Connectors.BambuLab
 			this.MQTT.OnData += MQTT_OnData;
 			this.FTP.OnLocal3MFAdded += FTP_OnLocal3MFAdded;
 			this.FTP.OnLocal3MFRemoved += FTP_OnLocal3MFRemoved;
+
+			// TODO: Monitor MQTT & FTP connection to determine disconnection status.
 		}
 
-		private void FTP_OnLocal3MFRemoved(string[] obj)
+		public static BBLMachineConnection LAN(IMachineFileStore fileStore, string? nickname, string sn, string accessCode, IPAddress address)
+		{
+			return new BBLMachineConnection(fileStore, nickname, sn, accessCode, address);
+		}
+
+		protected override async Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream)
+		{ 
+			if (BBLFiles.TryParseAs3MFHandle(fileHandle, out var filePath))
+			{
+				await FTP.DownloadFile(filePath, destinationStream);
+			}
+			else if (BBLFiles.TryParseAs3MFThumbnailHandle(fileHandle, out filePath))
+			{
+				var (bbl3MF, _) = await FTP.Download3MF(filePath);
+
+				if (bbl3MF.ThumbnailSmall == null)
+				{
+					throw new IOException("Thumbnail does not exist");
+				}
+
+				destinationStream.Write(bbl3MF.ThumbnailSmall, 0, bbl3MF.ThumbnailSmall.Length);
+			}
+			else
+			{
+				throw new IOException();
+			}
+		}
+
+		protected override async Task Connect_Internal()
+		{
+			await Task.WhenAll(this.MQTT.ConnectAsync(), this.FTP.ConnectAsync());
+		}
+
+		protected override Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)
+		{
+			// Convert abstract PrintOptions to BBL-specific options
+			Dictionary<int, AMSSlot>? amsMapping = null;
+
+			if (options.MaterialMap != null && options.MaterialMap.Count > 0)
+			{
+				amsMapping = new Dictionary<int, AMSSlot>();
+
+				foreach (var kvp in options.MaterialMap)
+				{
+					// Convert MMID (AMS serial number) to ams_id (integer)
+					if (MQTT.TryGetAMSIdFromSN(kvp.Value.MUID, out int amsId))
+					{
+						amsMapping[kvp.Key] = new AMSSlot(amsId, kvp.Value.Slot);
+					}
+					else
+					{
+						throw new InvalidOperationException($"Unable to resolve AMS ID for Material Unit '{kvp.Value.MUID}'. The AMS mapping may not be available yet.");
+					}
+				}
+			}
+
+			if (!BBLFiles.TryParseAs3MFHandle(localPrint.File, out var localPath))
+			{
+				throw new InvalidOperationException("Select file must be 3MF");
+			}
+
+			var jobIdWithInfo = new PrefixedFixedLengthKeyValueMessage("Lib3Dp");
+			jobIdWithInfo.Add("Path", localPath);
+			jobIdWithInfo.Add("Minutes", ((int)localPrint.Time.TotalMinutes).ToString());
+			jobIdWithInfo.Add("Grams", localPrint.TotalGramsUsed.ToString());
+
+			var bblPrintOptions = new BBLPrintOptions(
+				PlateIndex: 1,
+				FileName: localPrint.Name,
+				MetadataId: jobIdWithInfo.ToString(),
+				ProjectFilamentCount: options.MaterialMap?.Count ?? 1,
+				BedLeveling: options.LevelBed,
+				FlowCalibration: options.FlowCalibration,
+				VibrationCalibration: options.VibrationCalibration,
+				LayerInspect: options.InspectFirstLayer,
+				Timelapse: false,
+				AMSMapping: amsMapping
+			);
+
+			return this.MQTT.PublishPrint(bblPrintOptions);
+		}
+
+		protected override Task Pause_Internal()
+		{
+			return this.MQTT.PublishPause();
+		}
+
+		protected override Task Resume_Internal()
+		{
+			return this.MQTT.PublishResume();
+		}
+
+		protected override Task Stop_Internal()
+		{
+			return this.MQTT.PublishStop();
+		}
+
+		protected override async Task BeginMUHeating_Internal(string unitID, HeatingSettings settings)
+		{
+			await MQTT.PublishAMSHeatingCommand(unitID, settings);
+		}
+
+		protected override async Task EndMaterialUnitHeating_Internal(string unitID)
+		{
+			await MQTT.PublishAMSStopHeatingCommand(unitID);
+		}
+
+		internal override bool OvenMediaEnginePullURL_Internal([NotNullWhen(true)] out string? passURL)
+		{
+			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(this.State.Model))
+			{
+				// RTSPS
+				passURL = $"rtsps://bblp:{AccessCode}@{Address}:322/streaming/live/1";
+			}
+			else
+			{
+				// TODO: A1 Mini, A1, P1P, P1S
+				passURL = null;
+			}
+			return passURL != null;
+		}
+
+		protected override Task ChangeAirDuctMode_Internal(MachineAirDuctMode mode)
+		{
+			return this.MQTT.PublishHVACModeCommand(mode);
+		}
+
+		protected override Task ClearBed_Internal()
+		{
+			return this.MQTT.PublishClearBed();
+		}
+
+		private void FTP_OnLocal3MFRemoved(string[] removedPaths)
 		{
 			var stateChanges = new MachineStateUpdate();
 
-			foreach (var removed in obj)
+			foreach (var removed in removedPaths)
 			{
-				var jobToRemove = this.State.LocalJobs.FirstOrDefault(j => j.Path.Equals(removed, StringComparison.OrdinalIgnoreCase));
+				var jobToRemove = this.State.LocalJobs.FirstOrDefault(j => BBLFiles.TryParseAs3MFHandle(j.File, out var localPath) && localPath.Equals(removed, StringComparison.OrdinalIgnoreCase));
 
-				if (jobToRemove == null)
-				{
-					// We didn't have it in the first place?
-					continue;
-				}
+				if (jobToRemove == default) continue;
 
 				Console.WriteLine($"Removed Local Job {removed} from State");
 
@@ -74,7 +205,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			this.CommitState(stateChanges);
 		}
 
-		private void FTP_OnLocal3MFAdded(string addedPath, BambuLab3MF bbl3MF)
+		private void FTP_OnLocal3MFAdded(string fileName, string hash, BambuLab3MF bbl3MF)
 		{
 			try
 			{
@@ -83,9 +214,9 @@ namespace Lib3Dp.Connectors.BambuLab
 				var matsUsed = bbl3MF.Filaments.ToDictionary(f => f.Id, f => new MaterialToPrint(f.Filament, (int)f.UsedGrams, f.NozzleDiameter))!;
 
 				var localJob = new LocalPrintJob(
-					Path.GetFileNameWithoutExtension(addedPath), 
-					addedPath, 
-					(int)bbl3MF.TotalFilamentGrams, 
+					Path.GetFileNameWithoutExtension(fileName),
+					BBLFiles.HandleAs3MF(this.State.ID, fileName, hash),
+					(int)bbl3MF.TotalFilamentGrams,
 					bbl3MF.PredictedTime,
 					matsUsed);
 
@@ -93,38 +224,39 @@ namespace Lib3Dp.Connectors.BambuLab
 
 				this.CommitState(stateChanges);
 
-				Console.WriteLine($"Added Local Job {addedPath} to State");
+				Console.WriteLine($"Added Local Job {localJob} to State");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to add Local Job {addedPath} to State\n{ex}");
+				Console.WriteLine($"Failed to add Local Job {fileName} to State\n{ex}");
 			}
 		}
 
 		private void MQTT_OnData(BBLMQTTData data)
 		{
-			if (data.HasUSBOrSDCard.HasValue && this.IsUSBOrSDCardRequired)
+			// TODO: Reimplement
+			//if (data.HasUSBOrSDCard.HasValue && this.IsUSBOrSDCardRequired)
+			//{
+			//	bool hasMedia = data.HasUSBOrSDCard.Value;
+			//	var hasMissingMessage = this.State.Notifications.FirstOrDefault(BBLMessages.SDCardOrUSBMissing);
+
+			//	if (!hasMedia && !hasMissingMessage)
+			//	{
+			//		// Removed
+			//		data.Changes.SetMessages(BBLMessages.SDCardOrUSBMissing);
+			//	}
+			//	else if (hasMedia && hasMissingMessage)
+			//	{
+			//		// Added
+			//		data.Changes.RemoveMessages(BBLMessages.SDCardOrUSBMissing);
+			//	}
+
+			//	this.HasUSBOrSDCard = hasMedia;
+			//}
+
+			if (data.Changes.IsConnectedIsSet)
 			{
-				bool hasMedia = data.HasUSBOrSDCard.Value;
-				var hasMissingMessage = this.State.Messages.Contains(BBLMessages.SDCardOrUSBMissing);
-
-				if (!hasMedia && !hasMissingMessage)
-				{
-					// Removed
-					data.Changes.SetMessages(BBLMessages.SDCardOrUSBMissing);
-				}
-				else if (hasMedia && hasMissingMessage)
-				{
-					// Added
-					data.Changes.RemoveMessages(BBLMessages.SDCardOrUSBMissing);
-				}
-
-				this.HasUSBOrSDCard = hasMedia;
-			}
-
-			if (data.Changes.IsConnected.HasValue)
-			{
-				if (!data.Changes.IsConnected.Value)
+				if (!data.Changes.IsConnected)
 				{
 					// Disconnected, reset security flag.
 					this.PrevUsesUnsupportedSecurity = false;
@@ -136,7 +268,7 @@ namespace Lib3Dp.Connectors.BambuLab
 				this.FirmwareVersion = data.FirmwareVersion.Value;
 			}
 
-			MachineCapabilities machineFeatures = MachineCapabilities.Lighting | MachineCapabilities.Control | MachineCapabilities.FetchFiles | MachineCapabilities.PrintHistory;
+			MachineCapabilities machineFeatures = MachineCapabilities.StartLocalJob | MachineCapabilities.Lighting | MachineCapabilities.Control | MachineCapabilities.PrintHistory;
 
 			// We will decide which features are available on this machine depending on the model!
 
@@ -179,12 +311,12 @@ namespace Lib3Dp.Connectors.BambuLab
 				// Without LAN Mode and Developer Mode we cannot control anything.
 				// When switching to these modes, the machine must be restarted.
 
-				machineFeatures &= ~(MachineCapabilities.SendJob | MachineCapabilities.StartLocalJob | MachineCapabilities.Control | MachineCapabilities.AirDuct);
+				machineFeatures &= ~(MachineCapabilities.StartLocalJob | MachineCapabilities.Control | MachineCapabilities.AirDuct);
 			}
 
 			if (!this.HasUSBOrSDCard && this.IsUSBOrSDCardRequired)
 			{
-				machineFeatures &= ~(MachineCapabilities.SendJob | MachineCapabilities.StartLocalJob | MachineCapabilities.FetchFiles);
+				machineFeatures &= ~(MachineCapabilities.StartLocalJob);
 			}
 
 			data.Changes.SetCapabilities(machineFeatures);
@@ -195,139 +327,32 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			if (job != null)
 			{
-				if (job.File == null)
+				if (job.File.HasValue)
 				{
-					// TODO: Verify the location of files on FTP.
-
-					var file3MF = new BBLMachineFile(this, $"{job.Name}", "3MF");
-
-					data.Changes.UpdateCurrentJob(c => c.SetFile(file3MF));
+					data.Changes.UpdateCurrentJob(c => c.SetFile(job.File.Value));
 				}
 
-				//if (job.Thumbnail == null)
-				//{
-				//	// TODO: Verify the location of files on FTP.
-
-				//	var thumbnailFile = new BBLMachineThumbnailFile(this, $"{job.Name}");
-
-				//	data.Changes.UpdateCurrentJob(c => c.SetThumbnail(thumbnailFile));
-				//}
+				if (job.Thumbnail.HasValue)
+				{
+					data.Changes.UpdateCurrentJob(c => c.SetThumbnail(job.Thumbnail.Value));
+				}
 			}
 
 			// Append to the Print History.
 
-			if (data.Changes.Status.HasValue && this.State.Status == MachineStatus.Printing)
+			if (data.Changes.IsConnectedIsSet && this.State.Status == MachineStatus.Printing)
 			{
-				if (data.Changes.Status.Value == MachineStatus.Printed)
+				if (data.Changes.Status == MachineStatus.Printed)
 				{
-					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail, null));
+					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, true, DateTime.Now, job.TotalTime, job.Thumbnail ?? null, job.File ?? null));
 				}
-				else if (data.Changes.Status.Value == MachineStatus.Canceled)
+				else if (data.Changes.Status == MachineStatus.Canceled)
 				{
-					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail, null));
+					data.Changes.SetJobHistory(new HistoricPrintJob(job!.Name, false, DateTime.Now, job.TotalTime - job.RemainingTime, job.Thumbnail ?? null, job.File ?? null));
 				}
 			}
 
 			CommitState(data.Changes);
-		}
-
-		protected override async Task Connect_Internal(CancellationToken cancellationToken = default)
-		{
-			await Task.WhenAll(this.MQTT.Connect(cancellationToken), this.FTP.Connect());
-		}
-
-		protected override Task PrintLocal_Internal(string localPath, PrintOptions options, CancellationToken cancellationToken = default)
-		{
-			// Convert abstract PrintOptions to BBL-specific options
-			Dictionary<int, AMSSlot>? amsMapping = null;
-			
-			if (options.MaterialMap != null && options.MaterialMap.Count > 0)
-			{
-				amsMapping = new Dictionary<int, AMSSlot>();
-				
-				foreach (var kvp in options.MaterialMap)
-				{
-					// Convert MMID (AMS serial number) to ams_id (integer)
-					if (MQTT.TryGetAMSIdFromSN(kvp.Value.MMID, out int amsId))
-					{
-						amsMapping[kvp.Key] = new AMSSlot(amsId, kvp.Value.Slot);
-					}
-					else
-					{
-						throw new InvalidOperationException($"Unable to resolve AMS ID for Material Unit '{kvp.Value.MMID}'. The AMS mapping may not be available yet.");
-					}
-				}
-			}
-
-			var bblPrintOptions = new BBLPrintOptions(
-				PlateIndex: 1,
-				FileName: localPath,
-				JobId: $"Lib3Dp-{DateTime.Now.Ticks}",
-				ProjectFilamentCount: options.MaterialMap?.Count ?? 1,
-				BedLeveling: options.LevelBed,
-				FlowCalibration: options.FlowCalibration,
-				VibrationCalibration: options.VibrationCalibration,
-				LayerInspect: options.InspectFirstLayer,
-				Timelapse: false,
-				AMSMapping: amsMapping
-			);
-
-			return this.MQTT.PublishPrint(bblPrintOptions);
-		}
-
-		protected override Task Pause_Internal(CancellationToken cancellationToken = default)
-		{
-			return this.MQTT.PublishPause();
-		}
-
-		protected override Task Resume_Internal(CancellationToken cancellationToken = default)
-		{
-			return this.MQTT.PublishResume();
-		}
-
-		protected override Task Stop_Internal(CancellationToken cancellationToken = default)
-		{
-			return this.MQTT.PublishStop();
-		}
-
-		protected override async Task BeginMUHeating_Internal(string unitID, HeatingSettings settings)
-		{
-			await MQTT.PublishAMSHeatingCommand(unitID, settings);
-		}
-
-		protected override async Task EndMaterialUnitHeating_Internal(string unitID)
-		{
-			await MQTT.PublishAMSStopHeatingCommand(unitID);
-		}
-
-		internal override bool OvenMediaEnginePullURL_Internal([NotNullWhen(true)] out string? passURL)
-		{
-			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(this.State.Model))
-			{
-				// RTSPS
-				passURL = $"rtsps://bblp:{AccessCode}@{Address}:322/streaming/live/1";
-			}
-			else
-			{
-				// TODO: A1 Mini, A1, P1P, P1S
-				passURL = null;
-			}
-			return passURL != null;
-		}
-
-		protected override Task ChangeAirDuctMode_Internal(MachineAirDuctMode mode)
-		{
-			return this.MQTT.PublishHVACModeCommand(mode);
-		}
-
-		protected override Task ClearBed_Internal(CancellationToken cancellationToken = default)
-		{
-			return this.MQTT.PublishClearBed();
-		}
-
-		public static BBLMachineConnection LAN(string? nickname, string sn, string accessCode, IPAddress address)
-		{
-			return new BBLMachineConnection(nickname, sn, accessCode, address);
 		}
 
 		#region Configuration
@@ -348,60 +373,14 @@ namespace Lib3Dp.Connectors.BambuLab
 			return typeof(BBLMachineConfiguration);
 		}
 
-		public static MachineConnection CreateFromConfiguration(object configuration)
+		public static MachineConnection CreateFromConfiguration(IMachineFileStore fileStore, object configuration)
 		{
 			if (configuration is BBLMachineConfiguration bbl)
 			{
-				return LAN(bbl.Nickname, bbl.SerialNumber, bbl.AccessCode, IPAddress.Parse(bbl.Address));
+				return LAN(fileStore, bbl.Nickname, bbl.SerialNumber, bbl.AccessCode, IPAddress.Parse(bbl.Address));
 			}
 			return null;
 		}
-
-		#endregion
-
-		#region Files
-
-		public class BBLMachineFile(BBLMachineConnection machine, string fileName, string appendedID) : MachineFile($"BBL/{machine.State.ID}/{appendedID}", machine)
-		{
-			public string FileName { get; } = fileName;
-			private string AppendedID { get; } = appendedID;
-
-			public override string? MimeType => "model/3mf";
-
-			protected override Task<bool> DoDownload(Stream outStream)
-			{
-				return ((BBLMachineConnection)Machine).FTP.FTP.DownloadStream(outStream, FileName);
-			}
-
-			public override object Clone()
-			{
-				return new BBLMachineFile((BBLMachineConnection)this.Machine, this.FileName, this.AppendedID);
-			}
-		}
-
-		//public class BBLMachineThumbnailFile(BBLMachineConnection machine, string File3MFName, int PlateNumber = 1, BambuLab3MF.ThumbnailPositions Position = BambuLab3MF.ThumbnailPositions.Diagonal) : BBLMachineFile(machine, File3MFName, "Thumbnail")
-		//{
-		//	public int PlateNumber { get; } = PlateNumber;
-		//	public BambuLab3MF.ThumbnailPositions Position { get; } = Position;
-
-		//	public override string? MimeType => "image/png";
-
-		//	protected override async Task<bool> DoDownload(Stream outStream)
-		//	{
-		//		using var stream3MF = new MemoryStream();
-
-		//		if (!await base.DoDownload(stream3MF)) return false;
-
-		//		await BambuLab3MF.GetThumbnailEntry(stream3MF, outStream, Position, PlateNumber);
-
-		//		return true;
-		//	}
-
-		//	public override object Clone()
-		//	{
-		//		return new BBLMachineThumbnailFile((BBLMachineConnection)this.Machine, this.FileName, this.PlateNumber, this.Position);
-		//	}
-		//}
 
 		#endregion
 	}

@@ -1,64 +1,63 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Lib3Dp
 {
 	/// <summary>
-	/// A utility object which prevents multiple operations at the same time.
+	/// A utility object which limits a machine to one operation at once.
 	/// </summary>
 	internal class MonoMachine
 	{
-		public bool IsMutating => Semaphore.CurrentCount > 0;
-
 		protected SemaphoreSlim Semaphore = new(1, 1);
 
-		private readonly System.Timers.Timer _watchdogTimer = new(250);
+		private readonly Stopwatch Stopwatch = new();
 
-		public async Task<T> Mutate<T>(Func<Task<T>> mutateAction, [CallerMemberName] string callerName = "")
-		{
-			await Semaphore.WaitAsync();
-
-			var result = await mutateAction();
-
-			Semaphore.Release();
-
-			return result;
-		}
-
-		public async Task Mutate(Func<Task> mutateAction, [CallerMemberName] string callerName = "")
-		{
-			await Semaphore.WaitAsync();
-
-			await mutateAction();
-
-			Semaphore.Release();
-		}
+		public bool IsMutating => Semaphore.CurrentCount == 0;
 
 		/// <summary>
-		/// Executes a certain action, then waits for the predicate to return true.
+		/// Executes a certain <paramref name="invokeAction"/> then blocks until <paramref name="predicate"/> up to the <paramref name="timeout"/>.
 		/// </summary>
-		/// <returns>
-		/// Returns whether or not the predicate has timed out.
-		/// </returns>
-		public async Task<bool> MutateUntil(Func<Task> mutateAction, Func<bool> predicate, TimeSpan timeout, [CallerMemberName] string callerName = "")
+		public async Task<MutationResult> MutateUntil(Func<Task> invokeAction, Func<bool> predicate, TimeSpan timeout, [CallerMemberName] string callerName = "")
 		{
 			await Semaphore.WaitAsync();
 
-			await mutateAction();
+			try
+			{
+				await invokeAction();
+			}
+			catch (Exception ex)
+			{
+				return new MutationResult(TimeSpan.Zero, false, ex);
+			}
 
-			_watchdogTimer.Interval = timeout.TotalMilliseconds;
-			_watchdogTimer.Start();
+			Stopwatch.Restart();
 
 			// Blocks until predicate returns true.
 
-			while (!predicate.Invoke() && _watchdogTimer.Enabled)
+			while (!predicate.Invoke())
 			{
-
-				await Task.Delay(TimeSpan.FromMilliseconds(250));
+				if (Stopwatch.Elapsed <= timeout)
+				{
+					await Task.Delay(TimeSpan.FromMilliseconds(250));
+				}
+				else
+				{
+					return new MutationResult(timeout, true, null);
+				}
 			}
+
+			Stopwatch.Stop();
+
+			var results = new MutationResult(Stopwatch.Elapsed, false, null);
 
 			Semaphore.Release();
 
-			return !_watchdogTimer.Enabled;
+			return results;
+		}
+
+		public readonly record struct MutationResult(TimeSpan TimeSpent, bool TimedOut, Exception? InvokeException)
+		{
+			public bool IsSuccess => InvokeException == null && !TimedOut;
 		}
 	}
 }

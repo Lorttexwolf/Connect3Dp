@@ -1,4 +1,4 @@
 ﻿namespace Lib3Dp.State
 {
-	public record HeatingJob(double TempC, TimeSpan Duration);
+	public readonly record struct HeatingJob(double TempC, TimeSpan Duration);
 }

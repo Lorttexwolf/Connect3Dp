@@ -1,4 +1,5 @@
 ﻿using Lib3Dp.Connectors;
+using Lib3Dp.Files;
 
 namespace Lib3Dp
 {
@@ -8,7 +9,7 @@ namespace Lib3Dp
 
 		public static abstract Type GetConfigurationType();
 
-		public static abstract MachineConnection CreateFromConfiguration(object configuration);
+		public static abstract MachineConnection CreateFromConfiguration(IMachineFileStore fileStore, object configuration);
 	}
 
 	public interface IConnectorConfiguration

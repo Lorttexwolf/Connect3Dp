@@ -2,14 +2,8 @@
 
 namespace Lib3Dp.Exceptions
 {
-	public class MachineException : Exception
+	public class MachineException(MachineMessage message) : Exception("Machine encountered an Exception")
 	{
-		public MachineMessage MachineMessage { get; }
-
-		public MachineException(MachineMessage message, Exception? causingException = null) : base("Machine encountered an Exception", causingException)
-		{
-			message.ProgramException = this;
-			MachineMessage = message;
-		}
+		public MachineMessage MachineMessage { get; } = message;
 	}
 }

@@ -24,7 +24,7 @@ namespace Lib3Dp.Connectors.BambuLab.Files
 		public double TotalFilamentMeters { get; private set; }
 		public double TotalFilamentGrams { get; private set; }
 
-		public byte[]? PlateThumbnailSmall { get; private set; }
+		public byte[]? ThumbnailSmall { get; private set; }
 
 		private readonly List<FilamentInfo> _filaments = new();
 		private readonly List<LayerFilamentRange> _layerFilaments = new();

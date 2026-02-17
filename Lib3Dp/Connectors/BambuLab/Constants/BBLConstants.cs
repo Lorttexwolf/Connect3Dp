@@ -178,13 +178,13 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 			};
 		}
 
-		public static MaterialUnitCapabilities GetAMSFeaturesFromModel(string AMSModel)
+		public static MUCapabilities GetAMSFeaturesFromModel(string AMSModel)
 		{
 			return AMSModel switch
 			{
-				ModelAMS => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature,
-				ModelAMSHT => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature | MaterialUnitCapabilities.Heating | MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Heating_CanSpin,
-				ModelAMS2Pro => MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Temperature | MaterialUnitCapabilities.Heating | MaterialUnitCapabilities.AutomaticFeeding | MaterialUnitCapabilities.Humidity | MaterialUnitCapabilities.Heating_CanSpin,
+				ModelAMS => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature,
+				ModelAMSHT => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature | MUCapabilities.Heating | MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Heating_CanSpin,
+				ModelAMS2Pro => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature | MUCapabilities.Heating | MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Heating_CanSpin,
 				_ => throw new Exception($"Unknown AMS model of {AMSModel}")
 			};
 		}

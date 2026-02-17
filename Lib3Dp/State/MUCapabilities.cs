@@ -1,7 +1,7 @@
 ﻿namespace Lib3Dp.State
 {
 	[Flags]
-	public enum MaterialUnitCapabilities
+	public enum MUCapabilities
 	{
 		None = 0,
 		AutomaticFeeding = 1 << 1,

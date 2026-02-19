@@ -11,6 +11,16 @@ using System.Runtime.CompilerServices;
 
 namespace Lib3Dp.Connectors
 {
+	/// <summary>
+	/// Base configuration of a <see cref="MachineConnection"/> required to instantiate a connection.
+	/// </summary>
+	public record MachineConnectionConfiguration(
+		string? Nickname,
+		string ID,
+		string Brand,
+		string Model
+	);
+
 	public abstract partial class MachineConnection
 	{
 		private static readonly CronScheduler Scheduler;
@@ -19,13 +29,12 @@ namespace Lib3Dp.Connectors
 
 		private readonly MachineState _State;
 
-		private readonly MonoMachine Mono;
+		public readonly MonoMachine Mono;
 
 		protected readonly IMachineFileStore FileStore;
 
 		public event Action<IMachineState, MachineStateChanges>? OnChanges;
 
-		public bool IsMutating => Mono.IsMutating;
 		public IMachineState State => _State;
 
 		static MachineConnection()
@@ -33,17 +42,17 @@ namespace Lib3Dp.Connectors
 			Scheduler = new(TimeSpan.FromMinutes(1));
 		}
 
-		protected MachineConnection(IMachineFileStore fileStore, string? nickname, string id, string company, string model)
+		protected MachineConnection(IMachineFileStore fileStore, MachineConnectionConfiguration configuration)
 		{
 			FileStore = fileStore;
 			Mono = new MonoMachine();
 
 			_State = new MachineState
 			{
-				ID = id,
-				Nickname = nickname,
-				Brand = company,
-				Model = model
+				ID = configuration.ID,
+				Nickname = configuration.Nickname,
+				Brand = configuration.Brand,
+				Model = configuration.Model
 			};
 
 			Logger = Logger.OfCategory($"Machine {this._State.ID}");
@@ -111,7 +120,7 @@ namespace Lib3Dp.Connectors
 		/// </summary>
 		protected abstract Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream);
 
-		internal static void PreprocessState(MachineStateUpdate updatedState, out IEnumerable<string> issues)
+		internal void PreprocessState(MachineStateUpdate updatedState, out IEnumerable<string> issues)
 		{
 			var foundIssues = new List<string>();
 			issues = foundIssues;
@@ -121,17 +130,54 @@ namespace Lib3Dp.Connectors
 			// TODO RULE: CurrentJob must only exist while status is Printing, Paused, or Failed.
 
 			// RULE: With the MU Heating feature, a Heating Constraint must be applied before advertising this functionality.
-		}
 
-		internal void CommitState(MachineStateUpdate updatedState, [CallerMemberName] string callerName = "")
-		{
-			// Preprocess / Validate
-
-			PreprocessState(updatedState, out var issuesFound);
-
-			if (issuesFound.Any())
+			// Handle Notifications merging in-place before the generated AppendUpdate runs.
+			// This ensures we update LastSeenAt for existing notifications and avoid duplicate adds.
+			if (updatedState.NotificationsToSet != null)
 			{
-				Logger.Trace($"{callerName}() produced state issues, which were ignored: {string.Join(", ", issuesFound)}");
+				// Work on a snapshot to avoid modifying the collection during iteration.
+				foreach (var kv in updatedState.NotificationsToSet)
+				{
+					var key = kv.Key;
+					var notificationToAdd = kv.Value;
+
+					if (_State.Notifications.TryGetValue(key, out var existing))
+					{
+						// Update observed timestamp
+						existing.LastSeenAt = DateTimeOffset.UtcNow;
+
+						// Remove from the update so the generated updater won't also re-add it.
+						updatedState.NotificationsToSet.Remove(key);
+					}
+					else
+					{
+						// Add a fresh MachineNotification preserving the issued time from the provided one if set.
+						_State.Notifications[key] = new MachineNotification(notificationToAdd.Message, notificationToAdd.IssuedAt);
+					}
+				}
+			}
+
+			// Auto-resolve Messages
+
+			foreach (var notification in _State.Notifications.Values)
+			{
+				bool doResolve = false;
+
+				// Auto-resolve if the current machine state matches the desired on-resolve state
+				if (notification.Message.AutoResolve.WhenPrinting.HasValue && notification.Message.AutoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
+				{
+					doResolve = true;
+				}
+				else if (notification.Message.AutoResolve.WhenStatus.HasValue && _State.Status == notification.Message.AutoResolve.WhenStatus.Value)
+				{
+					doResolve = true;
+				}
+				else if (notification.Message.AutoResolve.WhenConnected.HasValue && notification.Message.AutoResolve.WhenConnected.Value && _State.Status is not MachineStatus.Disconnected)
+				{
+					doResolve = true;
+				}
+
+				if (doResolve) updatedState.RemoveNotifications(notification.MessageSignature);
 			}
 
 			// Check if any removed local jobs have associated scheduled prints
@@ -157,41 +203,17 @@ namespace Lib3Dp.Connectors
 					}
 				}
 			}
+		}
 
-			// Logs
+		internal void CommitState(MachineStateUpdate updatedState, [CallerMemberName] string callerName = "")
+		{
+			// Preprocess / Validate
 
-			if (updatedState.NotificationsToSet != null)
+			PreprocessState(updatedState, out var issuesFound);
+
+			if (issuesFound.Any())
 			{
-				foreach (var message in updatedState.NotificationsToSet)
-				{
-					if (!_State.Notifications.Contains(message))
-					{
-						Logger.Log(message.Message);
-					}
-				}
-			}
-
-			// Auto-resolve Messages
-
-			foreach (var notification in _State.Notifications)
-			{
-				bool doResolve = false;
-
-				// Auto-resolve if the current machine state matches the desired on-resolve state
-				if (notification.Message.AutoResolve.WhenPrinting.HasValue && notification.Message.AutoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
-				{
-					doResolve = true;
-				}
-				else if (notification.Message.AutoResolve.WhenStatus.HasValue && _State.Status == notification.Message.AutoResolve.WhenStatus.Value)
-				{
-					doResolve = true;
-				}
-				else if (notification.Message.AutoResolve.WhenConnected.HasValue && notification.Message.AutoResolve.WhenConnected.Value && _State.IsConnected)
-				{
-					doResolve = true;
-				}
-
-				if (doResolve) updatedState.RemoveNotifications(notification);
+				Logger.Trace($"{callerName}() produced state issues, which were ignored: {string.Join(", ", issuesFound)}");
 			}
 
 			// Apply Update	
@@ -295,7 +317,7 @@ namespace Lib3Dp.Connectors
 		{
 			var mutateResult = await this.Mono.MutateUntil(
 				() => Connect_Internal(),
-				() => this.State.IsConnected,
+				() => this.State.Status is not MachineStatus.Disconnected,
 				TimeSpan.FromSeconds(15));
 
 			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToConnect.Title, autoResolve: Constants.MachineMessages.FailedToConnect.AutoResolve);
@@ -320,7 +342,7 @@ namespace Lib3Dp.Connectors
 			var mutateResult = await this.Mono.MutateUntil(
 				() => PrintLocal_Internal(localPrint, options),
 				() => this.State.Status is MachineStatus.Printing,
-				TimeSpan.FromSeconds(30));
+				TimeSpan.FromSeconds(60));
 
 			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStartLocalPrint.Title, autoResolve: Constants.MachineMessages.FailedToStartLocalPrint.AutoResolve);
 		}
@@ -440,7 +462,7 @@ namespace Lib3Dp.Connectors
 			throw new NotImplementedException($"{nameof(ChangeAirDuctMode_Internal)} has not been implemented on the Connector");
 		}
 
-	}
+		}
 	#endregion
 
 	#region Material Unit Start & End Heating
@@ -634,9 +656,9 @@ namespace Lib3Dp.Connectors
 							return;
 						}
 
-						if (!_State.IsConnected || _State.Status is not MachineStatus.Idle)
+						if (_State.Status is MachineStatus.Disconnected || _State.Status is not MachineStatus.Idle)
 						{
-							var reason = !_State.IsConnected ? "Machine is not connected" : "Machine is not idle";
+							var reason = _State.Status is MachineStatus.Disconnected ? "Not Connected" : "Not Ready";
 
 							CommitState(changes => changes
 								.SetNotifications(new MachineNotification(Constants.MachineMessages.ScheduledPrintSkipped(jobName, reason))));

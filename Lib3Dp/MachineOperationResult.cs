@@ -1,7 +1,8 @@
-﻿using Lib3Dp.Utilities;
+﻿using Lib3Dp.State;
+using Lib3Dp.Utilities;
 using static Lib3Dp.MonoMachine;
 
-namespace Lib3Dp.State
+namespace Lib3Dp
 {
 	public readonly record struct MachineOperationResult
 	{
@@ -12,7 +13,7 @@ namespace Lib3Dp.State
 
 		public void ThrowIfFailed()
 		{
-			if (!Success) throw new Exception(this.ToString());
+			if (!Success) throw new Exception(ToString());
 		}
 
 		public static MachineOperationResult Ok => new() { Success = true, Reasoning = null };

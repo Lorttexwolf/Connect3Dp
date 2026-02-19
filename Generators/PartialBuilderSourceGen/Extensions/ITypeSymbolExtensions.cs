@@ -20,10 +20,9 @@ namespace PartialBuilderSourceGen.Extensions
 			return false;
 		}
 
-		public static bool HasAttribute(this ITypeSymbol symbol, string fullyQualifiedName)
+		public static bool ContainsAttribute(this ISymbol symbol, INamedTypeSymbol attributeSymbol)
 		{
-			return symbol.GetAttributes().Any(a => a.AttributeClass!.Name.Equals(fullyQualifiedName));
-
+			return symbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, attributeSymbol));
 		}
 	}
 }

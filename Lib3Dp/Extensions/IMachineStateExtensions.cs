@@ -8,9 +8,9 @@ namespace Lib3Dp.Extensions
 {
 	public record struct SpoolMatch(SpoolLocation Location, Material MaterialInMatchedSpool, double DeltaE);
 
-	public record Matches<K, V>(Dictionary<K , List<V>> All, Dictionary<K, V> Best, HashSet<K> Missing) where K : notnull
+	public record struct Matches<K, V>(Dictionary<K , List<V>> All, Dictionary<K, V> Match, HashSet<K> Missing) where K : notnull
 	{
-		public bool HasMissing => Missing != null && Missing.Count > 0;
+		public readonly bool HasMissing => Missing != null && Missing.Count > 0;
 	}
 
 	public static class IMachineStateExtensions
@@ -33,7 +33,6 @@ namespace Lib3Dp.Extensions
 						if (!spool.Material.Name.Equals(materialToPrint.Material.Name, StringComparison.OrdinalIgnoreCase)) continue;
 
 						var location = new SpoolLocation(mu.ID, spool.Number);
-
 
 						bool colorMatches = spool.Material.Color.IsSimilarTo(materialToPrint.Material.Color, out double deltaE);
 

@@ -1,7 +1,9 @@
-﻿using Lib3Dp.Connectors.BambuLab.Constants;
+﻿using Lib3Dp.Configuration;
+using Lib3Dp.Connectors.BambuLab.Constants;
 using Lib3Dp.Connectors.BambuLab.Files;
 using Lib3Dp.Connectors.BambuLab.FTP;
 using Lib3Dp.Connectors.BambuLab.MQTT;
+using Lib3Dp.Extensions;
 using Lib3Dp.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
@@ -13,53 +15,89 @@ using System.Xml.Serialization;
 
 namespace Lib3Dp.Connectors.BambuLab
 {
-	public sealed class BBLMachineConfiguration : IConnectorConfiguration
+	public class BBLMachineConnection : MachineConnection, IConfigurableConnection<BBLMachineConnection, BBLMachineConfiguration>
 	{
-		public required string Address { get; init; }
-		public required string SerialNumber { get; init; }
-		public required string AccessCode { get; init; }
-		public string? Nickname { get; init; }
-
-		public string ConnectorTypeFullName { get; } = typeof(BBLMachineConnection).FullName!;
-	}
-
-	public class BBLMachineConnection : MachineConnection, IConfigurableConnector
-	{
-		public IPAddress Address { get; }
-		public string SerialNumber { get; }
-		public string PrefixSerialNumber { get; }
-		public string AccessCode { get; }
+		public BBLMachineConfiguration Configuration { get; private set; }
+		public string PrefixSerialNumber => Configuration.SerialNumber[..3];
+		public string Model => BBLConstants.GetModelFromSerialNumber(Configuration.SerialNumber);
 
 		private readonly BBLFTPConnection FTP;
 		private readonly BBLMQTTConnection MQTT;
+
 		private BBLFirmwareVersion? FirmwareVersion;
 		private bool PrevUsesUnsupportedSecurity;
 		private bool HasUSBOrSDCard;
 		private readonly bool IsUSBOrSDCardRequired;
 
-		private BBLMachineConnection(IMachineFileStore fileStore, string? nickname, string sn, string accessCode, IPAddress address) : base(fileStore, nickname, sn, "BambuLab", BBLConstants.GetModelFromSerialNumber(sn))
+		private BBLMachineConnection(IMachineFileStore fileStore, BBLMachineConfiguration configuration) 
+			: base(fileStore, new MachineConnectionConfiguration(configuration.Nickname, $"BLL{configuration.SerialNumber}", "Bambu Lab", BBLConstants.GetModelFromSerialNumber(configuration.SerialNumber)))
 		{
-			this.Address = address;
-			this.SerialNumber = sn;
-			this.PrefixSerialNumber = sn[..3];
-			this.AccessCode = accessCode;
-			this.MQTT = new BBLMQTTConnection(address, sn, accessCode);
-			this.FTP = new BBLFTPConnection(address, accessCode);
+			this.Configuration = configuration;
+			this.MQTT = new BBLMQTTConnection(Logger.OfCategory($"BBL MQTT {Configuration.Nickname ?? Configuration.SerialNumber}"));
+			this.FTP = new BBLFTPConnection(fileStore, Logger.OfCategory($"BBL FTP {Configuration.Nickname ?? Configuration.SerialNumber}"));
 			this.HasUSBOrSDCard = false;
-			this.IsUSBOrSDCardRequired = BBLConstants.IsSDCardOrUSBRequired(BBLConstants.GetModelFromSerialNumber(sn));
+			this.IsUSBOrSDCardRequired = BBLConstants.IsSDCardOrUSBRequired(BBLConstants.GetModelFromSerialNumber(configuration.SerialNumber));
 
 			this.MQTT.OnData += MQTT_OnData;
 			this.FTP.OnLocal3MFAdded += FTP_OnLocal3MFAdded;
 			this.FTP.OnLocal3MFRemoved += FTP_OnLocal3MFRemoved;
+			this.FTP.OnDisconnected += FTP_OnDisconnected;
 
 			// TODO: Monitor MQTT & FTP connection to determine disconnection status.
 		}
 
-		public static BBLMachineConnection LAN(IMachineFileStore fileStore, string? nickname, string sn, string accessCode, IPAddress address)
+		public static BBLMachineConnection LAN(IMachineFileStore fileStore, BBLMachineConfiguration configuration)
 		{
-			return new BBLMachineConnection(fileStore, nickname, sn, accessCode, address);
+			return new BBLMachineConnection(fileStore, configuration);
 		}
 
+		#region Configuration
+
+		public override BBLMachineConfiguration GetConfiguration()
+		{
+			return this.Configuration;
+		}
+
+		public async Task<MachineOperationResult> UpdateConfiguration(BBLMachineConfiguration updatedCfg)
+		{
+			// TODO: Test if works.
+
+			var opResult = await Mono.MutateUntil(async () =>
+			{
+				// Reconfigure MQTT & FTP
+
+				await this.MQTT.DisconnectAsync();
+				await this.FTP.DisconnectAsync();
+
+				this.Configuration = updatedCfg;
+
+				await this.Connect_Internal();
+
+			}, () => this.MQTT.IsConnected && this.FTP.IsConnected, TimeSpan.FromSeconds(30));
+
+			return opResult.IntoOperationResult("Update Configuration");
+		}
+
+		public static Type GetConfigurationType()
+		{
+			return typeof(BBLMachineConfiguration);
+		}
+
+		public static BBLMachineConnection CreateFromConfiguration(IMachineFileStore fileStore, BBLMachineConfiguration configuration)
+		{
+			return LAN(fileStore, configuration);
+		}
+
+		#endregion
+
+		protected override async Task Connect_Internal()
+		{
+			var mqttTask = this.MQTT.AutoConnectAsync(new BBLMQTTSettings(this.Configuration.Address.ToString(), this.Configuration.SerialNumber, this.Configuration.AccessCode, this.Model));
+			var ftpTask = this.FTP.ConnectAsync(this.Configuration.Address, this.Configuration.AccessCode, this.State.ID);
+
+			await Task.WhenAll(mqttTask, ftpTask);
+		}
+		
 		protected override async Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream)
 		{ 
 			if (BBLFiles.TryParseAs3MFHandle(fileHandle, out var filePath))
@@ -83,12 +121,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			}
 		}
 
-		protected override async Task Connect_Internal()
-		{
-			await Task.WhenAll(this.MQTT.ConnectAsync(), this.FTP.ConnectAsync());
-		}
-
-		protected override Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)
+		protected override async Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)
 		{
 			// Convert abstract PrintOptions to BBL-specific options
 			Dictionary<int, AMSSlot>? amsMapping = null;
@@ -118,12 +151,27 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			var jobIdWithInfo = new PrefixedFixedLengthKeyValueMessage("Lib3Dp");
 			jobIdWithInfo.Add("Path", localPath);
+			jobIdWithInfo.Add("Hash", localPrint.File.HashSHA256);
 			jobIdWithInfo.Add("Minutes", ((int)localPrint.Time.TotalMinutes).ToString());
 			jobIdWithInfo.Add("Grams", localPrint.TotalGramsUsed.ToString());
 
+			try
+			{
+				using var da3MF = BambuLab3MF.Load(await DownloadFile(localPrint.File));
+				
+				if (da3MF.ThumbnailSmallHash != null)
+				{
+					jobIdWithInfo.Add("ThumbnailSmallHash", da3MF.ThumbnailSmallHash);
+				}
+			}
+			catch (Exception)
+			{
+				// Unable to download the 3MF to determine the Thumbnail Hash.
+			}
+
 			var bblPrintOptions = new BBLPrintOptions(
 				PlateIndex: 1,
-				FileName: localPrint.Name,
+				FileName: localPath,
 				MetadataId: jobIdWithInfo.ToString(),
 				ProjectFilamentCount: options.MaterialMap?.Count ?? 1,
 				BedLeveling: options.LevelBed,
@@ -134,7 +182,7 @@ namespace Lib3Dp.Connectors.BambuLab
 				AMSMapping: amsMapping
 			);
 
-			return this.MQTT.PublishPrint(bblPrintOptions);
+			await this.MQTT.PublishPrint(bblPrintOptions);
 		}
 
 		protected override Task Pause_Internal()
@@ -167,7 +215,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(this.State.Model))
 			{
 				// RTSPS
-				passURL = $"rtsps://bblp:{AccessCode}@{Address}:322/streaming/live/1";
+				passURL = $"rtsps://bblp:{Configuration.AccessCode}@{Configuration.Address}:322/streaming/live/1";
 			}
 			else
 			{
@@ -254,9 +302,9 @@ namespace Lib3Dp.Connectors.BambuLab
 			//	this.HasUSBOrSDCard = hasMedia;
 			//}
 
-			if (data.Changes.IsConnectedIsSet)
+			if (data.Changes.StatusIsSet)
 			{
-				if (!data.Changes.IsConnected)
+				if (data.Changes.Status is MachineStatus.Disconnected)
 				{
 					// Disconnected, reset security flag.
 					this.PrevUsesUnsupportedSecurity = false;
@@ -324,33 +372,21 @@ namespace Lib3Dp.Connectors.BambuLab
 			CommitState(data.Changes);
 		}
 
-		#region Configuration
-
-		public override object GetConfiguration()
+		private void FTP_OnDisconnected()
 		{
-			return new BBLMachineConfiguration()
+			var stateUpdate = new MachineStateUpdate()
+				.SetCapabilities(this.State.Capabilities & ~(MachineCapabilities.StartLocalJob | MachineCapabilities.LocalJobs));
+
+			if (this.HasUSBOrSDCard)
 			{
-				Nickname = this.State.Nickname,
-				AccessCode = AccessCode,
-				Address = Address.ToString(),
-				SerialNumber = SerialNumber,
-			};
-		}
-
-		public static Type GetConfigurationType()
-		{
-			return typeof(BBLMachineConfiguration);
-		}
-
-		public static MachineConnection CreateFromConfiguration(IMachineFileStore fileStore, object configuration)
-		{
-			if (configuration is BBLMachineConfiguration bbl)
-			{
-				return LAN(fileStore, bbl.Nickname, bbl.SerialNumber, bbl.AccessCode, IPAddress.Parse(bbl.Address));
+				stateUpdate.SetNotifications(new MachineNotification(BBLMessages.FTPDisconnected));
 			}
-			return null;
-		}
+			else
+			{
+				stateUpdate.SetNotifications(new MachineNotification(BBLMessages.SDCardOrUSBMissing));
+			}
 
-		#endregion
+			CommitState(stateUpdate);
+		}
 	}
 }

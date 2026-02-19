@@ -3,8 +3,9 @@ using System.Linq;
 
 namespace PartialBuilderSourceGen.Types
 {
-	public record ClassOrStructureToUse
+	internal record ClassOrStructureToUse
 	{
+		private readonly Context Context;
 		public INamedTypeSymbol Base { get; }
 		public PropertyToUse[] Properties { get; }
 
@@ -13,14 +14,15 @@ namespace PartialBuilderSourceGen.Types
 
 		public readonly PropertyToUse? DictKeyProp;
 
-		public ClassOrStructureToUse(INamedTypeSymbol symbol)
+		public ClassOrStructureToUse(INamedTypeSymbol symbol, Context context)
 		{
+			Context = context;
 			Base = symbol;
 
 			Properties = symbol.GetMembers()
 				.OfType<IPropertySymbol>()
 				.Where(p => p.DeclaredAccessibility is Accessibility.Public && !p.IsReadOnly)
-				.Select(p => new PropertyToUse(p))
+				.Select(p => new PropertyToUse(p, context))
 				.ToArray();
 
 			DictKeyProp = Properties.FirstOrDefault(p => p.HasDictKeyAttribute);
@@ -31,6 +33,6 @@ namespace PartialBuilderSourceGen.Types
 			IsClass = symbol.IsReferenceType;
 			IsStruct = symbol.IsValueType;
 		}
-		public ClassOrStructureToUse(in TypeToUse symbolToUse) : this((INamedTypeSymbol)symbolToUse.Base) { }
+		public ClassOrStructureToUse(in TypeToUse symbolToUse, Context context) : this((INamedTypeSymbol)symbolToUse.Base, context) { }
 	}
 }

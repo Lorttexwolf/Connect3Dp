@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Lib3Dp.Constants;
 
 namespace Lib3Dp.Connectors.BambuLab.MQTT
@@ -18,58 +17,58 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 		private readonly Logger Logger;
 
-		private readonly IMqttClient MQTTClient = new MqttClientFactory().CreateMqttClient();
-
-		public event Action<BBLMQTTData>? OnData;
-
-		public readonly IPAddress Address;
-		public readonly string SN;
-		public readonly string AccessCode;
-
-		public string Model => BBLConstants.GetModelFromSerialNumber(SN);
-
-		public bool IsConnected => MQTTClient.IsConnected;
-
-		private PeriodicAsyncAction? PullAllChangesPeriodic;
+		private readonly IMqttClient MQTT = new MqttClientFactory().CreateMqttClient();
 
 		private readonly Dictionary<int, string> AMSIDToSN = [];
 		private readonly Dictionary<string, int> SNToAMSID = [];
 
-		/// <summary>
-		/// Tries to get the AMS ID (integer) from the AMS serial number.
-		/// </summary>
-		public bool TryGetAMSIdFromSN(string amsSN, out int amsId)
+		private CancellationTokenSource ContinuouslyReconnectTokenSource;
+		private PeriodicAsyncAction? PullAllChangesPeriodic;
+
+		public BBLMQTTSettings Settings { get; private set; }
+
+		public bool IsConnected => MQTT.IsConnected;
+
+		public event Action<BBLMQTTData>? OnData;
+
+		public BBLMQTTConnection(Logger loggerToUse)
 		{
-			return SNToAMSID.TryGetValue(amsSN, out amsId);
+			Logger = loggerToUse;
+			ContinuouslyReconnectTokenSource = new();
+
+			MQTT.ConnectedAsync += OnConnected;
+			MQTT.DisconnectedAsync += OnDisconnected;
+			MQTT.ApplicationMessageReceivedAsync += OnMessage;
 		}
 
-		public BBLMQTTConnection(IPAddress address, string sn, string accessCode)
+		public async Task AutoConnectAsync(BBLMQTTSettings settings)
 		{
-			Address = address;
-			SN = sn;
-			AccessCode = accessCode;
-			Logger = Logger.OfCategory($"{nameof(BBLMQTTConnection)} {SN}");
+			if (MQTT.IsConnected) return;
 
-			MQTTClient.ConnectedAsync += OnConnected;
-			MQTTClient.DisconnectedAsync += OnDisconnected;
-			MQTTClient.ApplicationMessageReceivedAsync += OnMessage;
-		}
+			this.ContinuouslyReconnectTokenSource = new CancellationTokenSource();
+			this.Settings = settings;
 
-		public async Task ConnectAsync(CancellationToken cancellationToken = default)
-		{
-			if (MQTTClient.IsConnected) return;
-
-			await MQTTClient.ConnectAsync(MQTTOptions, cancellationToken);
-			await MQTTClient.PingAsync(cancellationToken);
+			await MQTT.ConnectAsync(BuildMQTTOptions(settings), this.ContinuouslyReconnectTokenSource.Token);
+			await MQTT.PingAsync(this.ContinuouslyReconnectTokenSource.Token);
 
 			Logger.Info("Connected via MQTT");
+		}
+
+		public async Task DisconnectAsync()
+		{
+			if (!MQTT.IsConnected) return;
+
+			await this.MQTT.DisconnectAsync();
+
+			this.ContinuouslyReconnectTokenSource.Cancel();
+			this.AMSIDToSN.Clear();
+			this.SNToAMSID.Clear();
 		}
 
 		private async Task PublishCommand(string category, string command, JsonObject? commandData = null)
 		{
 			if (!IsConnected) return;
 			commandData ??= new JsonObject();
-
 			commandData.Add("command", command);
 			commandData.Add("sequence_id", "0");
 			commandData.Add("timestamp", DateTimeOffset.Now.ToUnixTimeMilliseconds());
@@ -78,7 +77,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				{ category, commandData }
 			};
-			await MQTTClient.PublishStringAsync(BBLConstants.MQTT.RequestTopic(SN), data.ToJsonString());
+			await MQTT.PublishStringAsync(BBLConstants.MQTT.RequestTopic(this.Settings.SerialNumber), data.ToJsonString());
 		}
 
 		public async Task PublishPrint(BBLPrintOptions options)
@@ -90,6 +89,8 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// DO NOT USE TASK_ID, YOUR INTERFACE WILL BREAK.
 
 			// For additional metadata subtask_id seems to be able to hold them.
+
+			// TODO: There may be an issue with a long subtask_id, I've noticed some prints take 30 seconds to begin and lockup the whole system. More testing is required.
 
 			var commandData = new JsonObject
 			{
@@ -263,12 +264,9 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 		private async Task OnConnected(MqttClientConnectedEventArgs ev)
 		{
-			await MQTTClient.SubscribeAsync(BBLConstants.MQTT.ReportTopic(SN));
+			await MQTT.SubscribeAsync(BBLConstants.MQTT.ReportTopic(this.Settings.SerialNumber));
 
-			OnData?.Invoke(new BBLMQTTData
-			{
-				Changes = new MachineStateUpdate().SetIsConnected(true)
-			});
+			// Mark as connected once state is known by MQTT data.
 
 			await PublishGetFirmwareVersion();
 			await PublishPushAll();
@@ -280,10 +278,10 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 		{
 			OnData?.Invoke(new BBLMQTTData
 			{
-				Changes = new MachineStateUpdate().SetIsConnected(false)
+				Changes = new MachineStateUpdate().SetStatus(MachineStatus.Disconnected) 
 			});
 
-			// TODO: Read ev.ConnectResults.ResultCode
+			// TODO: Read ev.ConnectResults.ResultCode and push to notifications.
 
 			if (PullAllChangesPeriodic != null)
 			{
@@ -291,19 +289,19 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				PullAllChangesPeriodic = null;
 			}
 
-			_ = ContinuouslyConnect();
+			_ = ContinuouslyReconnect();
 		}
 
-		private Task ContinuouslyConnect()
+		private Task ContinuouslyReconnect()
 		{
 			return Task.Run(async () =>
 			{
-				while (!MQTTClient.IsConnected)
+				while (!MQTT.IsConnected && !ContinuouslyReconnectTokenSource.Token.IsCancellationRequested)
 				{
 					Thread.Sleep(TimeSpan.FromSeconds(10));
 					try
 					{
-						await MQTTClient.ReconnectAsync();
+						await MQTT.ReconnectAsync();
 					}
 					catch (Exception)
 					{
@@ -423,20 +421,18 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 					"pause" => MachineStatus.Paused,
 					"finish" => MachineStatus.Printed,
 					"failed" => MachineStatus.Canceled,
-					_ => MachineStatus.Unknown,
+					_ => throw new Exception($"Unknown gcode_state value {gcode_state.ToLower()}")
 				});
 			}
 
 			if (printJSON.TryGetInt32(out var print_error, "print_error"))
 			{
-				//Logger.Trace($"{nameof(print_error)}: {print_error}");
-
 				if (print_error != 0 && data.Changes.Status == MachineStatus.Printing)
+				{
 					// Sometimes machine reports running when print_error is present..?
 					data.Changes.SetStatus(MachineStatus.Paused);
+				}
 			}
-
-			//"print_type" Laser? FDM?
 		}
 
 		private void OnMessagePrintJob(JsonElement printJSON, ref BBLMQTTData data)
@@ -477,12 +473,19 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				var encodedTotalTime = TimeSpan.FromMinutes(int.Parse(metadata.Values["Minutes"]));
 				var encodedPath = metadata.Values["Path"];
+				var encodedHash = metadata.Values["Hash"];
 				var encodedGramsUsed = int.Parse(metadata.Values["Grams"]);
 
 				data.Changes.UpdateCurrentJob(changes => changes
 					.SetTotalTime(encodedTotalTime)
 					.SetLocalPath(encodedPath)
-					.SetTotalMaterialUsage(encodedGramsUsed));
+					.SetTotalMaterialUsage(encodedGramsUsed)
+					.SetFile(BBLFiles.HandleAs3MF(this.Settings.SerialNumber, encodedPath, encodedHash))); // TODO: These modules should have access to BBLMachineConnection. ID is inferred as SN.
+
+				if (metadata.Values.TryGetValue("ThumbnailSmallHash", out var encodedThumbnailSmallHash))
+				{
+					data.Changes.UpdateCurrentJob(changes => changes.SetThumbnail(BBLFiles.HandleAs3MFThumbnail(this.Settings.SerialNumber, encodedPath, encodedThumbnailSmallHash)));
+				}
 			}
 
 			// Issue: Cannot calculate if machine has already finished its print.
@@ -703,7 +706,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 		private void ProcessExtruderElement(JsonElement extruder, int number, ref BBLMQTTData data)
 		{
-			var heatingConstraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Nozzle, this.Model);
+			var heatingConstraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Nozzle, this.Settings.Model);
 			if (heatingConstraints.HasValue)
 			{
 				data.Changes.UpdateExtruders(number, e => e.SetHeatingConstraint(heatingConstraints.Value));
@@ -735,8 +738,8 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			}
 			else if (trayId == BBLConstants.ExternalTrayID)
 			{
-				data.Changes.UpdateExtruders(extruderNumber, e =>
-					e.SetLoadedSpool(new SpoolLocation(BBLConstants.ExternalTrayMMID, BBLConstants.ExternalTraySlotNumber)));
+				data.Changes.UpdateExtruders(extruderNumber, e => e
+					.SetLoadedSpool(new SpoolLocation(BBLConstants.ExternalTrayMMID, BBLConstants.ExternalTraySlotNumber)));
 			}
 			else
 			{
@@ -770,7 +773,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			if (printJSON.TryGetDouble(out var bed_target_temper, "bed_target_temper") && printJSON.TryGetDouble(out var bed_temper, "bed_temper"))
 			{
-				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Bed, Model);
+				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Bed, this.Settings.Model);
 
 				if (constraints.HasValue)
 					data.Changes.SetHeatingElements(HeatingElementNames.Bed, new HeatingElement(Math.Round(bed_temper), Math.Round(bed_target_temper), constraints.Value));
@@ -778,7 +781,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			if (printJSON.TryGetDouble(out var nozzle_target_temper, "nozzle_target_temper") && printJSON.TryGetDouble(out var nozzle_temper, "nozzle_temper"))
 			{
-				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Nozzle, Model);
+				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Nozzle, this.Settings.Model);
 
 				if (constraints.HasValue)
 					data.Changes.SetHeatingElements(HeatingElementNames.Nozzle, new HeatingElement(Math.Round(nozzle_temper), Math.Round(nozzle_target_temper), constraints.Value));
@@ -787,7 +790,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// TODO: Verify chamber_target_temper exists on X1E
 			if (printJSON.TryGetDouble(out var chamber_target_temper, "chamber_target_temper") && printJSON.TryGetDouble(out var chamber_temper, "chamber_temper"))
 			{
-				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Chamber, Model);
+				var constraints = BBLConstants.GetHeatingConstraintsFromElementName(HeatingElementNames.Chamber, this.Settings.Model);
 
 				if (constraints.HasValue)
 					data.Changes.SetHeatingElements(HeatingElementNames.Chamber, new HeatingElement(Math.Round(chamber_temper), Math.Round(chamber_target_temper), constraints.Value));
@@ -844,19 +847,12 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			//ams = (ushort)(u >> 8 & 0xFF); // bits 8..15
 		}
 
-		private struct BBLModule
+		/// <summary>
+		/// Tries to get the AMS ID (integer) from the AMS serial number.
+		/// </summary>
+		public bool TryGetAMSIdFromSN(string amsSN, out int amsId)
 		{
-			[JsonPropertyName("name")]
-			public string InternalName { get; set; }
-
-			[JsonPropertyName("product_name")]
-			public string ProductName { get; set; }
-
-			[JsonPropertyName("sw_ver")]
-			public BBLFirmwareVersion Version { get; set; }
-
-			[JsonPropertyName("sn")]
-			public string SN { get; set; }
+			return SNToAMSID.TryGetValue(amsSN, out amsId);
 		}
 
 		private void OnMessageInfoVersion(JsonElement infoJSON, ref BBLMQTTData data)
@@ -927,27 +923,28 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			return true;
 		}
 
-		private MqttClientOptions MQTTOptions => new MqttClientOptionsBuilder()
-			.WithTcpServer(Address.ToString(), 8883)
-			.WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V311)
-			.WithClientId("Lib3Dp")
-			.WithCleanSession(true)
-			.WithProtocolType(System.Net.Sockets.ProtocolType.Tcp)
-			.WithCredentials("BBLP".ToLower(), AccessCode)
-			.WithTimeout(TimeSpan.FromSeconds(15))
-			.WithTlsOptions(new MqttClientTlsOptions
-			{
-				UseTls = true,
-				AllowUntrustedCertificates = true,
-				AllowRenegotiation = true,
-				IgnoreCertificateChainErrors = true,
-				CertificateValidationHandler = (cV) =>
+		private static MqttClientOptions BuildMQTTOptions(BBLMQTTSettings settings)
+		{
+			return new MqttClientOptionsBuilder()
+				.WithTcpServer(settings.Address, 8883)
+				.WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V311)
+				.WithClientId("Lib3Dp")
+				.WithCleanSession(true)
+				.WithProtocolType(System.Net.Sockets.ProtocolType.Tcp)
+				.WithCredentials("BBLP".ToLower(), settings.AccessCode)
+				.WithTimeout(TimeSpan.FromSeconds(15))
+				.WithTlsOptions(new MqttClientTlsOptions
 				{
-					return true;
-				}
-			})
-			.Build();
+					UseTls = true,
+					AllowUntrustedCertificates = true,
+					AllowRenegotiation = true,
+					IgnoreCertificateChainErrors = true,
+					CertificateValidationHandler = (cV) =>
+					{
+						return true;
+					}
+				})
+				.Build();
+		}
 	}
-
-	internal record struct BBLMQTTData(MachineStateUpdate Changes, BBLFirmwareVersion? FirmwareVersion, bool? UsesUnsupportedSecurity, bool? UpdateAMSMapping, bool? HasUSBOrSDCard);
 }

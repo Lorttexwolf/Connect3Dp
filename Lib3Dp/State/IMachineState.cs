@@ -7,7 +7,6 @@ namespace Lib3Dp.State
 		string? Brand { get; }
 		string? Model { get; }
 		string? Nickname { get; }
-		bool IsConnected { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineCapabilities Capabilities { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineStatus Status { get; }
 		IMachinePrintJob? Job { get; }

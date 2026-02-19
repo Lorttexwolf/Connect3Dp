@@ -4,7 +4,7 @@ namespace Lib3Dp.State
 {
 	[GeneratePartialBuilder]
 	public record struct Spool(
-		int Number,
+		[property: PartialBuilderDictKey] int Number,
 		Material Material,
 		int? GramsMaximum,
 		int? GramsRemaining);

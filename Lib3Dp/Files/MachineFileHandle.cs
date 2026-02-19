@@ -1,4 +1,4 @@
-﻿namespace Lib3Dp.State
+﻿namespace Lib3Dp.Files
 {
 	public record struct MachineFileHandle(string MachineID, string URI, string MIME, string HashSHA256)
 	{

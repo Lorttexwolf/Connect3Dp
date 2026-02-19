@@ -6,7 +6,7 @@ namespace Lib3Dp
 	/// <summary>
 	/// A utility object which limits a machine to one operation at once.
 	/// </summary>
-	internal class MonoMachine
+	public class MonoMachine
 	{
 		protected SemaphoreSlim Semaphore = new(1, 1);
 

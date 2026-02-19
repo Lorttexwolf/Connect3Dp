@@ -1,8 +1,5 @@
-﻿using Lib3Dp.State;
-
-namespace Lib3Dp.Files
+﻿namespace Lib3Dp.Files
 {
-	// Examples, FileSystemMachineFileStore, S3MachineFileStore
 	public interface IMachineFileStore
 	{
 		/// <summary>

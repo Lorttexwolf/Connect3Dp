@@ -7,8 +7,10 @@ using System.Collections.Concurrent;
 
 namespace PartialBuilderSourceGen.Types
 {
-	public record class TypeToUse
+	internal record class TypeToUse
 	{
+		private readonly Context Context;
+
 		private static readonly ConcurrentDictionary<string, TypeToUse> Types = new(StringComparer.Ordinal);
 
 		public readonly ITypeSymbol Base;
@@ -25,23 +27,30 @@ namespace PartialBuilderSourceGen.Types
 		public readonly bool IsSet;
 		private readonly TypeToUse? SetValueType;
 
-		public readonly bool HasDictKeyAttrib;
 
 		public readonly bool HasGenerateUpdaterAttrib;
 		private ClassOrStructureToUse? UpdaterType;
 
-		private TypeToUse(ITypeSymbol typeSymbol)
+		public readonly bool HasDictKeyAttrib;
+		public IPropertySymbol? PropertyWithDictKeyAttrib;
+
+		private TypeToUse(ITypeSymbol typeSymbol, Context context)
 		{
+			Context = context;
 			Base = typeSymbol;
 			IsValue = typeSymbol.IsValueType;
 			IsRecord = typeSymbol.IsRecord; // fixed: detect record properly
 			IsClass = typeSymbol.IsReferenceType;
 			IsReadOnly = typeSymbol.IsReadOnly;
 
+			var propsOfSymbol = typeSymbol.GetMembers().OfType<IPropertySymbol>();
+
+			PropertyWithDictKeyAttrib = propsOfSymbol.FirstOrDefault(p => p.ContainsAttribute(context.DictKeyAttribSymbol));
+			HasDictKeyAttrib = PropertyWithDictKeyAttrib != null;
+
 			var methodsOfSymbol = typeSymbol.GetMembers().OfType<IMethodSymbol>();
 
-			HasGenerateUpdaterAttrib = typeSymbol.HasAttribute(typeof(GeneratePartialBuilderAttribute).Name);
-			HasDictKeyAttrib = typeSymbol.HasAttribute(typeof(PartialBuilderDictKeyAttribute).Name);
+			HasGenerateUpdaterAttrib = typeSymbol.ContainsAttribute(context.GenAttribSymbol);
 
 			var cloneMethod = methodsOfSymbol.FirstOrDefault(m => m.Name == "Clone" && m.Parameters.Length == 0);
 			IsCloneable = cloneMethod is not null;
@@ -50,23 +59,23 @@ namespace PartialBuilderSourceGen.Types
 			{
 				IsDictionary = true;
 				DictionaryKeyType = nD.TypeArguments[0];
-				DictionaryValueType = GetOrCreate((INamedTypeSymbol)nD.TypeArguments[1]);
+				DictionaryValueType = GetOrCreate((INamedTypeSymbol)nD.TypeArguments[1], context);
 			}
 			else IsDictionary = false;
 
 			if (typeSymbol is INamedTypeSymbol nS && (nS.Name == "HashSet" || nS.Name == "ISet" || nS.Name == "ICollection") && nS.TypeArguments.Length == 1)
 			{
 				IsSet = true;
-				SetValueType = GetOrCreate((INamedTypeSymbol)nS.TypeArguments[0]);
+				SetValueType = GetOrCreate((INamedTypeSymbol)nS.TypeArguments[0], context);
 			}
 			else IsSet = false;
 		}
 
-		public static TypeToUse GetOrCreate(ITypeSymbol typeSymbol)
+		public static TypeToUse GetOrCreate(ITypeSymbol typeSymbol, Context context)
 		{
 			var key = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
-			return Types.GetOrAdd(key, _ => new TypeToUse(typeSymbol));
+			return Types.GetOrAdd(key, _ => new TypeToUse((INamedTypeSymbol)typeSymbol, context));
 		}
 
 		public override string ToString()
@@ -102,7 +111,7 @@ namespace PartialBuilderSourceGen.Types
 				return false;
 			}
 
-			this.UpdaterType ??= new ClassOrStructureToUse(this);
+			this.UpdaterType ??= new ClassOrStructureToUse(this, Context);
 
 			updaterToUse = this.UpdaterType;
 

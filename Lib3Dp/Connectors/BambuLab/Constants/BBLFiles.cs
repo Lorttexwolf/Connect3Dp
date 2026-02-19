@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lib3Dp.State;
+using Lib3Dp.Files;
 
 namespace Lib3Dp.Connectors.BambuLab.Constants
 {

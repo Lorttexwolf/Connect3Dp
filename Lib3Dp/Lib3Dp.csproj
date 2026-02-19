@@ -19,8 +19,4 @@
 		<ProjectReference Include="..\Generators\PartialBuilderSourceGen\PartialBuilderSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Generators\PartialBuilderSourceGen\" />
-	</ItemGroup>
-
 </Project>

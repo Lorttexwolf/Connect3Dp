@@ -8,6 +8,7 @@ using PartialBuilderSourceGen.Extensions;
 using PartialBuilderSourceGen.Types;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,15 +25,19 @@ namespace PartialBuilderSourceGen
 				static (n, _) => n is ClassDeclarationSyntax or StructDeclarationSyntax or RecordDeclarationSyntax,
 				static (ctx, _) => (INamedTypeSymbol)ctx.TargetSymbol);
 
-			context.RegisterSourceOutput(types, static (ctx, type) =>
+			var attribSymbol = context.CompilationProvider.Select((c, _) => new Context(
+				c.GetTypeByMetadataName(typeof(GeneratePartialBuilderAttribute).FullName!)!,
+				c.GetTypeByMetadataName(typeof(PartialBuilderDictKeyAttribute).FullName!)!));
+
+			var classesOrStructsToGen = types.Combine(attribSymbol).Select((p, _) => new ClassOrStructureToUse(p.Left, p.Right));
+
+			context.RegisterSourceOutput(classesOrStructsToGen, static (ctx, classOrStructureToGen) =>
 			{
-				var t = new ClassOrStructureToUse(type);
+				ctx.AddSource($"{classOrStructureToGen.Base.Name}.Changes.g.cs",
+					ChangesStructEmitter.Emit(classOrStructureToGen));
 
-				ctx.AddSource($"{type.Name}.Changes.g.cs",
-					ChangesStructEmitter.Emit(t));
-
-				ctx.AddSource($"{type.Name}.Updater.g.cs",
-					UpdateEmitter.Emit(t));
+				ctx.AddSource($"{classOrStructureToGen.Base.Name}.Updater.g.cs",
+					UpdateEmitter.Emit(classOrStructureToGen));
 			});
 		}
 	}
@@ -249,39 +254,58 @@ namespace PartialBuilderSourceGen
 			// DICTIONARY
 			if (p.Type.TryIfDictionary(out var k, out var v))
 			{
+				//var vc = new ClassOrStructureToUse(v);
+
 				if (v.TryIfUpdater(out var vu))
 				{
-					sb.AppendLine($$"""
-					public {{t.UpdaterName}} Update{{p.Base.Name}}({{k}} key, Action<{{vu.UpdaterName}}> configure)
+					if (vu.IsClass)
 					{
-						{{p.Base.Name}}ToSet ??= new Dictionary<{{k}}, {{vu.UpdaterName}}>();
-						if (!{{p.Base.Name}}ToSet.TryGetValue(key, out var u))
-						{
-							u = new {{vu.UpdaterName}}();
-							{{(vu.DictKeyProp != null ? $"u.Set{vu.DictKeyProp.Base.Name}(key);" : "")}}
-							{{p.Base.Name}}ToSet[key] = u;
-						}
-						configure(u);
-						return this;
+						sb.AppendLine($$"""
+							public {{t.UpdaterName}} Update{{p.Base.Name}}({{k}} key, Action<{{vu.UpdaterName}}> configure)
+							{
+								{{p.Base.Name}}ToSet ??= new Dictionary<{{k}}, {{vu.UpdaterName}}>();
+								if (!{{p.Base.Name}}ToSet.TryGetValue(key, out var u))
+								{
+									u = new {{vu.UpdaterName}}(){{(vu.DictKeyProp != null ? $".Set{vu.DictKeyProp.Base.Name}(key);" : ";")}}
+									{{p.Base.Name}}ToSet[key] = u;
+								}
+								configure(u);
+								return this;
+							}
+						""");
 					}
-					""");
+					else if (vu.IsStruct)
+					{
+						sb.AppendLine($$"""
+							public {{t.UpdaterName}} Update{{p.Base.Name}}({{k}} key, Func<{{vu.UpdaterName}}, {{vu.UpdaterName}}> configure)
+							{
+								{{p.Base.Name}}ToSet ??= new Dictionary<{{k}}, {{vu.UpdaterName}}>();
+								if (!{{p.Base.Name}}ToSet.TryGetValue(key, out var u))
+								{
+									u = new {{vu.UpdaterName}}(){{(vu.DictKeyProp != null ? $".Set{vu.DictKeyProp.Base.Name}(key);" : ";")}}
+								}
+								{{($"{p.Base.Name}ToSet[key] = configure(u);")}}
+								return this;
+							}
+						""");
+					}
 				}
 				else
 				{
 					sb.AppendLine($$"""
-					public {{t.UpdaterName}} Set{{p.Base.Name}}({{k}} key, {{v}} val)
-					{
-						{{p.Base.Name}}ToSet ??= new Dictionary<{{k}}, {{v}}>();
-						{{p.Base.Name}}ToSet[key] = val;
-						return this;
-					}
+						public {{t.UpdaterName}} Set{{p.Base.Name}}({{k}} key, {{v}} val)
+						{
+							{{p.Base.Name}}ToSet ??= new Dictionary<{{k}}, {{v}}>();		
+							{{p.Base.Name}}ToSet[key] = val;
+							return this;
+						}
 
-					public {{t.UpdaterName}} Remove{{p.Base.Name}}({{k}} key)
-					{
-						{{p.Base.Name}}ToRemove ??= new HashSet<{{k}}>();
-						{{p.Base.Name}}ToRemove.Add(key);
-						return this;
-					}
+						public {{t.UpdaterName}} Remove{{p.Base.Name}}({{k}} key)
+						{
+							{{p.Base.Name}}ToRemove ??= new HashSet<{{k}}>();
+							{{p.Base.Name}}ToRemove.Add(key);
+							return this;
+						}
 					""");
 				}
 

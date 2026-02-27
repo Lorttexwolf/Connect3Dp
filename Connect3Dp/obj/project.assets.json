@@ -483,16 +483,6 @@
           "build/VersionInfoGenerator.targets": {}
         }
       },
-      "JeIdentity/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v8.0",
-        "compile": {
-          "bin/placeholder/JeIdentity.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/JeIdentity.dll": {}
-        }
-      },
       "Lib3Dp/0.0.1": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -500,10 +490,8 @@
           "Cronos": "0.11.1",
           "FluentFTP": "53.0.2",
           "FluentFTP.GnuTLS": "1.0.37",
-          "JeIdentity": "1.0.0",
           "MQTTnet": "5.0.1.1416",
           "Microsoft.Extensions.Logging": "10.0.3",
-          "PartialBuilderSourceGen": "1.0.0",
           "PartialSourceGen": "0.0.20"
         },
         "compile": {
@@ -511,16 +499,6 @@
         },
         "runtime": {
           "bin/placeholder/Lib3Dp.dll": {}
-        }
-      },
-      "PartialBuilderSourceGen/1.0.0": {
-        "type": "project",
-        "framework": ".NETStandard,Version=v2.0",
-        "compile": {
-          "bin/placeholder/PartialBuilderSourceGen.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/PartialBuilderSourceGen.dll": {}
         }
       }
     }
@@ -1311,20 +1289,10 @@
         "versioninfogenerator.nuspec"
       ]
     },
-    "JeIdentity/1.0.0": {
-      "type": "project",
-      "path": "../JeIdentity.NET/JeIdentity.csproj",
-      "msbuildProject": "../JeIdentity.NET/JeIdentity.csproj"
-    },
     "Lib3Dp/0.0.1": {
       "type": "project",
       "path": "../Lib3Dp/Lib3Dp.csproj",
       "msbuildProject": "../Lib3Dp/Lib3Dp.csproj"
-    },
-    "PartialBuilderSourceGen/1.0.0": {
-      "type": "project",
-      "path": "../Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj",
-      "msbuildProject": "../Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1335,16 +1303,16 @@
     ]
   },
   "packageFolders": {
-    "/home/runner/.nuget/packages/": {}
+    "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages": {}
   },
   "project": {
     "version": "0.0.1",
     "restore": {
-      "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
+      "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj",
       "projectName": "Connect3Dp",
-      "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
-      "packagesPath": "/home/runner/.nuget/packages/",
-      "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/obj/",
+      "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj",
+      "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+      "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/runner/.nuget/NuGet/NuGet.Config"
@@ -1359,8 +1327,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj": {
-              "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj"
+            "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj": {
+              "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj"
             }
           }
         }

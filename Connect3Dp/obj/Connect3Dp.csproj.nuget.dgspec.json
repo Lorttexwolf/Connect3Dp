@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj": {}
+    "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj": {}
   },
   "projects": {
-    "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj": {
+    "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj": {
       "version": "0.0.1",
       "restore": {
-        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
+        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj",
         "projectName": "Connect3Dp",
-        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
-        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/obj/",
+        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/Connect3Dp.csproj",
+        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Connect3Dp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/runner/.nuget/NuGet/NuGet.Config"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj": {
-                "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj"
+              "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj": {
+                "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj"
               }
             }
           }
@@ -92,155 +92,14 @@
         }
       }
     },
-    "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj",
-        "projectName": "PartialBuilderSourceGen",
-        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
-        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/home/runner/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "netstandard2.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netstandard2.0": {
-            "targetAlias": "netstandard2.0",
-            "projectReferences": {}
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.100"
-      },
-      "frameworks": {
-        "netstandard2.0": {
-          "targetAlias": "netstandard2.0",
-          "dependencies": {
-            "Microsoft.CodeAnalysis.CSharp": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[4.8.0, )"
-            },
-            "Microsoft.CodeAnalysis.Common": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[4.8.0, )"
-            },
-            "NETStandard.Library": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.0.3, )",
-              "autoReferenced": true
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.102/RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj",
-        "projectName": "JeIdentity",
-        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
-        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/home/runner/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net8.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
-            "projectReferences": {}
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.100"
-      },
-      "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.23, 8.0.23]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.23, 8.0.23]"
-            }
-          ],
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj": {
+    "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj": {
       "version": "0.0.1",
       "restore": {
-        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj",
+        "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj",
         "projectName": "Lib3Dp",
-        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
-        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/obj/",
+        "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/Lib3Dp.csproj",
+        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/_codeql_detected_source_root/Lib3Dp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/runner/.nuget/NuGet/NuGet.Config"
@@ -254,14 +113,7 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {
-              "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj": {
-                "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj"
-              },
-              "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj": {
-                "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj"
-              }
-            }
+            "projectReferences": {}
           }
         },
         "warningProperties": {

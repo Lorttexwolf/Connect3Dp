@@ -31,3 +31,9 @@
 // ============================================================
 #define WIFI_RECONNECT_INTERVAL_MS  5000
 #define WS_RECONNECT_INTERVAL_MS    5000
+
+// ============================================================
+// Development Mode
+// ============================================================
+// Uncomment to enable the on-screen CPU/memory debug overlay.
+// #define C3DP_DEV_MODE

@@ -49,6 +49,9 @@ static lv_obj_t* s_barProgress   = nullptr;
 static lv_obj_t* s_lblPercent    = nullptr;
 static lv_obj_t* s_lblRemaining  = nullptr;
 static lv_obj_t* s_lblConnStatus = nullptr;
+#ifdef C3DP_DEV_MODE
+static lv_obj_t* s_lblDevStats   = nullptr;
+#endif
 
 // ---- Colour palette --------------------------------------------------------
 static inline lv_color_t _statusColor(MachineStatus s) {
@@ -89,6 +92,15 @@ void ui_init() {
     lv_obj_set_style_text_color(s_lblStatus, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_font(s_lblStatus, &lv_font_montserrat_20, LV_PART_MAIN);
     lv_obj_center(s_lblStatus);
+
+#ifdef C3DP_DEV_MODE
+    // ---- Dev stats overlay (top-left of status bar, always visible) --------
+    s_lblDevStats = lv_label_create(s_statusBar);
+    lv_label_set_text(s_lblDevStats, "Heap: --  Loop: --");
+    lv_obj_set_style_text_color(s_lblDevStats, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_text_font(s_lblDevStats, &lv_font_montserrat_12, LV_PART_MAIN);
+    lv_obj_align(s_lblDevStats, LV_ALIGN_LEFT_MID, 8, 0);
+#endif
 
     // ---- Nickname / Machine ID (below status bar, left) --------------------
     s_lblNickname = lv_label_create(s_scrMain);
@@ -231,3 +243,16 @@ void ui_update(const MachineState& ms) {
         lv_obj_add_flag(s_containerJob, LV_OBJ_FLAG_HIDDEN);
     }
 }
+
+// ---- Dev-mode stats refresh (no-op unless C3DP_DEV_MODE is defined) --------
+
+#ifdef C3DP_DEV_MODE
+// freeHeap / totalHeap in bytes; loopMs is the last loop()-to-loop() duration.
+void ui_update_dev_stats(uint32_t freeHeap, uint32_t totalHeap, uint32_t loopMs) {
+    if (!s_lblDevStats) return;
+    char buf[40];
+    snprintf(buf, sizeof(buf), "Heap: %uK/%uK  Loop: %ums",
+             freeHeap / 1024, totalHeap / 1024, loopMs);
+    lv_label_set_text(s_lblDevStats, buf);
+}
+#endif

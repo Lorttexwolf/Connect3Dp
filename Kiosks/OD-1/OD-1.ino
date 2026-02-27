@@ -19,6 +19,9 @@
 
 #include <WiFi.h>
 #include <lvgl.h>
+#ifdef C3DP_DEV_MODE
+#include <esp_system.h>
+#endif
 
 // Project modules
 #include "config.h"
@@ -73,9 +76,23 @@ void setup() {
 // ============================================================
 static MachineState s_lastRendered;
 static bool         s_firstRender = true;
+#ifdef C3DP_DEV_MODE
+static uint32_t     s_devLastUpdate  = 0;
+static uint32_t     s_devPrevLoopMs  = 0;
+#endif
 
 void loop() {
     const uint32_t now = millis();
+
+#ifdef C3DP_DEV_MODE
+    // Measure time between consecutive loop() starts as a CPU-busyness proxy.
+    const uint32_t loopDelta = (s_devPrevLoopMs > 0) ? (now - s_devPrevLoopMs) : 0;
+    s_devPrevLoopMs = now;
+    if (now - s_devLastUpdate >= 1000) {
+        s_devLastUpdate = now;
+        ui_update_dev_stats(ESP.getFreeHeap(), ESP.getHeapSize(), loopDelta);
+    }
+#endif
 
     // --- WiFi watchdog ------------------------------------------------------
     if (now - s_lastWifiCheck >= WIFI_RECONNECT_INTERVAL_MS) {

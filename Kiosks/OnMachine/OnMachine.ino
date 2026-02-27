@@ -102,11 +102,14 @@ static WsHandler wsHandler;
 static uint32_t s_lastWifiCheck = 0;
 static uint32_t s_lastWsCheck   = 0;
 
-// ---- LVGL tick task (FreeRTOS) ---------------------------------------------
+// LVGL tick source via a dedicated FreeRTOS task.
+// vTaskDelay(1) yields for exactly one tick; portTICK_PERIOD_MS converts that
+// tick to milliseconds so lv_tick_inc stays accurate regardless of the
+// FreeRTOS tick rate (CONFIG_FREERTOS_HZ).
 static void lvgl_tick_task(void* /*arg*/) {
     for (;;) {
-        vTaskDelay(pdMS_TO_TICKS(5));
-        lv_tick_inc(5);
+        vTaskDelay(1);
+        lv_tick_inc(portTICK_PERIOD_MS);
     }
 }
 

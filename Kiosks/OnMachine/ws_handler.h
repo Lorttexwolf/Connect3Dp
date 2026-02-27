@@ -234,8 +234,10 @@ private:
 
         // ---- State update broadcast: Topic == "machine/<id>/state" ----
         // Build the expected topic string from the configured machine ID.
-        // Buffer: "machine/" (8) + machine ID + "/state" (6) + NUL (1)
-        char expectedTopic[8 + sizeof(C3DP_MACHINE_ID) + 7];
+        // sizeof(C3DP_MACHINE_ID) already includes the null terminator, so the
+        // total buffer = "machine/"(8) + ID(sizeof-1) + "/state"(6) + NUL(1) =
+        // sizeof(C3DP_MACHINE_ID) + 14.
+        char expectedTopic[sizeof(C3DP_MACHINE_ID) + 14];
         snprintf(expectedTopic, sizeof(expectedTopic),
                  "machine/%s/state", C3DP_MACHINE_ID);
         if (strcmp(topic, expectedTopic) != 0) return;

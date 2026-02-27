@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
         "projectName": "Connect3Dp",
         "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/Connect3Dp.csproj",
-        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "packagesPath": "/home/runner/.nuget/packages/",
         "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Connect3Dp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -98,7 +98,7 @@
         "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj",
         "projectName": "PartialBuilderSourceGen",
         "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.csproj",
-        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "packagesPath": "/home/runner/.nuget/packages/",
         "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Generators/PartialBuilderSourceGen/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -170,7 +170,7 @@
         "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj",
         "projectName": "JeIdentity",
         "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/JeIdentity.csproj",
-        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "packagesPath": "/home/runner/.nuget/packages/",
         "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/JeIdentity.NET/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -239,7 +239,7 @@
         "projectUniqueName": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj",
         "projectName": "Lib3Dp",
         "projectPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/Lib3Dp.csproj",
-        "packagesPath": "/tmp/codeql-scratch-b4e626c23db4918d/dbs/csharp/working/packages",
+        "packagesPath": "/home/runner/.nuget/packages/",
         "outputPath": "/home/runner/work/Connect3Dp/Connect3Dp/Lib3Dp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [

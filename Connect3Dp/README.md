@@ -2,10 +2,6 @@
 
 A .NET library providing core services, extension methods, logging, and controllers for vendor-agnostic 3D Printer Remote Management. Designed to be consumed by other applications, not executed directly.
 
-Source: [github.com/Lorttexwolf/Connect3Dp](https://github.com/Lorttexwolf/Connect3Dp) · License: MIT
-
----
-
 ## Services
 
 ### `JeWebSocketServer`

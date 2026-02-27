@@ -22,7 +22,6 @@
 //                                              "PercentageComplete": 45,
 //                                              "RemainingTime": "00:30:00",
 //                                              "TotalTime": "01:30:00" } } } }
-//   Null fields are OMITTED (server uses DefaultIgnoreCondition.WhenWritingNull).
 //
 //   Server → Client  (state update, Topic = "machine/<id>/state"):
 //     { "Time": "...", "Topic": "machine/<id>/state",

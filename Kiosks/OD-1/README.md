@@ -110,8 +110,6 @@ The sketch uses the `AtAGlance` subscription detail level.
 `TimeSpan` values are serialised by .NET as `[-][d.]hh:mm:ss[.fffffff]`
 (e.g. `"01:30:00"` or `"1.02:30:00"` for values over 24 hours).
 
-Null fields are **omitted** from the JSON (server uses `WhenWritingNull`).
-
 ---
 
 ## Authentication

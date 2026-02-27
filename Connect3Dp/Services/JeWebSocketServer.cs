@@ -20,8 +20,7 @@ namespace Connect3Dp.Services
 		private static readonly JsonSerializerOptions JsonOptions = new()
 		{
 			PropertyNameCaseInsensitive = true,
-			NumberHandling = JsonNumberHandling.Strict,
-			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			NumberHandling = JsonNumberHandling.Strict
 		};
 
 		private readonly ILogger<JeWebSocketServer<C>> Logger = logger;

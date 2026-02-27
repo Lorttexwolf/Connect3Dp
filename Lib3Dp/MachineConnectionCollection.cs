@@ -138,13 +138,13 @@ namespace Lib3Dp
 
 		public async Task Add(MachineConnection connection, bool connectIfDisconnected = true)
 		{
-			if (this._Connections.TryGetValue(connection.State.ID, out var existingConnection))
+			if (this._Connections.TryGetValue(connection.ID, out var existingConnection))
 			{
 				throw new NotImplementedException();
 			}
 			else
 			{
-				this._Connections[connection.State.ID] = connection;
+				this._Connections[connection.ID] = connection;
 
 				ListenForChanges(connection);
 				if (connectIfDisconnected)
@@ -154,7 +154,7 @@ namespace Lib3Dp
 
 				if (connection is IConfigurableConnection c)
 				{
-					await this.ConfigurationStore.StoreConfiguration(connection.State.ID, c.GetConfigurationWithDiscrimination());
+					await this.ConfigurationStore.StoreConfiguration(connection.ID, c.GetConfigurationWithDiscrimination());
 				}
 			}
 		}
@@ -164,9 +164,9 @@ namespace Lib3Dp
 			machineConnection.OnChanges += MachineConnection_OnChanges;
 		}
 
-		private void MachineConnection_OnChanges(IMachineState arg1, MachineStateChanges arg2)
+		private void MachineConnection_OnChanges(MachineConnection connection, MachineStateChanges changes)
 		{
-			OnStateChange?.Invoke(this, new OnMachineStateUpdatedArgs(arg1.ID, arg2));
+			OnStateChange?.Invoke(this, new OnMachineStateUpdatedArgs(connection.ID, changes));
 		}
 	}
 }

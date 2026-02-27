@@ -9,9 +9,10 @@ namespace Lib3Dp.Extensions
 {
 	public static class MachineStateUpdateExtensions
 	{
-		public static MachineStateUpdate SetNotifications(this MachineStateUpdate update, MachineNotification notification)
+		public static MachineStateUpdate SetNotifications(this MachineStateUpdate update, MachineMessage message)
 		{
-			update.SetNotifications(notification.MessageSignature, notification);
+			var now = DateTimeOffset.UtcNow;
+			update.UpdateNotifications(message, n => { n.SetIssuedAt(now); n.SetLastSeenAt(now); });
 			return update;
 		}
 	}

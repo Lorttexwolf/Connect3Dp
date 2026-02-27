@@ -7,7 +7,6 @@ namespace Lib3Dp.State
 	[GeneratePartialBuilder]
 	public class MachineState : IMachineState
 	{
-		public required string ID { get; set; }
 		public string? Brand { get; set; }
 		public string? Model { get; set; }
 		public string? Nickname { get; set; }
@@ -30,14 +29,14 @@ namespace Lib3Dp.State
 		public string? StreamingOMEURL { get; set; }
 		public string? ThumbnailOMEURL { get; set; }
 
-		// Store notifications keyed by MessageSignature so updates can be expressed as dictionary-updates in the generated updater.
-		public Dictionary<string, MachineNotification> Notifications { get; set; } = [];
+		// Store notifications keyed by MachineMessage so updates can be expressed as dictionary-updates in the generated updater.
+		public Dictionary<MachineMessage, Notification> Notifications { get; set; } = [];
 
 		IReadOnlyDictionary<string, bool> IMachineState.Lights => Lights;
 		IReadOnlyDictionary<string, int> IMachineState.Fans => Fans;
 		IMachinePrintJob? IMachineState.Job => CurrentJob;
 		IEnumerable<HistoricPrintJob> IMachineState.JobHistory => JobHistory;
-		IEnumerable<MachineNotification> IMachineState.Notifications => Notifications.Values;
+		IReadOnlyDictionary<MachineMessage, Notification> IMachineState.Notifications => Notifications;
 		IEnumerable<IMaterialUnit> IMachineState.MaterialUnits => MaterialUnits.Values;
 		IReadOnlySet<LocalPrintJob> IMachineState.LocalJobs => LocalJobs;
 		IEnumerable<ScheduledPrint> IMachineState.ScheduledPrints => ScheduledPrints;

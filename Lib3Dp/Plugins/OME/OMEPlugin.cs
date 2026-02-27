@@ -144,7 +144,7 @@ namespace Lib3Dp.Plugins.OME
 
 		private static string MakeStreamName(MachineConnection forMachine)
 		{
-			return $"machine/{forMachine.State.ID}";
+			return $"machine/{forMachine.ID}";
 		}
 
 		public static bool TryGetInstance([NotNullWhen(true)] out OMEPlugin? instance)

@@ -1,3 +1,6 @@
+# Emitted source-generator output (produced locally with /p:EmitCompilerGeneratedFiles=true)
+generated_sources/
+
 *.swp
 *.*~
 project.lock.json

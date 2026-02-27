@@ -1,0 +1,93 @@
+name: .NET Compile Check
+
+# Run on every push or pull request that touches .NET source files,
+# and allow manual triggers from the Actions tab.
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.sln'
+      - '.github/workflows/dotnet-build.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.sln'
+      - '.github/workflows/dotnet-build.yml'
+  workflow_dispatch:
+
+jobs:
+  compile:
+    name: Compile all .NET solutions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # .NET 9 SDK handles net9.0, net8.0, and netstandard2.0 targets.
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      # Cache the NuGet global packages folder to speed up restores.
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # ---------------------------------------------------------------
+      # Build in dependency order so each solution can use the cached
+      # outputs of projects it references.
+      # ---------------------------------------------------------------
+
+      # 1. Source generator (netstandard2.0) – no project dependencies.
+      - name: Restore – PartialBuilderSourceGen
+        run: dotnet restore Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.sln
+
+      - name: Build – PartialBuilderSourceGen
+        run: dotnet build Generators/PartialBuilderSourceGen/PartialBuilderSourceGen.sln
+          --no-restore --configuration Release
+
+      # 2. JeIdentity.NET + JeIdentity.NET.AspNetCore (net8.0) –
+      #    no project dependencies outside this solution.
+      - name: Restore – JeIdentity.NET / JeIdentity.NET.AspNetCore
+        run: dotnet restore JeIdentity.NET.AspNetCore/JeIdentity.AspNetCore.sln
+
+      - name: Build – JeIdentity.NET / JeIdentity.NET.AspNetCore
+        run: dotnet build JeIdentity.NET.AspNetCore/JeIdentity.AspNetCore.sln
+          --no-restore --configuration Release
+
+      # 3. Lib3Dp (net8.0) – depends on PartialBuilderSourceGen and JeIdentity.
+      - name: Restore – Lib3Dp
+        run: dotnet restore Lib3Dp/Lib3Dp.sln
+
+      - name: Build – Lib3Dp
+        run: dotnet build Lib3Dp/Lib3Dp.sln
+          --no-restore --configuration Release
+
+      # 4. Connect3Dp (net9.0) – depends on Lib3Dp.
+      - name: Restore – Connect3Dp
+        run: dotnet restore Connect3Dp/Connect3Dp.sln
+
+      - name: Build – Connect3Dp
+        run: dotnet build Connect3Dp/Connect3Dp.sln
+          --no-restore --configuration Release
+
+      # 5. Connect3Dp.Host (net9.0) – depends on Connect3Dp and
+      #    JeIdentity.NET.AspNetCore.
+      - name: Restore – Connect3Dp.Host
+        run: dotnet restore Connect3Dp.Host/Connect3Dp.Host.sln
+
+      - name: Build – Connect3Dp.Host
+        run: dotnet build Connect3Dp.Host/Connect3Dp.Host.sln
+          --no-restore --configuration Release

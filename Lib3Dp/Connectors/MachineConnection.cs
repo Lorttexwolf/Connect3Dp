@@ -35,7 +35,14 @@ namespace Lib3Dp.Connectors
 
 		protected readonly IMachineFileStore FileStore;
 
-		public event Action<IMachineState, MachineStateChanges>? OnChanges;
+		/// <summary>
+		/// The unique identifier for this machine connection.
+		/// Only assigned during construction or a configuration load/update via
+		/// <see cref="MachineIDWithConfigurationWithDiscrimination"/>.
+		/// </summary>
+		public string ID { get; private set; }
+
+		public event Action<MachineConnection, MachineStateChanges>? OnChanges;
 
 		public IMachineState State => _State;
 
@@ -48,21 +55,21 @@ namespace Lib3Dp.Connectors
 		{
 			FileStore = fileStore;
 			Mono = new MonoMachine();
+			ID = configuration.ID;
 
 			_State = new MachineState
 			{
-				ID = configuration.ID,
 				Nickname = configuration.Nickname,
 				Brand = configuration.Brand,
 				Model = configuration.Model
 			};
 
-			Logger = Logger.OfCategory($"Machine {this._State.ID}");
+			Logger = Logger.OfCategory($"Machine {ID}");
 		}
 
-		public void AddNotification(MachineNotification notification)
+		public void AddNotification(MachineMessage message)
 		{
-			this.CommitState(new MachineStateUpdate().SetNotifications(notification));
+			this.CommitState(new MachineStateUpdate().SetNotifications(message));
 		}
 
 		public async Task<Stream> DownloadFile(MachineFileHandle fileHandle)
@@ -138,53 +145,32 @@ namespace Lib3Dp.Connectors
 
 			// RULE: With the MU Heating feature, a Heating Constraint must be applied before advertising this functionality.
 
-			// Handle Notifications merging in-place before the generated AppendUpdate runs.
-			// This ensures we update LastSeenAt for existing notifications and avoid duplicate adds.
-			if (updatedState.NotificationsToSet != null)
-			{
-				// Work on a snapshot to avoid modifying the collection during iteration.
-				foreach (var kv in updatedState.NotificationsToSet)
-				{
-					var key = kv.Key;
-					var notificationToAdd = kv.Value;
-
-					if (_State.Notifications.TryGetValue(key, out var existing))
-					{
-						// Update observed timestamp
-						existing.LastSeenAt = DateTimeOffset.UtcNow;
-
-						// Remove from the update so the generated updater won't also re-add it.
-						updatedState.NotificationsToSet.Remove(key);
-					}
-					else
-					{
-						// Add a fresh MachineNotification preserving the issued time from the provided one if set.
-						_State.Notifications[key] = new MachineNotification(notificationToAdd.Message, notificationToAdd.IssuedAt);
-					}
-				}
-			}
+			// Note: Notification merging (preserving IssuedAt for existing notifications while updating
+			// LastSeenAt) is handled automatically by the source-generated AppendUpdate — it calls
+			// AppendUpdate on existing dict entries instead of replacing them, so init-only fields
+			// like IssuedAt are preserved and only explicitly-set fields (LastSeenAt) are updated.
 
 			// Auto-resolve Messages
 
-			foreach (var notification in _State.Notifications.Values)
+			foreach (var (message, _) in _State.Notifications)
 			{
 				bool doResolve = false;
 
 				// Auto-resolve if the current machine state matches the desired on-resolve state
-				if (notification.Message.AutoResolve.WhenPrinting.HasValue && notification.Message.AutoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
+				if (message.AutoResolve.WhenPrinting.HasValue && message.AutoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
 				{
 					doResolve = true;
 				}
-				else if (notification.Message.AutoResolve.WhenStatus.HasValue && _State.Status == notification.Message.AutoResolve.WhenStatus.Value)
+				else if (message.AutoResolve.WhenStatus.HasValue && _State.Status == message.AutoResolve.WhenStatus.Value)
 				{
 					doResolve = true;
 				}
-				else if (notification.Message.AutoResolve.WhenConnected.HasValue && notification.Message.AutoResolve.WhenConnected.Value && _State.Status is not MachineStatus.Disconnected)
+				else if (message.AutoResolve.WhenConnected.HasValue && message.AutoResolve.WhenConnected.Value && _State.Status is not MachineStatus.Disconnected)
 				{
 					doResolve = true;
 				}
 
-				if (doResolve) updatedState.RemoveNotifications(notification.MessageSignature);
+				if (doResolve) updatedState.RemoveNotifications(message);
 			}
 
 			// Check if any removed local jobs have associated scheduled prints
@@ -290,7 +276,7 @@ namespace Lib3Dp.Connectors
 
 			// Invoke OnChange
 
-			if (changes.HasChanged) this.OnChanges?.Invoke(State, changes);
+			if (changes.HasChanged) this.OnChanges?.Invoke(this, changes);
 
 		}
 
@@ -693,7 +679,7 @@ namespace Lib3Dp.Connectors
 						if (!_State.LocalJobs.Any(lj => lj.File.Equals(meta.LocalJob.File)))
 						{
 							CommitState(changes => changes
-								.SetNotifications(new MachineNotification(Constants.MachineMessages.ScheduledPrintSkipped(jobName, "Local file no longer exists on the machine")))
+								.SetNotifications(Constants.MachineMessages.ScheduledPrintSkipped(jobName, "Local file no longer exists on the machine"))
 								.RemoveScheduledPrints(meta));
 
 							return;
@@ -704,7 +690,7 @@ namespace Lib3Dp.Connectors
 							var reason = _State.Status is MachineStatus.Disconnected ? "Not Connected" : "Not Ready";
 
 							CommitState(changes => changes
-								.SetNotifications(new MachineNotification(Constants.MachineMessages.ScheduledPrintSkipped(jobName, reason))));
+								.SetNotifications(Constants.MachineMessages.ScheduledPrintSkipped(jobName, reason)));
 
 							return;
 						}
@@ -717,13 +703,13 @@ namespace Lib3Dp.Connectors
 							var opResult = await this.PrintLocal(meta.LocalJob, meta.Options);
 
 							if (!opResult.Success) CommitState(changes => changes
-								.SetNotifications(new MachineNotification(Constants.MachineMessages.ScheduledPrintFailed(jobName, opResult.Reasoning.HasValue ? opResult.Reasoning.Value.Body : "Unknown Error"))));
+								.SetNotifications(Constants.MachineMessages.ScheduledPrintFailed(jobName, opResult.Reasoning.HasValue ? opResult.Reasoning.Value.Body : "Unknown Error")));
 						}
 						catch (Exception ex)
 						{
 							Logger.Error(ex, $"Scheduled Print '{jobName}' Failed");
 							CommitState(changes => changes
-								.SetNotifications(new MachineNotification(Constants.MachineMessages.ScheduledPrintFailed(jobName, ex.Message))));
+								.SetNotifications(Constants.MachineMessages.ScheduledPrintFailed(jobName, ex.Message)));
 						}
 
 					}, scheduledPrint);

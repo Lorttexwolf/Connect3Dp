@@ -1,4 +1,5 @@
-﻿using Lib3Dp.Constants;
+﻿using Lib3Dp.Configuration;
+using Lib3Dp.Constants;
 using Lib3Dp.Exceptions;
 using Lib3Dp.Extensions;
 using Lib3Dp.Files;
@@ -8,6 +9,7 @@ using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static Lib3Dp.MonoMachine;
 
 namespace Lib3Dp.Connectors
 {
@@ -56,6 +58,11 @@ namespace Lib3Dp.Connectors
 			};
 
 			Logger = Logger.OfCategory($"Machine {this._State.ID}");
+		}
+
+		public void AddNotification(MachineNotification notification)
+		{
+			this.CommitState(new MachineStateUpdate().SetNotifications(notification));
 		}
 
 		public async Task<Stream> DownloadFile(MachineFileHandle fileHandle)
@@ -205,7 +212,7 @@ namespace Lib3Dp.Connectors
 			}
 		}
 
-		internal void CommitState(MachineStateUpdate updatedState, [CallerMemberName] string callerName = "")
+		protected void CommitState(MachineStateUpdate updatedState, [CallerMemberName] string callerName = "")
 		{
 			// Preprocess / Validate
 
@@ -287,7 +294,7 @@ namespace Lib3Dp.Connectors
 
 		}
 
-		internal void CommitState(Action<MachineStateUpdate> updatedStateFunc)
+		protected void CommitState(Action<MachineStateUpdate> updatedStateFunc)
 		{
 			var update = new MachineStateUpdate();
 			updatedStateFunc?.Invoke(update);
@@ -315,15 +322,24 @@ namespace Lib3Dp.Connectors
 	{
 		public async Task<MachineOperationResult> Connect(CancellationToken cancellationToken = default)
 		{
-			var mutateResult = await this.Mono.MutateUntil(
-				() => Connect_Internal(),
+			MutationValuedResult<MachineOperationResult> mutateResult = await this.Mono.MutateUntil(
+				Connect_Internal,
 				() => this.State.Status is not MachineStatus.Disconnected,
 				TimeSpan.FromSeconds(15));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToConnect.Title, autoResolve: Constants.MachineMessages.FailedToConnect.AutoResolve);
+			return mutateResult.IntoOperationResult(MachineMessages.FailedToConnect.Title, autoResolve: MachineMessages.FailedToConnect.AutoResolve);
 		}
 
-		protected abstract Task Connect_Internal();
+		protected abstract Task<MachineOperationResult> Connect_Internal();
+
+		public async Task<MachineOperationResult> ConnectIfDisconnected(CancellationToken cancellationToken = default)
+		{
+			if (this.State.Status is not MachineStatus.Disconnected) return MachineOperationResult.Ok;
+
+			return await this.Connect(cancellationToken);
+		}
+
+		public abstract Task Disconnect();
 	}
 	#endregion
 
@@ -332,7 +348,7 @@ namespace Lib3Dp.Connectors
 	{
 		public async Task<MachineOperationResult> PrintLocal(LocalPrintJob localPrint, PrintOptions options)
 		{
-			if (State.IfNotCapable(MachineCapabilities.StartLocalJob, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.StartLocalJob, out var uncapableResult)) return uncapableResult.Value;
 
 			if (State.Status != MachineStatus.Idle)
 			{
@@ -354,12 +370,39 @@ namespace Lib3Dp.Connectors
 	}
 	#endregion
 
+	#region Modifying Filament
+	public abstract partial class MachineConnection
+	{
+		public async Task<MachineOperationResult> ChangeMaterial(SpoolLocation location, Material material)
+		{
+			if (!this._State.MaterialUnits.TryGetValue(location.MUID, out var mu))
+			{
+				return MachineOperationResult.Fail(MachineMessages.MUDoesNotExist(location.MUID));
+			}
+
+			if (mu.IfNotCapable(MUCapabilities.ModifyTray, out var unableToModifyTrayOpRes)) return unableToModifyTrayOpRes.Value;
+
+			var changeMaterialOp = await Mono.MutateUntil(
+				() => Invoke_ChangeMaterial(location, material),
+				() => this._State.MaterialUnits.GetValueOrDefault(location.MUID)?.Trays.GetValueOrDefault(location.Slot).Material == material,
+				TimeSpan.FromSeconds(15));
+
+			return changeMaterialOp.IntoOperationResult("Change Material");
+		}
+
+		protected virtual Task<MachineOperationResult> Invoke_ChangeMaterial(SpoolLocation location, Material material)
+		{
+			throw new NotImplementedException($"{nameof(Invoke_ChangeMaterial)} has not been implemented on the Connector");
+		}
+	}
+	#endregion
+
 	#region Pause, Resume, Stop
 	public abstract partial class MachineConnection
 	{
 		public async Task<MachineOperationResult> Pause()
 		{
-			if (State.IfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
 
 			var mutateResult = await this.Mono.MutateUntil(
 				() => Pause_Internal(),
@@ -375,7 +418,7 @@ namespace Lib3Dp.Connectors
 
 		public async Task<MachineOperationResult> Resume()
 		{
-			if (State.IfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
 
 			var mutateResult = await this.Mono.MutateUntil(
 				() => Resume_Internal(),
@@ -391,7 +434,7 @@ namespace Lib3Dp.Connectors
 
 		public async Task<MachineOperationResult> Stop()
 		{
-			if (State.IfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.Control, out var uncapableResult)) return uncapableResult.Value;
 
 			var mutateResult = await this.Mono.MutateUntil(
 				() => Stop_Internal(),
@@ -448,7 +491,7 @@ namespace Lib3Dp.Connectors
 	{
 		public async Task<MachineOperationResult> ChangeAirDuct(MachineAirDuctMode mode)
 		{
-			if (State.IfNotCapable(MachineCapabilities.AirDuct, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.AirDuct, out var uncapableResult)) return uncapableResult.Value;
 
 			var mutateResult = await this.Mono.MutateUntil(
 				() => ChangeAirDuctMode_Internal(mode),
@@ -604,7 +647,7 @@ namespace Lib3Dp.Connectors
 		/// <param name="scheduledPrint">The scheduled print configuration.</param>
 		public MachineOperationResult SchedulePrint(ScheduledPrint scheduledPrint)
 		{
-			if (State.IfNotCapable(MachineCapabilities.StartLocalJob, out var uncapableResult)) return uncapableResult.Value;
+			if (State.OpIfNotCapable(MachineCapabilities.StartLocalJob, out var uncapableResult)) return uncapableResult.Value;
 
 			CommitState(changes => changes.SetScheduledPrints(scheduledPrint));
 

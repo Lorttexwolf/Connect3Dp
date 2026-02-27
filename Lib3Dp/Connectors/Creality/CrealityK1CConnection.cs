@@ -73,10 +73,16 @@ namespace Lib3Dp.Connectors.Creality
 			Logger.Trace(msg);
 		}
 
-		protected override async Task Connect_Internal()
+		protected override async Task<MachineOperationResult> Connect_Internal()
 		{
 			await this.WebSocket.ConnectAsync();
 
+			return MachineOperationResult.Ok;
+		}
+
+		public override Task Disconnect()
+		{
+			return Task.CompletedTask;
 		}
 	}
 }

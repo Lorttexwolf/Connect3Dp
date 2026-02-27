@@ -159,7 +159,19 @@ namespace Lib3Dp.Extensions
 		public static bool HasFeature(this IMachineState state, MachineCapabilities desiredFeature)
 			=> state.Capabilities.HasFlag(desiredFeature);
 
-		public static bool IfNotCapable(this IMachineState state, MachineCapabilities desiredFeature, [NotNullWhen(true)] out MachineOperationResult? operationResult)
+		public static bool OpIfDisconnected(this IMachineState state, [NotNullWhen(true)] out MachineOperationResult? operationResult)
+		{
+			if (state.Status is MachineStatus.Disconnected)
+			{
+				operationResult = MachineOperationResult.Fail(MachineMessages.DisconnectedMessage);
+				return true;
+			}
+
+			operationResult = default;
+			return false;
+		}
+
+		public static bool OpIfNotCapable(this IMachineState state, MachineCapabilities desiredFeature, [NotNullWhen(true)] out MachineOperationResult? operationResult)
 		{
 			if (state.HasFeature(desiredFeature))
 			{

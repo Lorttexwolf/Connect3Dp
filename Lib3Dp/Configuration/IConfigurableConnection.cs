@@ -35,6 +35,11 @@ namespace Lib3Dp.Configuration
 			return GetConfiguration();
 		}
 
+		static Type IConfigurableConnection.GetConfigurationType()
+		{
+			return typeof(T);
+		}
+
 		Task<MachineOperationResult> UpdateConfiguration(T updatedCfg);
 
 		Task<MachineOperationResult> IConfigurableConnection.UpdateConfiguration(object updatedCfg)

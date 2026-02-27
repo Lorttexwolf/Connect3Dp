@@ -50,8 +50,6 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			await MQTT.ConnectAsync(BuildMQTTOptions(settings), this.ContinuouslyReconnectTokenSource.Token);
 			await MQTT.PingAsync(this.ContinuouslyReconnectTokenSource.Token);
-
-			Logger.Info("Connected via MQTT");
 		}
 
 		public async Task DisconnectAsync()
@@ -105,7 +103,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				{ "plate", options.PlateIndex },
 				{ "subtask_name", "" },
 				{ "task_type", 1 },
-				{ "subtask_id", options.MetadataId },
+				{ "subtask_id", options.SubTaskId },
 				{ "timelapse", options.Timelapse },
 				{ "toolhead_offset_cali", false },
 				{ "url", $"file:///media/usb0/{options.FileName}" }
@@ -153,21 +151,22 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			await PublishCommand("print", "bed_clean");
 		}
 
-		//public async Task PublishTraySetting(BBLFilament filament)
+		//public async Task PublishTraySetting(string amsID, strin, string settingID)
 		//{
-		//    var commandData = new JsonObject
-		//    {
-		//        { "ams_id", filament.Location.IsAutomatic ? (int)Math.Floor(filament.Location.Slot / 4d) : 255 },
-		//        { "nozzle_temp_max", filament.NozzleTempMax },
-		//        { "nozzle_temp_min", filament.NozzleTempMin },
-		//        { "setting_id", filament.SettingID },
-		//        { "slot_id", filament.Location.Slot % 4 },
-		//        { "tray_color", $"{filament.Base.Color.Hex}FF" },
-		//        { "tray_id", filament.TrayID },
-		//        { "tray_info_idx", filament.TrayInfoIDX },
-		//        { "tray_type", filament.Base.Material }
-		//    };
-		//    await this.PublishCommand("print", "ams_filament_setting", commandData);
+		//	var commandData = new JsonObject
+		//	{
+		//		//{ "ams_id", filament.Location.IsAutomatic ? (int)Math.Floor(filament.Location.Slot / 4d) : 255 },
+		//		{ "ams_id", amsID },
+		//		{ "nozzle_temp_max", 0 },
+		//		{ "nozzle_temp_min", 0 },
+		//		{ "setting_id", filament.SettingID },
+		//		{ "slot_id", filament.Location.Slot % 4 },
+		//		{ "tray_color", $"{filament.Base.Color.Hex}FF" },
+		//		{ "tray_id", filament.TrayID },
+		//		{ "tray_info_idx", filament.TrayInfoIDX },
+		//		{ "tray_type", filament.Base.Material }
+		//	};
+		//	await this.PublishCommand("print", "ams_filament_setting", commandData);
 		//}
 
 		public async Task PublishClearError(int errorCode)
@@ -278,10 +277,20 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 		{
 			OnData?.Invoke(new BBLMQTTData
 			{
-				Changes = new MachineStateUpdate().SetStatus(MachineStatus.Disconnected) 
+				Changes = new MachineStateUpdate()
+					.SetStatus(MachineStatus.Disconnected)
+					.SetNotifications(new MachineNotification(new MachineMessage()
+					{
+						Title = "MQTT Disconnected",
+						Body = $"An issue occurred connecting to the MQTT Broker: {(ev.ConnectResult?.ResultCode != null ? ev.ConnectResult.ResultCode.ToString() : null) ?? ev.Exception?.Message ?? "Unknown"}",
+						Severity = MachineMessageSeverity.Error,
+						ManualResolve = MachineMessageActions.CheckConfiguration,
+						AutoResolve = new MachineMessageAutoResole()
+						{
+							WhenConnected = true
+						}
+					}))
 			});
-
-			// TODO: Read ev.ConnectResults.ResultCode and push to notifications.
 
 			if (PullAllChangesPeriodic != null)
 			{
@@ -485,6 +494,11 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				if (metadata.Values.TryGetValue("ThumbnailSmallHash", out var encodedThumbnailSmallHash))
 				{
 					data.Changes.UpdateCurrentJob(changes => changes.SetThumbnail(BBLFiles.HandleAs3MFThumbnail(this.Settings.SerialNumber, encodedPath, encodedThumbnailSmallHash)));
+				}
+
+				if (metadata.Values.TryGetValue("CustomID", out var customID))
+				{
+					data.Changes.UpdateCurrentJob(changes => changes.SetCustomID(customID));
 				}
 			}
 

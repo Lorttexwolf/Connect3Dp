@@ -51,11 +51,6 @@ namespace Lib3Dp.Connectors.ELEGOO
 			throw new NotImplementedException();
 		}
 
-		public static Type GetConfigurationType()
-		{
-			throw new NotImplementedException();
-		}
-
 		public static ELEGOOMachineConnector CreateFromConfiguration(IMachineFileStore fileStore, ELEGOOMachineConfiguration configuration)
 		{
 			throw new NotImplementedException();
@@ -73,13 +68,16 @@ namespace Lib3Dp.Connectors.ELEGOO
 			throw new NotImplementedException();
 		}
 
-		protected override async Task Connect_Internal()
+		protected override async Task<MachineOperationResult> Connect_Internal()
 		{
 			await this.Socket.ConnectAsync();
 
-			// TODO, do Discovery, configure Model, and etc from Discovery payload.
+			return MachineOperationResult.Ok;
+		}
 
-			CommitState(changes => changes.SetStatus(MachineStatus.Disconnected));
+		public override Task Disconnect()
+		{
+			return Task.CompletedTask;
 		}
 	}
 }

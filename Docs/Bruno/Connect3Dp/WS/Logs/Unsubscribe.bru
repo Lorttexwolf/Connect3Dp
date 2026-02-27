@@ -1,0 +1,22 @@
+meta {
+  name: Unsubscribe
+  type: ws
+  seq: 2
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: none
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "log/unsubscribe",
+      "ResponseMessageID": "123"
+    }
+  '''
+}

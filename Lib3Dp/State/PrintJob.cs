@@ -8,6 +8,7 @@ namespace Lib3Dp.State
 	public record PrintJob : IMachinePrintJob
 	{
 		public required string Name { get; set; }
+		public string? CustomID { get; set; }
 		public required int PercentageComplete { get; set; }
 		public required TimeSpan RemainingTime { get; set; }
 		public required TimeSpan TotalTime { get; set; }

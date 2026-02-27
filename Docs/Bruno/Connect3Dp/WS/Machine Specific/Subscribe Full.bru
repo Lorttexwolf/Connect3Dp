@@ -1,0 +1,27 @@
+meta {
+  name: Subscribe Full
+  type: ws
+  seq: 6
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/subscribe",
+      "ResponseMessageID": "123",
+      "Data": {
+        "MachineID": "BLL22E8AJ591501848",
+        "DetailOfState": "Full",
+        "Logs": false
+      }
+    }
+  '''
+}

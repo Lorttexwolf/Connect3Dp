@@ -1,0 +1,25 @@
+meta {
+  name: Pause
+  type: ws
+  seq: 3
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/pause",
+      "ResponseMessageID": "123",
+      "Data": {
+        "MachineID": "BLL22E8AJ591501848"
+      }
+    }
+  '''
+}

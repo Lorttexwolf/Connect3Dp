@@ -69,19 +69,32 @@ namespace PartialBuilderSourceGen
 				if (p.Type.TryIfDictionary(out var k, out var v))
 				{
 					// Order: Added, Removed, Updated (matches usage)
+					// Updated holds Changes structs (not full values) when the value type has an updater
+					var updatedValueType = v.TryIfUpdater(out var dictValUpd) ? dictValUpd.ChangesName : v.ToString();
 					sb.AppendLine($"\tKeyValuePair<{k}, {v}>[] {p.Base.Name}Added,");
 					sb.AppendLine($"\t{k}[] {p.Base.Name}Removed,");
-					sb.Append($"\tKeyValuePair<{k}, {v}>[] {p.Base.Name}Updated");
+					sb.Append($"\tKeyValuePair<{k}, {updatedValueType}>[] {p.Base.Name}Updated");
 				}
 				else if (p.Type.TryIfSet(out var s))
 				{
 					sb.AppendLine($"\t{s}[] {p.Base.Name}Added,");
 					sb.Append($"\t{s}[] {p.Base.Name}Removed");
 				}
+				else if (p.Type.TryIfUpdater(out var cu))
+				{
+					// Nested updater: store only the nested Changes struct (null = no changes)
+					sb.Append($"\t{cu.ChangesName}? {p.Base.Name}Changes");
+				}
 				else
 				{
+					// Regular value: store HasChanged flag, Previous value, and New value.
+					// Both are nullable so they remain null when HasChanged is false,
+					// rather than showing a misleading zero/default value.
+					// Normalise to a single trailing '?' — some types (int?, TimeSpan?) already carry one.
+					var nullableType = p.Type.ToString().TrimEnd('?') + "?";
 					sb.AppendLine($"\tbool {p.Base.Name}HasChanged,");
-					sb.Append($"\t{p.Type} {p.Base.Name}Previous");
+					sb.AppendLine($"\t{nullableType} {p.Base.Name}Previous,");
+					sb.Append($"\t{nullableType} {p.Base.Name}New");
 				}
 
 				sb.AppendLine(i == t.Properties.Count() - 1 ? "" : ",");
@@ -96,14 +109,18 @@ namespace PartialBuilderSourceGen
 			{
 				if (p.Type.TryIfDictionary(out _, out _))
 				{
-					checks.Add($"{p.Base.Name}Added.Length != 0");
-					checks.Add($"{p.Base.Name}Removed.Length != 0");
-					checks.Add($"{p.Base.Name}Updated.Length != 0");
+					checks.Add($"{p.Base.Name}Added?.Length > 0");
+					checks.Add($"{p.Base.Name}Removed?.Length > 0");
+					checks.Add($"{p.Base.Name}Updated?.Length > 0");
 				}
 				else if (p.Type.TryIfSet(out _))
 				{
-					checks.Add($"{p.Base.Name}Added.Length != 0");
-					checks.Add($"{p.Base.Name}Removed.Length != 0");
+					checks.Add($"{p.Base.Name}Added?.Length > 0");
+					checks.Add($"{p.Base.Name}Removed?.Length > 0");
+				}
+				else if (p.Type.TryIfUpdater(out _))
+				{
+					checks.Add($"{p.Base.Name}Changes?.HasChanged == true");
 				}
 				else
 				{
@@ -127,31 +144,38 @@ namespace PartialBuilderSourceGen
 				if (p.Type.TryIfDictionary(out var k, out var v))
 				{
 					sb.AppendLine($$"""
-							if ({{p.Base.Name}}Added.Length != 0)
+							if ({{p.Base.Name}}Added?.Length > 0)
 								parts.Add($"{{p.Base.Name}}Added = [{(string.Join(", ", {{p.Base.Name}}Added.Select(e => e.ToString())))}]");
 
-							if ({{p.Base.Name}}Removed.Length != 0)
+							if ({{p.Base.Name}}Removed?.Length > 0)
 								parts.Add($"{{p.Base.Name}}Removed = [{(string.Join(", ", {{p.Base.Name}}Removed.Select(e => e.ToString())))}]");
 
-							if ({{p.Base.Name}}Updated.Length != 0)
+							if ({{p.Base.Name}}Updated?.Length > 0)
 								parts.Add($"{{p.Base.Name}}Updated = [{(string.Join(", ", {{p.Base.Name}}Updated.Select(e => e.ToString())))}]");
 					""");
 				}
 				else if (p.Type.TryIfSet(out var s))
 				{
 					sb.AppendLine($$"""
-							if ({{p.Base.Name}}Added.Length != 0)
+							if ({{p.Base.Name}}Added?.Length > 0)
 								parts.Add($"{{p.Base.Name}}Added = [{(string.Join(", ", {{p.Base.Name}}Added.Select(e => e.ToString())))}]");
 
-							if ({{p.Base.Name}}Removed.Length != 0)
+							if ({{p.Base.Name}}Removed?.Length > 0)
 								parts.Add($"{{p.Base.Name}}Removed = [{(string.Join(", ", {{p.Base.Name}}Removed.Select(e => e.ToString())))}]");
+					""");
+				}
+				else if (p.Type.TryIfUpdater(out _))
+				{
+					sb.AppendLine($$"""
+							if ({{p.Base.Name}}Changes?.HasChanged == true)
+								parts.Add($"{{p.Base.Name}} = {{{p.Base.Name}}Changes}");
 					""");
 				}
 				else
 				{
 					sb.AppendLine($$"""
 							if ({{p.Base.Name}}HasChanged) 
-								parts.Add($"{{p.Base.Name}} = Previous: {{{p.Base.Name}}Previous}");
+								parts.Add($"{{p.Base.Name}} = Previous: {{{p.Base.Name}}Previous}, New: {{{p.Base.Name}}New}");
 					""");
 				}
 			}
@@ -254,8 +278,6 @@ namespace PartialBuilderSourceGen
 			// DICTIONARY
 			if (p.Type.TryIfDictionary(out var k, out var v))
 			{
-				//var vc = new ClassOrStructureToUse(v);
-
 				if (v.TryIfUpdater(out var vu))
 				{
 					if (vu.IsClass)
@@ -400,7 +422,7 @@ namespace PartialBuilderSourceGen
 					""");
 				}
 
-					sb.AppendLine($$"""
+				sb.AppendLine($$"""
 				public {{t.UpdaterName}} Remove{{p.Base.Name}}()
 				{
 					{{p.Base.Name}}IsSet = true;
@@ -470,11 +492,6 @@ namespace PartialBuilderSourceGen
 				{
 					if (p.Type.IsValue)
 					{
-						//if (p.IsRequiredToCreate)
-						//{
-
-						//}
-
 						sb.AppendLine($"        if (!{p.Base.Name}IsSet || !{p.Base.Name}.Value.TryCreate(out var c{p.Base.Name})) return false;");
 					}
 					else
@@ -538,6 +555,11 @@ namespace PartialBuilderSourceGen
 
 			sb.AppendLine("    {");
 
+			// For reference types, guard against a null existing object (e.g. first-time creation).
+			// There is nothing to diff against, so return a default (no-changes) struct.
+			if (!type.IsValueType)
+				sb.AppendLine($"\t\tif ({name} == null) return default;");
+
 			var ctorArgs = new List<string>();
 
 			foreach (var p in t.Properties)
@@ -549,8 +571,12 @@ namespace PartialBuilderSourceGen
 					var updatedVar = $"u{p.Base.Name}_updated";
 					var removedVar = $"r{p.Base.Name}_removed";
 
+					// Updated list holds Changes structs when the value type has an updater, full values otherwise
+					var hasValUpdater = dictValueType.TryIfUpdater(out var dictValUpdater);
+					var updatedValueType = hasValUpdater ? dictValUpdater.ChangesName : dictValueType.ToString();
+
 					sb.AppendLine($"\t\tvar {addedVar} = new List<KeyValuePair<{dictKeyType}, {dictValueType}>>();");
-					sb.AppendLine($"\t\tvar {updatedVar} = new List<KeyValuePair<{dictKeyType}, {dictValueType}>>();");
+					sb.AppendLine($"\t\tvar {updatedVar} = new List<KeyValuePair<{dictKeyType}, {updatedValueType}>>();");
 					sb.AppendLine($"\t\tvar {removedVar} = new List<{dictKeyType}>();");
 
 					// ToSet
@@ -559,7 +585,7 @@ namespace PartialBuilderSourceGen
 					sb.AppendLine($"\t\t\tforeach (var kv in this.{p.Base.Name}ToSet)");
 					sb.AppendLine("\t\t\t{");
 
-					if (dictValueType.TryIfUpdater(out var dictValUpdater))
+					if (hasValUpdater)
 					{
 						// assert key
 						if (dictValUpdater.DictKeyProp is not null)
@@ -568,15 +594,25 @@ namespace PartialBuilderSourceGen
 						sb.AppendLine($"\t\t\t\tif (kv.Value.TryCreate(out var created))");
 						sb.AppendLine("\t\t\t\t{");
 						sb.AppendLine($"\t\t\t\t\tif ({name}.{p.Base.Name} != null && {name}.{p.Base.Name}.TryGetValue(kv.Key, out var existing))");
-						sb.AppendLine($"\t\t\t\t\t\t{updatedVar}.Add(new KeyValuePair<{dictKeyType}, {dictValueType}>(kv.Key, created));");
+						sb.AppendLine("\t\t\t\t\t{");
+						sb.AppendLine($"\t\t\t\t\t\tif (!EqualityComparer<{dictValueType}>.Default.Equals(existing, created))");
+						// Store the Changes struct (diff), not the full new value
+						sb.AppendLine($"\t\t\t\t\t\t{{");
+						sb.AppendLine($"\t\t\t\t\t\t\tvar __entryChanges = kv.Value.Changes(existing);");
+						sb.AppendLine($"\t\t\t\t\t\t\t{updatedVar}.Add(new KeyValuePair<{dictKeyType}, {updatedValueType}>(kv.Key, __entryChanges));");
+						sb.AppendLine($"\t\t\t\t\t\t}}");
+						sb.AppendLine("\t\t\t\t\t}");
 						sb.AppendLine("\t\t\t\t\telse");
 						sb.AppendLine($"\t\t\t\t\t\t{addedVar}.Add(new KeyValuePair<{dictKeyType}, {dictValueType}>(kv.Key, created));");
 						sb.AppendLine("\t\t\t\t}");
 					}
 					else
 					{
-						sb.AppendLine($"\t\t\t\tif ({name}.{p.Base.Name} != null && {name}.{p.Base.Name}.ContainsKey(kv.Key))");
-						sb.AppendLine($"\t\t\t\t\t{updatedVar}.Add(kv);");
+						sb.AppendLine($"\t\t\t\tif ({name}.{p.Base.Name} != null && {name}.{p.Base.Name}.TryGetValue(kv.Key, out var existing))");
+						sb.AppendLine("\t\t\t\t{");
+						sb.AppendLine($"\t\t\t\t\tif (!EqualityComparer<{dictValueType}>.Default.Equals(existing, kv.Value))");
+						sb.AppendLine($"\t\t\t\t\t\t{updatedVar}.Add(kv);");
+						sb.AppendLine("\t\t\t\t}");
 						sb.AppendLine("\t\t\t\telse");
 						sb.AppendLine($"\t\t\t\t\t{addedVar}.Add(kv);");
 					}
@@ -653,63 +689,63 @@ namespace PartialBuilderSourceGen
 					continue;
 				}
 
-				// REGULAR (value or nested updater)
-				// For immutable Changes, create local hasChanged and prev variables
-				var hasVar = $"__{p.Base.Name}_hasChanged";
-				var prevVar = $"__{p.Base.Name}_prev";
-				sb.AppendLine($"\t\tvar {hasVar} = false;");
-				sb.AppendLine($"\t\tvar {prevVar} = default({p.Type});");
-
+				// REGULAR — NESTED UPDATER: delegate to the nested Changes struct
 				if (p.Type.TryIfUpdater(out var nestedUpd))
 				{
-					if (nestedUpd.IsStruct)
-					{
-						sb.AppendLine($"\t\tif (this.{p.Base.Name}.HasValue)");
+					var changesVar = $"__{p.Base.Name}_changes";
+					sb.AppendLine($"\t\t{nestedUpd.ChangesName}? {changesVar} = null;");
 
-					}
+					if (nestedUpd.IsStruct)
+						sb.AppendLine($"\t\tif (this.{p.Base.Name}.HasValue)");
 					else
-					{
 						sb.AppendLine($"\t\tif (this.{p.Base.Name} != null)");
-					}
 
 					sb.AppendLine("\t\t{");
 
+					// Call the nested updater's Changes() method against the current value.
+					// We must copy the property into a local first: properties cannot be passed
+					// directly as `in` because the compiler cannot guarantee a stable address.
 					if (nestedUpd.IsStruct)
 					{
-						sb.AppendLine($"\t\t\tif (this.{p.Base.Name}.Value.TryCreate(out var __created_{p.Base.Name}))");
+						sb.AppendLine($"\t\t\tvar __local_{p.Base.Name} = {name}.{p.Base.Name};");
+						sb.AppendLine($"\t\t\tvar __nested_{p.Base.Name} = this.{p.Base.Name}.Value.Changes(in __local_{p.Base.Name});");
 					}
 					else
-					{
-						sb.AppendLine($"\t\t\tif (this.{p.Base.Name}.TryCreate(out var __created_{p.Base.Name}))");
-					}
+						sb.AppendLine($"\t\t\tvar __nested_{p.Base.Name} = this.{p.Base.Name}.Changes({name}.{p.Base.Name});");
 
-					sb.AppendLine("\t\t\t{");
+					// Only store if there are actual changes; null signals "no changes"
+					sb.AppendLine($"\t\t\tif (__nested_{p.Base.Name}.HasChanged) {changesVar} = __nested_{p.Base.Name};");
 
-					sb.AppendLine($"\t\t\t\tif (!EqualityComparer<{p.Type}>.Default.Equals({name}.{p.Base.Name}, __created_{p.Base.Name}))");
-
-					sb.AppendLine("\t\t\t\t{");
-					sb.AppendLine($"\t\t\t\t\t{hasVar} = true;");
-
-					sb.AppendLine($"\t\t\t\t\t{prevVar} = {name}.{p.Base.Name};");
-
-					sb.AppendLine("\t\t\t\t}");
-					sb.AppendLine("\t\t\t}");
 					sb.AppendLine("\t\t}");
+
+					ctorArgs.Add(changesVar);
 				}
 				else
 				{
+					// REGULAR VALUE: track HasChanged, Previous, and New
+					var hasVar = $"__{p.Base.Name}_hasChanged";
+					var prevVar = $"__{p.Base.Name}_prev";
+					var newVar = $"__{p.Base.Name}_new";
+					var nullableType = p.Type.ToString().TrimEnd('?') + "?";
+
+					sb.AppendLine($"\t\tvar {hasVar} = false;");
+					sb.AppendLine($"\t\t{nullableType} {prevVar} = null;");
+					sb.AppendLine($"\t\t{nullableType} {newVar} = null;");
+
 					sb.AppendLine($"\t\tif (this.{p.Base.Name}IsSet)");
 					sb.AppendLine("\t\t{");
 					sb.AppendLine($"\t\t\tif (!EqualityComparer<{p.Type}>.Default.Equals({name}.{p.Base.Name}, this.{p.Base.Name}))");
 					sb.AppendLine("\t\t\t{");
 					sb.AppendLine($"\t\t\t\t{hasVar} = true;");
 					sb.AppendLine($"\t\t\t\t{prevVar} = {name}.{p.Base.Name};");
+					sb.AppendLine($"\t\t\t\t{newVar} = this.{p.Base.Name};");
 					sb.AppendLine("\t\t\t}");
 					sb.AppendLine("\t\t}");
-				}
 
-				ctorArgs.Add(hasVar);
-				ctorArgs.Add(prevVar);
+					ctorArgs.Add(hasVar);
+					ctorArgs.Add(prevVar);
+					ctorArgs.Add(newVar);
+				}
 
 				sb.AppendLine();
 			}
@@ -760,11 +796,10 @@ namespace PartialBuilderSourceGen
 					// apply ToSet
 					sb.AppendLine($"\t\tif (this.{p.Base.Name}ToSet != null)");
 					sb.AppendLine("\t\t{");
-					
+
 
 					if (dictValueType.TryIfUpdater(out var dictValUpdater))
 					{
-						//sb.AppendLine($"\t\t\tif ({name}.{p.Base.Name} == null) {name}.{p.Base.Name} = new Dictionary<{dictKeyType}, {dictValUpdater}>();");
 						sb.AppendLine($"\t\t\tforeach (var kv in this.{p.Base.Name}ToSet)");
 						sb.AppendLine("\t\t\t{");
 						// set dictkey on updater in case it's needed
@@ -776,7 +811,6 @@ namespace PartialBuilderSourceGen
 					}
 					else
 					{
-						//sb.AppendLine($"\t\t\tif ({name}.{p.Base.Name} == null) {name}.{p.Base.Name} = new Dictionary<{dictKeyType}, {dictValueType}>();");
 						sb.AppendLine($"\t\t\tforeach (var kv in this.{p.Base.Name}ToSet)");
 						sb.AppendLine($"\t\t\t\t{name}.{p.Base.Name}[kv.Key] = kv.Value;");
 					}
@@ -797,7 +831,6 @@ namespace PartialBuilderSourceGen
 					// ToSet union
 					sb.AppendLine($"\t\tif (this.{p.Base.Name}ToSet != null)");
 					sb.AppendLine("\t\t{");
-					//sb.AppendLine($"\t\t\tif ({name}.{p.Base.Name} == null) {name}.{p.Base.Name} = new HashSet<{setValueType}>();");
 					sb.AppendLine($"\t\t\t{name}.{p.Base.Name}.UnionWith(this.{p.Base.Name}ToSet);");
 					sb.AppendLine("\t\t}");
 
@@ -812,7 +845,6 @@ namespace PartialBuilderSourceGen
 					{
 						sb.AppendLine($"\t\tif (this.{p.Base.Name}Updates != null)");
 						sb.AppendLine("\t\t{");
-						//sb.AppendLine($"\t\t\tif ({name}.{p.Base.Name} == null) {name}.{p.Base.Name} = new HashSet<{setValueType}>();");
 						sb.AppendLine($"\t\t\tforeach (var upd in this.{p.Base.Name}Updates)");
 						sb.AppendLine("\t\t\t{");
 						sb.AppendLine($"\t\t\t\tif (upd.TryCreate(out var created)) {name}.{p.Base.Name}.Add(created);");

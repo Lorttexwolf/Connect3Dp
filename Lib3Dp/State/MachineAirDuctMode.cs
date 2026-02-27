@@ -1,5 +1,8 @@
-﻿namespace Lib3Dp.State
+﻿using System.Text.Json.Serialization;
+
+namespace Lib3Dp.State
 {
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum MachineAirDuctMode
 	{
 		None = 0,

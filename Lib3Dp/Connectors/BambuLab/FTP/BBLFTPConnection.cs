@@ -11,6 +11,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Channels;
 using Lib3Dp.Connectors.BambuLab.Constants;
+using FluentFTP.Exceptions;
 
 namespace Lib3Dp.Connectors.BambuLab.FTP
 {
@@ -77,8 +78,11 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			}
 		}
 
+		/// <exception cref="FtpException"></exception>
 		public async Task ConnectAsync(string address, string accessCode, string machineID)
 		{
+			if (FTP != null && FTP.IsConnected) return;
+
 			// store machine id for file handle generation
 			this.MachineID = machineID;
 
@@ -92,7 +96,7 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			// Create FTP client and monitor for this connection
 			FTP = new AsyncFtpClient(address.ToString(), "bblp", accessCode, port: 990, new FtpConfig()
 			{
-				EncryptionMode = FtpEncryptionMode.Explicit,
+				EncryptionMode = FtpEncryptionMode.Auto,
 				ValidateAnyCertificate = true
 			});
 
@@ -121,6 +125,7 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 					catch (Exception ex)
 					{
 						Logger.Error($"FTP Monitor error: {ex}");
+						// Runs on disconnect
 					}
 				});
 			}

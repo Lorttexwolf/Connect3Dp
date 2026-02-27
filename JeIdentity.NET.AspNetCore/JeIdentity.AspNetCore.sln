@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JeIdentity.AspNetCore", "JeIdentity.AspNetCore.csproj", "{7DE88FC7-A594-9D51-C733-3DDBB84A772E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JeIdentity", "..\JeIdentity.NET\JeIdentity.csproj", "{42CE0AEB-F736-E288-25AF-02A03A74B9C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DE88FC7-A594-9D51-C733-3DDBB84A772E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DE88FC7-A594-9D51-C733-3DDBB84A772E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DE88FC7-A594-9D51-C733-3DDBB84A772E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DE88FC7-A594-9D51-C733-3DDBB84A772E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42CE0AEB-F736-E288-25AF-02A03A74B9C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42CE0AEB-F736-E288-25AF-02A03A74B9C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42CE0AEB-F736-E288-25AF-02A03A74B9C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42CE0AEB-F736-E288-25AF-02A03A74B9C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1FE18CE6-E179-4F16-AD77-8B5189EE4673}
+	EndGlobalSection
+EndGlobal

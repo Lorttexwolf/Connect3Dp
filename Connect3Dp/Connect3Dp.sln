@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36518.9 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connect3Dp", "Connect3Dp.csproj", "{E68F037D-CD71-4C3E-830D-B98D81AD0EA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connect3Dp", "Connect3Dp.csproj", "{5A8B335B-F7C2-4F94-B74B-45E769783857}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib3Dp", "..\Lib3Dp\Lib3Dp.csproj", "{3AE2E495-242E-2D95-B93F-7471BABFC41C}"
 EndProject
@@ -13,10 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E68F037D-CD71-4C3E-830D-B98D81AD0EA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E68F037D-CD71-4C3E-830D-B98D81AD0EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E68F037D-CD71-4C3E-830D-B98D81AD0EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E68F037D-CD71-4C3E-830D-B98D81AD0EA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A8B335B-F7C2-4F94-B74B-45E769783857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A8B335B-F7C2-4F94-B74B-45E769783857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A8B335B-F7C2-4F94-B74B-45E769783857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A8B335B-F7C2-4F94-B74B-45E769783857}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3AE2E495-242E-2D95-B93F-7471BABFC41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3AE2E495-242E-2D95-B93F-7471BABFC41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AE2E495-242E-2D95-B93F-7471BABFC41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {FA4058CA-1272-415F-BB41-6BA2EEF298D6}
+		SolutionGuid = {783B1A70-E5D6-419B-9748-367637210E38}
 	EndGlobalSection
 EndGlobal

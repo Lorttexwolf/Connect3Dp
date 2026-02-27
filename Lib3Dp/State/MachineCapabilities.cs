@@ -1,8 +1,10 @@
 ﻿using Lib3Dp.Connectors;
+using System.Text.Json.Serialization;
 
 namespace Lib3Dp.State
 {
 	[Flags]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public enum MachineCapabilities
 	{
 		None = 1 << 0,

@@ -7,6 +7,13 @@ namespace Lib3Dp.Constants
 	/// </summary>
 	internal static class MachineMessages
 	{
+		public static MachineMessage DisconnectedMessage => new(
+			"Disconnected from Machine",
+			"Unable to establish connection to Machine",
+			MachineMessageSeverity.Error,
+			MachineMessageActions.CheckConfiguration,
+			new MachineMessageAutoResole { WhenConnected = true });
+
 		public static MachineMessage FailedToConnect => new(
 			"Unable to connect to Machine",
 			"An issue occurred connecting to this Machine",

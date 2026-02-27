@@ -1,12 +1,15 @@
-﻿using Lib3Dp.Configuration;
+﻿using FluentFTP.Exceptions;
+using Lib3Dp.Configuration;
 using Lib3Dp.Connectors.BambuLab.Constants;
 using Lib3Dp.Connectors.BambuLab.Files;
 using Lib3Dp.Connectors.BambuLab.FTP;
 using Lib3Dp.Connectors.BambuLab.MQTT;
+using Lib3Dp.Exceptions;
 using Lib3Dp.Extensions;
 using Lib3Dp.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
+using MQTTnet.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net;
@@ -90,14 +93,40 @@ namespace Lib3Dp.Connectors.BambuLab
 
 		#endregion
 
-		protected override async Task Connect_Internal()
+		protected override async Task<MachineOperationResult> Connect_Internal()
 		{
-			var mqttTask = this.MQTT.AutoConnectAsync(new BBLMQTTSettings(this.Configuration.Address.ToString(), this.Configuration.SerialNumber, this.Configuration.AccessCode, this.Model));
-			var ftpTask = this.FTP.ConnectAsync(this.Configuration.Address, this.Configuration.AccessCode, this.State.ID);
+			try
+			{
+				await this.MQTT.AutoConnectAsync(new BBLMQTTSettings(this.Configuration.Address.ToString(), this.Configuration.SerialNumber, this.Configuration.AccessCode, this.Model));
+			}
+			catch (Exception ex)
+			{
+				return MachineOperationResult.Fail("Unable to Connect to MQTT Broker", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
+				{
+					WhenConnected = true
+				});
+			}
 
-			await Task.WhenAll(mqttTask, ftpTask);
+			try
+			{
+				await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.State.ID);
+			}
+			catch (Exception ex)
+			{
+				return MachineOperationResult.Fail("Unable to Connect to FTP Server", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
+				{
+					WhenConnected = true
+				});
+			}
+
+			return MachineOperationResult.Ok;
 		}
-		
+
+		public override Task Disconnect()
+		{
+			return Task.CompletedTask;
+		}
+
 		protected override async Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream)
 		{ 
 			if (BBLFiles.TryParseAs3MFHandle(fileHandle, out var filePath))
@@ -169,10 +198,15 @@ namespace Lib3Dp.Connectors.BambuLab
 				// Unable to download the 3MF to determine the Thumbnail Hash.
 			}
 
+			if (options.CustomID != null)
+			{
+				jobIdWithInfo.Add("CustomID", options.CustomID);
+			}
+
 			var bblPrintOptions = new BBLPrintOptions(
 				PlateIndex: 1,
 				FileName: localPath,
-				MetadataId: jobIdWithInfo.ToString(),
+				SubTaskId: jobIdWithInfo.ToString(),
 				ProjectFilamentCount: options.MaterialMap?.Count ?? 1,
 				BedLeveling: options.LevelBed,
 				FlowCalibration: options.FlowCalibration,

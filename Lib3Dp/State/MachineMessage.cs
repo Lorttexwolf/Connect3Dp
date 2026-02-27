@@ -64,7 +64,7 @@ namespace Lib3Dp.State
 		Pause = 2,
 		Cancel = 4,
 		Refresh = 8,
-		CheckConnection = 16,
+		CheckConfiguration = 16,
 		UnsupportedFirmware = 32,
 		ClearBed = 64
 	}

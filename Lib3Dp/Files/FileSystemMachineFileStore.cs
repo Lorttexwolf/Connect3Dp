@@ -1,7 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace Lib3Dp.Files;
+
+public record struct FileSystemMachineFileStoreOptions(string BasePath, bool VerifyHashes);
+
 public class FileSystemMachineFileStore : IMachineFileStore
 {
 	private const int MaxPathLength = 200;
@@ -12,10 +16,10 @@ public class FileSystemMachineFileStore : IMachineFileStore
 	private readonly string BasePath;
 	private readonly bool VerifyHashes;
 
-	public FileSystemMachineFileStore(string basePath, bool verifyHashes = true)
+	public FileSystemMachineFileStore(in FileSystemMachineFileStoreOptions options)
 	{
-		BasePath = Path.GetFullPath(basePath);
-		VerifyHashes = verifyHashes;
+		BasePath = Path.GetFullPath(options.BasePath);
+		VerifyHashes = options.VerifyHashes;
 
 		if (!Directory.Exists(BasePath))
 		{

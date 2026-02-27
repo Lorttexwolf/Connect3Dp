@@ -5,6 +5,7 @@ namespace Lib3Dp.State
 	public interface IMachinePrintJob
 	{
 		string Name { get; }
+		string? CustomID { get; }
 		int PercentageComplete { get; }
 		TimeSpan RemainingTime { get; }
 		TimeSpan TotalTime { get; }

@@ -7,16 +7,27 @@
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<Version>0.0.1</Version>
+		<VersionPrerelease>alpha</VersionPrerelease>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Cronos" Version="0.11.1" />
 		<PackageReference Include="FluentFTP" Version="53.0.2" />
 		<PackageReference Include="FluentFTP.GnuTLS" Version="1.0.37" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3" />
 		<PackageReference Include="MQTTnet" Version="5.0.1.1416" />
 		<PackageReference Include="PartialSourceGen" Version="0.0.20" />
+		<PackageReference Include="VersionInfoGenerator" Version="3.2.1">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Generators\PartialBuilderSourceGen\PartialBuilderSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+		<ProjectReference Include="..\JeIdentity.NET\JeIdentity.csproj" />
 	</ItemGroup>
 
 </Project>

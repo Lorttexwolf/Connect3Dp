@@ -1,6 +1,7 @@
 ﻿using PartialBuilderSourceGen.Attributes;
 using PartialBuilderSourceGen.Attributes;
 using System.Text.Json.Serialization;
+using Lib3Dp.Utilities;
 
 namespace Lib3Dp.State
 {
@@ -51,22 +52,45 @@ namespace Lib3Dp.State
 
 		public override bool Equals(object? obj)
 		{
-			return Equals(obj as MUnit);
+			return obj is MUnit m && Equals(m);
 		}
 
 		public bool Equals(MUnit? other)
 		{
-			return other is not null &&
-				   ID == other.ID &&
-				   Capacity == other.Capacity &&
-				   Model == other.Model &&
-				   Capabilities == other.Capabilities &&
-				   EqualityComparer<HeatingConstraints?>.Default.Equals(HeatingConstraints, other.HeatingConstraints) &&
-				   EqualityComparer<Dictionary<int, Spool>>.Default.Equals(Trays, other.Trays) &&
-				   HumidityPercent == other.HumidityPercent &&
-				   TemperatureC == other.TemperatureC &&
-				   EqualityComparer<HeatingJob?>.Default.Equals(HeatingJob, other.HeatingJob) &&
-				   HeatingSchedule.SetEquals(other.HeatingSchedule);
+			if (other is null) return false;
+
+			if (!EqualityComparer<string>.Default.Equals(ID, other.ID))
+				return false;
+
+			if (Capacity != other.Capacity)
+				return false;
+
+			if (!EqualityComparer<string?>.Default.Equals(Model, other.Model))
+				return false;
+
+			if (Capabilities != other.Capabilities)
+				return false;
+
+			if (!EqualityComparer<HeatingConstraints?>.Default.Equals(HeatingConstraints, other.HeatingConstraints))
+				return false;
+
+			// Compare Trays by contents (same keys and values)
+			if (!CollectionUtils.AreDictionariesEqual(Trays, other.Trays))
+				return false;
+
+			if (!EqualityComparer<double?>.Default.Equals(HumidityPercent, other.HumidityPercent))
+				return false;
+
+			if (!EqualityComparer<double?>.Default.Equals(TemperatureC, other.TemperatureC))
+				return false;
+
+			if (!EqualityComparer<HeatingJob?>.Default.Equals(HeatingJob, other.HeatingJob))
+				return false;
+
+			if (!HeatingSchedule.SetEquals(other.HeatingSchedule))
+				return false;
+
+			return true;
 		}
 
 		public override int GetHashCode()

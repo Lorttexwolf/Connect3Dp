@@ -1,4 +1,4 @@
-# Connect3Dp On-Machine Kiosk
+# Connect3Dp OD-1 Kiosk
 
 An ESP32-S3 LVGL display sketch that connects to a **Connect3Dp** server via WebSocket and shows live machine status using the `AtAGlance` subscription level.
 
@@ -6,7 +6,7 @@ An ESP32-S3 LVGL display sketch that connects to a **Connect3Dp** server via Web
 
 | File | Purpose |
 |---|---|
-| `OnMachine.ino` | Main Arduino sketch – WiFi, LVGL init, main loop |
+| `OD-1.ino` | Main Arduino sketch – WiFi, LVGL init, main loop |
 | `config.h` | All user-editable settings (WiFi, server, machine ID, display) |
 | `machine_state.h` | `MachineState` struct, `MachineStatus` enum, parse helpers |
 | `ws_handler.h` | WebSocket client, subscribe message, JSON message parsing |
@@ -54,13 +54,13 @@ Enable the fonts used by the UI:
 ### 4. Wire up your display driver
 
 Uncomment and fill in **Option A (LovyanGFX)** or **Option B (TFT_eSPI)**
-at the top of `OnMachine.ino`, then set your SPI / I2C pins and panel model.
+at the top of `OD-1.ino`, then set your SPI / I2C pins and panel model.
 
 After that, un-comment the `dispDrv.flush_cb = lvgl_flush_cb;` line in `setup()`.
 
 ### 5. Flash & Run
 
-Open the `OnMachine` folder as an Arduino project, select **ESP32S3 Dev Module**
+Open the `OD-1` folder as an Arduino project, select **ESP32S3 Dev Module**
 (or your specific board), and upload.
 
 ---

@@ -18,6 +18,12 @@ namespace PartialBuilderSourceGen.Types
 		/// </summary>
 		public readonly bool IsRequiredToCreate;
 		public readonly bool HasDictKeyAttribute;
+		/// <summary>
+		/// True when the property uses <c>init</c> — settable only during object construction.
+		/// Such properties are included in TryCreate() object initializers but must be skipped
+		/// in AppendUpdate() since they cannot be set after construction.
+		/// </summary>
+		public readonly bool IsInitOnly;
 
 		public PropertyToUse(IPropertySymbol property, Context context)
 		{
@@ -29,6 +35,7 @@ namespace PartialBuilderSourceGen.Types
 			IsNullable = property.IsNullable();
 			IsRequiredToCreate = !property.IsNullable();
 			HasDictKeyAttribute = property.ContainsAttribute(context.DictKeyAttribSymbol);
+			IsInitOnly = property.SetMethod?.IsInitOnly == true;
 		}
 
 		public override string ToString()

@@ -279,7 +279,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				Changes = new MachineStateUpdate()
 					.SetStatus(MachineStatus.Disconnected)
-					.SetNotifications(new MachineNotification(new MachineMessage()
+					.SetNotifications(new MachineMessage()
 					{
 						Title = "MQTT Disconnected",
 						Body = $"An issue occurred connecting to the MQTT Broker: {(ev.ConnectResult?.ResultCode != null ? ev.ConnectResult.ResultCode.ToString() : null) ?? ev.Exception?.Message ?? "Unknown"}",
@@ -289,7 +289,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 						{
 							WhenConnected = true
 						}
-					}))
+					})
 			});
 
 			if (PullAllChangesPeriodic != null)

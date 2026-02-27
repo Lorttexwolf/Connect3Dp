@@ -413,11 +413,11 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			if (this.HasUSBOrSDCard)
 			{
-				stateUpdate.SetNotifications(new MachineNotification(BBLMessages.FTPDisconnected));
+				stateUpdate.SetNotifications(BBLMessages.FTPDisconnected);
 			}
 			else
 			{
-				stateUpdate.SetNotifications(new MachineNotification(BBLMessages.SDCardOrUSBMissing));
+				stateUpdate.SetNotifications(BBLMessages.SDCardOrUSBMissing);
 			}
 
 			CommitState(stateUpdate);

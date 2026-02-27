@@ -311,6 +311,16 @@ namespace PartialBuilderSourceGen
 							}
 						""");
 					}
+
+					// Individual removal for updater-typed dict values
+					sb.AppendLine($$"""
+						public {{t.UpdaterName}} Remove{{p.Base.Name}}({{k}} key)
+						{
+							{{p.Base.Name}}ToRemove ??= new HashSet<{{k}}>();
+							{{p.Base.Name}}ToRemove.Add(key);
+							return this;
+						}
+					""");
 				}
 				else
 				{
@@ -805,8 +815,25 @@ namespace PartialBuilderSourceGen
 						// set dictkey on updater in case it's needed
 						if (dictValUpdater.DictKeyProp is not null)
 							sb.AppendLine($"\t\t\t\tkv.Value.Set{dictValUpdater.DictKeyProp.Base.Name}(kv.Key);");
-						sb.AppendLine($"\t\t\t\tif (kv.Value.TryCreate(out var created))");
-						sb.AppendLine($"\t\t\t\t\t{name}.{p.Base.Name}[kv.Key] = created;");
+						// Update-or-Create: apply in-place when the key already exists so that
+						// init-only (construction-time) fields on the existing entry are preserved.
+						if (dictValUpdater.IsClass)
+						{
+							sb.AppendLine($"\t\t\t\tif ({name}.{p.Base.Name} != null && {name}.{p.Base.Name}.TryGetValue(kv.Key, out var __existing_{p.Base.Name}))");
+							sb.AppendLine($"\t\t\t\t\tkv.Value.AppendUpdate(__existing_{p.Base.Name}, out _);");
+							sb.AppendLine($"\t\t\t\telse if (kv.Value.TryCreate(out var __created_{p.Base.Name}))");
+							sb.AppendLine($"\t\t\t\t\t{name}.{p.Base.Name}[kv.Key] = __created_{p.Base.Name};");
+						}
+						else
+						{
+							sb.AppendLine($"\t\t\t\tif ({name}.{p.Base.Name} != null && {name}.{p.Base.Name}.TryGetValue(kv.Key, out var __existing_{p.Base.Name}))");
+							sb.AppendLine("\t\t\t\t{");
+							sb.AppendLine($"\t\t\t\t\tkv.Value.AppendUpdate(ref __existing_{p.Base.Name}, out _);");
+							sb.AppendLine($"\t\t\t\t\t{name}.{p.Base.Name}[kv.Key] = __existing_{p.Base.Name};");
+							sb.AppendLine("\t\t\t\t}");
+							sb.AppendLine($"\t\t\t\telse if (kv.Value.TryCreate(out var __created_{p.Base.Name}))");
+							sb.AppendLine($"\t\t\t\t\t{name}.{p.Base.Name}[kv.Key] = __created_{p.Base.Name};");
+						}
 						sb.AppendLine("\t\t\t}");
 					}
 					else
@@ -857,6 +884,13 @@ namespace PartialBuilderSourceGen
 				}
 
 				// REGULAR
+				if (p.IsInitOnly)
+				{
+					// init-only properties can only be set during object construction (TryCreate).
+					// Skip them here to avoid a compile error and preserve the original value.
+					sb.AppendLine();
+					continue;
+				}
 				sb.AppendLine($"\t\tif (this.{p.Base.Name}IsSet)");
 				sb.AppendLine("\t\t{");
 				if (p.Type.TryIfUpdater(out var nested))

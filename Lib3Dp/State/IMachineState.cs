@@ -16,7 +16,7 @@ namespace Lib3Dp.State
 		IEnumerable<MachineExtruder> Extruders { get; }
 		IEnumerable<MachineNozzle> Nozzles { get; }
 		IEnumerable<IMaterialUnit> MaterialUnits { get; }
-		IEnumerable<MachineNotification> Notifications { get; }
+		IReadOnlyDictionary<MachineMessage, Notification> Notifications { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }
 		IReadOnlyDictionary<string, bool> Lights { get; }
 		IReadOnlyDictionary<string, int> Fans { get; }

@@ -181,6 +181,20 @@ public:
         client.poll();
     }
 
+    // Send a machine/markAsIdle request.
+    void sendMarkAsIdle() {
+        if (!connected) return;
+        StaticJsonDocument<96> doc;
+        doc["Action"]      = "machine/markAsIdle";
+        JsonObject data    = doc.createNestedObject("Data");
+        data["MachineID"]  = C3DP_MACHINE_ID;
+        String msg;
+        serializeJson(doc, msg);
+        Serial.print("[WS] MarkAsIdle → ");
+        Serial.println(msg);
+        client.send(msg);
+    }
+
 private:
     // Send the AtAGlance subscription request.
     void _sendSubscribe() {

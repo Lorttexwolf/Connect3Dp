@@ -20,11 +20,11 @@
 #define C3DP_MACHINE_ID "your-machine-id"
 
 // ============================================================
-// Display Configuration – adjust to match your Qualia panel
+// Display Configuration – adjust to match your panel
 // ============================================================
-// Adafruit Qualia ESP32-S3 2.1" round display: 480 × 480
-#define SCREEN_WIDTH    480
-#define SCREEN_HEIGHT   480
+// Rectangle Bar RGB TTL TFT Display – 3.2" 320×820 (landscape: width=820, height=320)
+#define SCREEN_WIDTH    820
+#define SCREEN_HEIGHT   320
 
 // ============================================================
 // Reconnection Intervals (milliseconds)

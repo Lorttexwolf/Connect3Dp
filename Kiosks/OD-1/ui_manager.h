@@ -3,18 +3,23 @@
 // ---------------------------------------------------------------------------
 // ui_manager.h – LVGL v8 UI for the Connect3Dp On-Machine Kiosk
 //
-// Layout (480 × 320 default, landscape):
+// Layout (820 × 320, wide landscape):
 //
-//   ┌─────────────────────────────────────────┐
-//   │  [ STATUS LABEL  (colour-coded bar) ]   │  50 px
-//   │  Nickname / Machine ID                  │
-//   │  ┌─────────────────────────────────┐    │
-//   │  │ Job: <name>                     │    │
-//   │  │ ████████████░░░░░░░░  45%       │    │
-//   │  │ Remaining: 00:30:00 / 01:30:00  │    │
-//   │  └─────────────────────────────────┘    │
-//   │                        ⊕ Connected      │
-//   └─────────────────────────────────────────┘
+//   ┌──────────────────────────────────────────────────────────────────────┐
+//   │  [ STATUS LABEL           (colour-coded bar, full width, 50 px)  ]  │
+//   │  Nickname / Machine ID                        [Mark as Idle]         │
+//   │  ┌───────────────────────────────────────────────────────────────┐   │
+//   │  │ Job: <name>                                                   │   │
+//   │  │ ████████████████░░░░░░░░░░░░  45%                            │   │
+//   │  │ Remaining: 00:30:00 / 01:30:00                                │   │
+//   │  └───────────────────────────────────────────────────────────────┘   │
+//   │                                                       ⊕ Connected    │
+//   └──────────────────────────────────────────────────────────────────────┘
+//
+// [Mark as Idle] is only shown when status is Printed or Canceled.
+// Button style: black background, white border, white text.
+//
+// Screen: Rectangle Bar RGB TTL TFT Display – 3.2" 320×820 (820 wide, 320 tall)
 //
 // Required LVGL fonts – enable in lv_conf.h:
 //   #define LV_FONT_MONTSERRAT_12  1
@@ -28,11 +33,16 @@
 #include "config.h"
 #include "machine_state.h"
 
+// WsHandler is defined in ws_handler.h (included before ui_manager.h in OD-1.ino).
+class WsHandler;
+extern WsHandler wsHandler;
+
 // ---- Widget handles (static → file-local) ----------------------------------
 static lv_obj_t* s_scrMain       = nullptr;
 static lv_obj_t* s_statusBar     = nullptr;
 static lv_obj_t* s_lblStatus     = nullptr;
 static lv_obj_t* s_lblNickname   = nullptr;
+static lv_obj_t* s_btnMarkIdle   = nullptr;
 static lv_obj_t* s_containerJob  = nullptr;
 static lv_obj_t* s_lblJobName    = nullptr;
 static lv_obj_t* s_barProgress   = nullptr;
@@ -53,11 +63,16 @@ static inline lv_color_t _statusColor(MachineStatus s) {
     }
 }
 
+// ---- Button event callback -------------------------------------------------
+static void _onMarkIdleClicked(lv_event_t* /*e*/) {
+    wsHandler.sendMarkAsIdle();
+}
+
 // ---- Build the UI ----------------------------------------------------------
 
 void ui_init() {
     s_scrMain = lv_scr_act();
-    lv_obj_set_style_bg_color(s_scrMain, lv_color_hex(0x1C1C1C), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(s_scrMain, lv_color_black(), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(s_scrMain, LV_OPA_COVER, LV_PART_MAIN);
 
     // ---- Status bar (top, full width, 50 px tall) --------------------------
@@ -75,18 +90,36 @@ void ui_init() {
     lv_obj_set_style_text_font(s_lblStatus, &lv_font_montserrat_20, LV_PART_MAIN);
     lv_obj_center(s_lblStatus);
 
-    // ---- Nickname / Machine ID (below status bar) --------------------------
+    // ---- Nickname / Machine ID (below status bar, left) --------------------
     s_lblNickname = lv_label_create(s_scrMain);
     lv_label_set_text(s_lblNickname, C3DP_MACHINE_ID);
     lv_obj_set_style_text_color(s_lblNickname, lv_color_hex(0xBDC3C7), LV_PART_MAIN);
     lv_obj_set_style_text_font(s_lblNickname, &lv_font_montserrat_16, LV_PART_MAIN);
     lv_obj_align(s_lblNickname, LV_ALIGN_TOP_LEFT, 12, 58);
 
+    // ---- Mark as Idle button (below status bar, right; hidden initially) ---
+    s_btnMarkIdle = lv_btn_create(s_scrMain);
+    lv_obj_set_size(s_btnMarkIdle, 160, 36);
+    lv_obj_align(s_btnMarkIdle, LV_ALIGN_TOP_RIGHT, -12, 52);
+    lv_obj_set_style_bg_color(s_btnMarkIdle, lv_color_black(), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(s_btnMarkIdle, lv_color_black(), LV_STATE_PRESSED);
+    lv_obj_set_style_border_color(s_btnMarkIdle, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_border_width(s_btnMarkIdle, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(s_btnMarkIdle, 4, LV_PART_MAIN);
+    lv_obj_add_event_cb(s_btnMarkIdle, _onMarkIdleClicked, LV_EVENT_CLICKED, nullptr);
+    lv_obj_add_flag(s_btnMarkIdle, LV_OBJ_FLAG_HIDDEN);
+
+    lv_obj_t* lblBtn = lv_label_create(s_btnMarkIdle);
+    lv_label_set_text(lblBtn, "Mark as Idle");
+    lv_obj_set_style_text_color(lblBtn, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_text_font(lblBtn, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_center(lblBtn);
+
     // ---- Job container (hidden until a job is active) ----------------------
     s_containerJob = lv_obj_create(s_scrMain);
     lv_obj_set_size(s_containerJob, SCREEN_WIDTH - 24, 160);
     lv_obj_align(s_containerJob, LV_ALIGN_BOTTOM_MID, 0, -28);
-    lv_obj_set_style_bg_color(s_containerJob, lv_color_hex(0x2C2C2C), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(s_containerJob, lv_color_hex(0x1C1C1C), LV_PART_MAIN);
     lv_obj_set_style_border_width(s_containerJob, 0, LV_PART_MAIN);
     lv_obj_set_style_radius(s_containerJob, 8, LV_PART_MAIN);
     lv_obj_set_style_pad_all(s_containerJob, 10, LV_PART_MAIN);
@@ -95,7 +128,7 @@ void ui_init() {
     // Job name (scrolling label)
     s_lblJobName = lv_label_create(s_containerJob);
     lv_label_set_long_mode(s_lblJobName, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_obj_set_width(s_lblJobName, lv_pct(88));
+    lv_obj_set_width(s_lblJobName, lv_pct(80));
     lv_label_set_text(s_lblJobName, "");
     lv_obj_set_style_text_color(s_lblJobName, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_font(s_lblJobName, &lv_font_montserrat_16, LV_PART_MAIN);
@@ -155,6 +188,17 @@ void ui_update(const MachineState& ms) {
         lv_label_set_text(s_lblNickname, ms.nickname.c_str());
     } else {
         lv_label_set_text(s_lblNickname, C3DP_MACHINE_ID);
+    }
+
+    // Mark as Idle button – only when Printed or Canceled
+    const bool showMarkIdle =
+        ms.status == MachineStatus::Printed ||
+        ms.status == MachineStatus::Canceled;
+
+    if (showMarkIdle) {
+        lv_obj_clear_flag(s_btnMarkIdle, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(s_btnMarkIdle, LV_OBJ_FLAG_HIDDEN);
     }
 
     // Show the job panel when there is an active job

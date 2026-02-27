@@ -109,7 +109,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			try
 			{
-				await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.State.ID);
+				await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.ID);
 			}
 			catch (Exception ex)
 			{
@@ -297,7 +297,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 				var localJob = new LocalPrintJob(
 					Path.GetFileNameWithoutExtension(fileName),
-					BBLFiles.HandleAs3MF(this.State.ID, fileName, hash),
+					BBLFiles.HandleAs3MF(this.ID, fileName, hash),
 					(int)bbl3MF.TotalFilamentGrams,
 					bbl3MF.PredictedTime,
 					matsUsed);

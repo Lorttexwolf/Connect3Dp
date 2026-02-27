@@ -7,7 +7,6 @@ namespace Lib3Dp.State
 	[GeneratePartialBuilder]
 	public class MachineState : IMachineState
 	{
-		public required string ID { get; set; }
 		public string? Brand { get; set; }
 		public string? Model { get; set; }
 		public string? Nickname { get; set; }

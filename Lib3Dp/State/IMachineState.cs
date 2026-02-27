@@ -2,7 +2,7 @@
 
 namespace Lib3Dp.State
 {
-	public interface IMachineState : IUniquelyIdentifiable
+	public interface IMachineState
 	{
 		string? Brand { get; }
 		string? Model { get; }

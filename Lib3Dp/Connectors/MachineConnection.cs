@@ -35,7 +35,14 @@ namespace Lib3Dp.Connectors
 
 		protected readonly IMachineFileStore FileStore;
 
-		public event Action<IMachineState, MachineStateChanges>? OnChanges;
+		/// <summary>
+		/// The unique identifier for this machine connection.
+		/// Only assigned during construction or a configuration load/update via
+		/// <see cref="MachineIDWithConfigurationWithDiscrimination"/>.
+		/// </summary>
+		public string ID { get; private set; }
+
+		public event Action<MachineConnection, MachineStateChanges>? OnChanges;
 
 		public IMachineState State => _State;
 
@@ -48,16 +55,16 @@ namespace Lib3Dp.Connectors
 		{
 			FileStore = fileStore;
 			Mono = new MonoMachine();
+			ID = configuration.ID;
 
 			_State = new MachineState
 			{
-				ID = configuration.ID,
 				Nickname = configuration.Nickname,
 				Brand = configuration.Brand,
 				Model = configuration.Model
 			};
 
-			Logger = Logger.OfCategory($"Machine {this._State.ID}");
+			Logger = Logger.OfCategory($"Machine {ID}");
 		}
 
 		public void AddNotification(MachineMessage message)
@@ -269,7 +276,7 @@ namespace Lib3Dp.Connectors
 
 			// Invoke OnChange
 
-			if (changes.HasChanged) this.OnChanges?.Invoke(State, changes);
+			if (changes.HasChanged) this.OnChanges?.Invoke(this, changes);
 
 		}
 

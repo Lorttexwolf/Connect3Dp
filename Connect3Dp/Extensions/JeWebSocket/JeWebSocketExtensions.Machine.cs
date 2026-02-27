@@ -25,7 +25,7 @@ namespace Connect3Dp.Extensions.JeWebSocket
 				if (connection.MachineSubscriptions.TryGetValue(connection.ID, out var existing))
 					existing.DetailOfState = payload.DetailOfState;
 				else
-					connection.MachineSubscriptions.TryAdd(machine.State.ID, new JeWebSocketClientForConnect3Dp.MachineSubscription { DetailOfState = payload.DetailOfState });
+					connection.MachineSubscriptions.TryAdd(machine.ID, new JeWebSocketClientForConnect3Dp.MachineSubscription { DetailOfState = payload.DetailOfState });
 
 				var result = payload.DetailOfState switch
 				{

@@ -83,6 +83,47 @@ Open the `OD-1` folder as an Arduino project, select your ESP32-S3 board, and up
 
 ---
 
+## PC Simulator
+
+The `simulator/` sub-directory contains a standalone **CMake + SDL2** project that
+runs the exact same `ui_manager.h` code on your desktop.  No hardware is needed.
+The window cycles through every `MachineStatus` variant (Disconnected → Connecting
+→ Idle → Printing → Paused → Printed → Canceled) every three seconds so the full
+UI can be reviewed at a glance.
+
+### Prerequisites
+
+| Tool | Notes |
+|---|---|
+| CMake ≥ 3.16 | `brew install cmake` / `apt install cmake` / [cmake.org](https://cmake.org) |
+| SDL2 dev libraries | `brew install sdl2` / `apt install libsdl2-dev` / [libsdl.org](https://www.libsdl.org) |
+| C++17 compiler | GCC 9+, Clang 10+, or MSVC 2019+ |
+
+LVGL v8 is fetched automatically by CMake via `FetchContent`; no manual download
+is required.
+
+### Build & Run (Linux / macOS)
+
+```bash
+cd Kiosks/OD-1/simulator
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/OD1Simulator
+```
+
+### Build & Run (Windows – Developer Command Prompt)
+
+```bat
+cd Kiosks\OD-1\simulator
+cmake -B build
+cmake --build build --config Release
+build\Release\OD1Simulator.exe
+```
+
+Close the window or press **Escape** to quit.
+
+---
+
 ## WebSocket Protocol (reference)
 
 The sketch uses the `AtAGlance` subscription detail level.

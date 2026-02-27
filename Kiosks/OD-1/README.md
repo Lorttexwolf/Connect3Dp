@@ -23,8 +23,10 @@ An ESP32-S3 LVGL display sketch that connects to a **Connect3Dp** server via Web
 | ArduinoWebsockets | latest | Gil Maimon |
 | ArduinoJson | 6.x | Benoit Blanchon |
 | lvgl | 8.x | LVGL LLC |
-| LovyanGFX **or** TFT_eSPI | latest | – |
-| Touch driver for your panel | – | – |
+
+> **Note:** The Adafruit Qualia ESP32-S3 BSP bundles the RGB panel display driver
+> and wires it into LVGL automatically. No additional display or touch library is
+> required.
 
 ### 2. Edit `config.h`
 
@@ -41,7 +43,8 @@ An ESP32-S3 LVGL display sketch that connects to a **Connect3Dp** server via Web
 
 ### 3. Configure LVGL (`lv_conf.h`)
 
-Enable the fonts used by the UI:
+Enable the fonts used by the UI (the Adafruit Qualia BSP ships an `lv_conf.h`
+that you can edit in-place inside the library folder):
 
 ```c
 #define LV_FONT_MONTSERRAT_12  1
@@ -51,17 +54,10 @@ Enable the fonts used by the UI:
 #define LV_FONT_MONTSERRAT_28  1
 ```
 
-### 4. Wire up your display driver
+### 4. Flash & Run
 
-Uncomment and fill in **Option A (LovyanGFX)** or **Option B (TFT_eSPI)**
-at the top of `OD-1.ino`, then set your SPI / I2C pins and panel model.
-
-After that, un-comment the `dispDrv.flush_cb = lvgl_flush_cb;` line in `setup()`.
-
-### 5. Flash & Run
-
-Open the `OD-1` folder as an Arduino project, select **ESP32S3 Dev Module**
-(or your specific board), and upload.
+Open the `OD-1` folder as an Arduino project, select **Adafruit Qualia ESP32-S3**
+as the board, and upload.
 
 ---
 

@@ -20,14 +20,11 @@
 #define C3DP_MACHINE_ID "your-machine-id"
 
 // ============================================================
-// Display Configuration – adjust to match your panel
+// Display Configuration – adjust to match your Qualia panel
 // ============================================================
+// Adafruit Qualia ESP32-S3 2.1" round display: 480 × 480
 #define SCREEN_WIDTH    480
-#define SCREEN_HEIGHT   320
-#define SCREEN_ROTATION 0   // 0 = landscape, 1 = portrait (hardware-dependent)
-
-// LVGL draw buffer height in lines (1/10 of screen height is a safe default)
-#define LVGL_BUF_LINES  (SCREEN_HEIGHT / 10)
+#define SCREEN_HEIGHT   480
 
 // ============================================================
 // Reconnection Intervals (milliseconds)

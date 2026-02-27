@@ -1,19 +1,22 @@
-# JeIdentity ASP.NET
+# JeIdentity.AspNet
 
-An ease-of-use utility package for [JeIdentity.NET](../JeIdentity.NET/README.md) with useful extension methods for Dependency Injection and auto-routing.
+ASP.NET utilities for [JeIdentity.NET](../JeIdentity.NET/README.md), providing extension methods for dependency injection and automatic route mapping.
 
+## Setup
+
+Register the identity of the executing assembly as a singleton service:
 ```cs
 builder.Services.AddJeIdentity();
 ```
 
-Stores the JeIdentity of the executing assembly as a Singleton Service.
+## Exposing the Endpoint
 
+Map the identity to an HTTP route using reflection via `JeIdentityResolver`:
 ```cs
 app.MapJeIdentity("/jeIdentity");
 ```
 
-For convenience, the defined `JeIdentity` can mapped via Reflection using  `JeIdentityResolver` to the desired route displayed as JSON.
-
+A `GET` request to `/jeIdentity` will return the service identity as JSON:
 ```json
 {
   "name": "Connect3Dp.Host",
@@ -28,7 +31,7 @@ For convenience, the defined `JeIdentity` can mapped via Reflection using  `JeId
     {
       "name": "Lib3Dp",
       "version": "0.0.1",
-      "description": "Vendor-agnostic remote management framework for 3D Printing. "
+      "description": "Vendor-agnostic remote management framework for 3D Printing."
     }
   ]
 }

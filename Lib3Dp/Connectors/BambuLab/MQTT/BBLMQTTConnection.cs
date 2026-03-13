@@ -427,6 +427,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				{
 					"idle" => MachineStatus.Idle,
 					"running" => MachineStatus.Printing,
+					"prepare" => MachineStatus.Printing, // NOTE: This is when 3MF is being processed, extract, and etc.
 					"pause" => MachineStatus.Paused,
 					"finish" => MachineStatus.Printed,
 					"failed" => MachineStatus.Canceled,

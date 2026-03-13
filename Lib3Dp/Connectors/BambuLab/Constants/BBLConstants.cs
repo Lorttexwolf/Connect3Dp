@@ -185,6 +185,7 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 				ModelAMS => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature,
 				ModelAMSHT => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature | MUCapabilities.Heating | MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Heating_CanSpin,
 				ModelAMS2Pro => MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Temperature | MUCapabilities.Heating | MUCapabilities.AutomaticFeeding | MUCapabilities.Humidity | MUCapabilities.Heating_CanSpin,
+				ModelAMSLite => MUCapabilities.AutomaticFeeding,
 				_ => throw new Exception($"Unknown AMS model of {AMSModel}")
 			};
 		}

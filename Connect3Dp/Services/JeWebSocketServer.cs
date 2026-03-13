@@ -121,6 +121,8 @@ namespace Connect3Dp.Services
 					using var doc = JsonDocument.Parse(text);
 					var root = doc.RootElement;
 
+					Logger.LogTrace("Received message from client {}", JsonSerializer.Serialize(root, JsonOptions));
+
 					if (!root.TryGetProperty("Action", out var actionProp)) continue;
 
 					var actionName = actionProp.GetString();
@@ -214,9 +216,19 @@ namespace Connect3Dp.Services
 			client.Dispose();
 		}
 
-		public static Task SendMessageToClientAsync<T>(MessageToClient<T> messageToClient, IJeWebSocketClient connection) where T : notnull
+		public Task SendMessageToClientAsync<T>(MessageToClient<T> messageToClient, IJeWebSocketClient connection) where T : notnull
 		{
-			var jsonOfMessage = JsonSerializer.Serialize(messageToClient, messageToClient.GetType());
+			string jsonOfMessage;
+
+			try
+			{
+				jsonOfMessage = JsonSerializer.Serialize(messageToClient, messageToClient.GetType());
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex, "Failed to serialize data {} being sent to a client", messageToClient);
+				throw;
+			}
 			var bytesOfJson = Encoding.UTF8.GetBytes(jsonOfMessage);
 
 			return connection.WebSocket.SendAsync(new ArraySegment<byte>(bytesOfJson), WebSocketMessageType.Text, true, CancellationToken.None);

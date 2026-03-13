@@ -126,7 +126,7 @@ public class JsonFileBasedMachineConfigurationStore : IMachineConfigurationStore
 		catch (Exception ex)
 		{
 			Logger?.LogError(ex, "Failed to load machine configurations from {FilePath}", FilePath);
-		}
+		} 
 
 		// Update in-memory store with loaded configs for future mutations
 		lock (Lock)

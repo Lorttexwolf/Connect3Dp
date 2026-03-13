@@ -107,17 +107,17 @@ namespace Lib3Dp.Connectors.BambuLab
 				});
 			}
 
-			try
-			{
-				await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.ID);
-			}
-			catch (Exception ex)
-			{
-				return MachineOperationResult.Fail("Unable to Connect to FTP Server", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
-				{
-					WhenConnected = true
-				});
-			}
+			//try
+			//{
+			//	await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.ID);
+			//}
+			//catch (Exception ex)
+			//{
+			//	return MachineOperationResult.Fail("Unable to Connect to FTP Server", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
+			//	{
+			//		WhenConnected = true
+			//	});
+			//}
 
 			return MachineOperationResult.Ok;
 		}

@@ -41,6 +41,11 @@ namespace Connect3Dp.Host
 			builder.Services.AddControllers();
 			builder.Services.AddJeIdentity();
 
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("MyCORS", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+			});
+
 			var app = builder.Build();
 
 			var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Connect3Dp.Host.Program");
@@ -56,6 +61,10 @@ namespace Connect3Dp.Host
 			{
 				app.UseHttpsRedirection();
 			}
+
+			app.UseRouting();
+
+			app.UseCors("MyCORS");
 
 			app.UseWebSockets();
 

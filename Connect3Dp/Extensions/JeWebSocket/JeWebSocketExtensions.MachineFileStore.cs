@@ -7,8 +7,8 @@ namespace Connect3Dp.Extensions.JeWebSocket
 	public static partial class JeWebSocketExtensions
 	{
 		public record struct MachineFileStoreMachineUsagePayload(string MachineID) : IMachineSpecificPayload;
-		public record struct MachineFileStoreTotalUsageResult(bool IsSuccess, string? FailureReason, StorageInfo? TotalUsage) : IJeWebSocketClientActionResult;
-		public record struct MachineFileStoreMachineUsageResult(bool IsSuccess, string? FailureReason, string? MachineID, StorageInfo? MachineUsage) : IJeWebSocketClientActionResult;
+		public record struct MachineFileStoreTotalUsageResult(bool IsSuccess, string? FailureReason, StorageInfo? Usage) : IJeWebSocketClientActionResult;
+		public record struct MachineFileStoreMachineUsageResult(bool IsSuccess, string? FailureReason, string? MachineID, StorageInfo? Usage) : IJeWebSocketClientActionResult;
 
 		public static JeWebSocketServer<JeWebSocketClientForConnect3Dp> WithMachineFileStoreTotalUsage(this JeWebSocketServer<JeWebSocketClientForConnect3Dp> ws, IMachineFileStore fileStore)
 		{

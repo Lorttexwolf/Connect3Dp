@@ -1,0 +1,13 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <VersionSuffix>alpha</VersionSuffix>
+    <Authors>Aaron Jung, Justin Meng, Jih Bin Luo</Authors>
+    <RepositoryUrl>https://github.com/Lorttexwolf/Connect3Dp</RepositoryUrl>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+</Project>

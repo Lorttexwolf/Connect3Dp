@@ -1,0 +1,48 @@
+name: .NET Compile Check
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.sln'
+      - '.github/workflows/dotnet-build.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.sln'
+      - '.github/workflows/dotnet-build.yml'
+  workflow_dispatch:
+
+jobs:
+  compile:
+    name: Compile all .NET projects
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore Connect3Dp.sln
+
+      - name: Build
+        run: dotnet build Connect3Dp.sln --no-restore --configuration Release

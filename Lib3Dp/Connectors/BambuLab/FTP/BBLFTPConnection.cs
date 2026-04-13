@@ -21,6 +21,11 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 
 	internal class BBLFTPConnection : IDisposable
 	{
+		private class FluentFtpLogAdapter(Logger logger) : IFtpLogger
+		{
+			public void Log(FtpLogEntry entry) => logger.Trace($"[FluentFTP] {entry.Message}");
+		}
+
 		private readonly Logger Logger;
 
 		public AsyncFtpClient? FTP;
@@ -96,9 +101,9 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			// Create FTP client and monitor for this connection
 			FTP = new AsyncFtpClient(address.ToString(), "bblp", accessCode, port: 990, new FtpConfig()
 			{
-				EncryptionMode = FtpEncryptionMode.Auto,
+				EncryptionMode = FtpEncryptionMode.Implicit,
 				ValidateAnyCertificate = true
-			});
+			}, logger: new FluentFtpLogAdapter(Logger));
 
 			MonitorCancellationSource = new();
 

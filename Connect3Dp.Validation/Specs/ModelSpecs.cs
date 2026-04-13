@@ -1,3 +1,4 @@
+using Lib3Dp.Connectors.BambuLab.Constants;
 using Lib3Dp.Constants;
 using Lib3Dp.State;
 
@@ -19,11 +20,13 @@ public static class ModelSpecs
 	private static readonly MachineCapabilities BBLWithFlowAndInspect =
 		BBLWithFlowCali | MachineCapabilities.Print_Options_InspectFirstLayer;
 
-	public static readonly Dictionary<string, ModelSpec> All = new()
-	{
-		// ── BambuLab ──────────────────────────────────────────
+	public static readonly Dictionary<string, ModelSpec> All = BuildAll();
 
-		["X1C"] = new ModelSpec(
+	private static Dictionary<string, ModelSpec> BuildAll()
+	{
+		// ── BambuLab standalone specs ──────────────────────────
+
+		var x1c = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "X1C",
 			ExpectedCapabilities: BBLWithFlowAndInspect,
@@ -34,10 +37,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
-		["X1E"] = new ModelSpec(
+		var x1e = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "X1E",
 			ExpectedCapabilities: BBLWithFlowAndInspect,
@@ -49,10 +52,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Chamber] = new(40, 60),
 			},
 			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
-		["P1S"] = new ModelSpec(
+		var p1s = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "P1S",
 			ExpectedCapabilities: BBLBase,
@@ -66,10 +69,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
-		["P2S"] = new ModelSpec(
+		var p2s = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "P2S",
 			ExpectedCapabilities: BBLWithFlowCali | MachineCapabilities.AirDuct,
@@ -80,10 +83,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
-		["A1"] = new ModelSpec(
+		var a1 = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "A1",
 			ExpectedCapabilities: BBLWithFlowCali,
@@ -96,10 +99,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
-		["A1 Mini"] = new ModelSpec(
+		var a1Mini = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "A1 Mini",
 			ExpectedCapabilities: BBLWithFlowCali,
@@ -112,12 +115,12 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+		);
 
 		// ── ELEGOO ────────────────────────────────────────────
 
-		["Centauri Carbon"] = new ModelSpec(
+		var centauriCarbon = new ModelSpec(
 			Brand: PrinterBrand.ELEGOO,
 			ModelName: "Centauri Carbon",
 			ExpectedCapabilities:
@@ -136,13 +139,12 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(0, 110),
 				[HeatingElementNames.Nozzle] = new(0, 300),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "WebRTC"
-		),
+			RequiresSDOrUSB: false
+		);
 
 		// ── Creality ──────────────────────────────────────────
 
-		["K1C"] = new ModelSpec(
+		var k1c = new ModelSpec(
 			Brand: PrinterBrand.Creality,
 			ModelName: "K1C",
 			ExpectedCapabilities:
@@ -160,10 +162,52 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(0, 300),
 				[HeatingElementNames.Chamber] = new(0, 60),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "RTSP"
-		),
-	};
+			RequiresSDOrUSB: false
+		);
+
+		// ── Build dictionary with AMS variants ────────────────
+
+		return new Dictionary<string, ModelSpec>
+		{
+			// BambuLab — X1C
+			["X1C"] = x1c,
+			["X1C + AMS"] = x1c with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["X1C + AMS 2 Pro"] = x1c with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// BambuLab — X1E
+			["X1E"] = x1e,
+			["X1E + AMS"] = x1e with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["X1E + AMS 2 Pro"] = x1e with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// BambuLab — P1S
+			["P1S"] = p1s,
+			["P1S + AMS"] = p1s with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["P1S + AMS 2 Pro"] = p1s with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// BambuLab — P2S
+			["P2S"] = p2s,
+			["P2S + AMS"] = p2s with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["P2S + AMS 2 Pro"] = p2s with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// BambuLab — A1 (supports AMS, AMS Lite, AMS 2 Pro)
+			["A1"] = a1,
+			["A1 + AMS"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["A1 + AMS Lite"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMSLite },
+			["A1 + AMS 2 Pro"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// BambuLab — A1 Mini (supports AMS, AMS Lite, AMS 2 Pro)
+			["A1 Mini"] = a1Mini,
+			["A1 Mini + AMS"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMS },
+			["A1 Mini + AMS Lite"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMSLite },
+			["A1 Mini + AMS 2 Pro"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
+
+			// ELEGOO
+			["Centauri Carbon"] = centauriCarbon,
+
+			// Creality
+			["K1C"] = k1c,
+		};
+	}
 
 	public static IEnumerable<string> GetModelsForBrand(PrinterBrand brand) =>
 		All.Where(kv => kv.Value.Brand == brand).Select(kv => kv.Key);

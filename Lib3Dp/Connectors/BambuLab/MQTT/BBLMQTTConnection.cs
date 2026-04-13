@@ -281,6 +281,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 					.SetStatus(MachineStatus.Disconnected)
 					.SetNotifications(new MachineMessage()
 					{
+						Id = "bbl.mqtt.disconnected",
 						Title = "MQTT Disconnected",
 						Body = $"An issue occurred connecting to the MQTT Broker: {(ev.ConnectResult?.ResultCode != null ? ev.ConnectResult.ResultCode.ToString() : null) ?? ev.Exception?.Message ?? "Unknown"}",
 						Severity = MachineMessageSeverity.Error,
@@ -336,7 +337,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			BBLMQTTData readData;
 			try
 			{
-				readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null);
+				readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null, null);
 			}
 			catch (Exception ex)
 			{
@@ -348,6 +349,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				TryRun(() => OnMessagePrintMQTTSecurity(printJSON, ref readData), "Print.Security");
 				TryRun(() => OnMessagePrintSDCard(printJSON, ref readData), "Print.SDCard");
+				TryRun(() => OnMessagePrintHMS(printJSON, ref readData), "Print.HMS");
 				TryRun(() => OnMessagePrintGcodeState(printJSON, ref readData), "Print.GcodeState");
 				TryRun(() => OnMessagePrintJob(printJSON, ref readData), "Print.Job");
 
@@ -437,10 +439,34 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			if (printJSON.TryGetInt32(out var print_error, "print_error"))
 			{
-				if (print_error != 0 && data.Changes.Status == MachineStatus.Printing)
+				if (print_error != 0)
 				{
-					// Sometimes machine reports running when print_error is present..?
-					data.Changes.SetStatus(MachineStatus.Paused);
+					if (data.Changes.Status == MachineStatus.Printing)
+					{
+						// Sometimes machine reports running when print_error is present..?
+						data.Changes.SetStatus(MachineStatus.Paused);
+					}
+
+					// Only notify if this error isn't already covered by an active HMS entry
+					string printErrorHex = $"{print_error:X8}";
+					bool coveredByHMS = data.ActiveHMSIds != null
+						&& data.ActiveHMSIds.Any(id => id.Contains(printErrorHex));
+
+					if (!coveredByHMS)
+					{
+						data.Changes.SetNotifications(new MachineMessage(
+							"bbl.print_error",
+							"Print Error Detected",
+							$"Print error code: {printErrorHex}",
+							MachineMessageSeverity.Error,
+							MachineMessageActions.None,
+							new MachineMessageAutoResole { WhenPrinting = true }));
+					}
+				}
+				else
+				{
+					// print_error cleared
+					data.Changes.RemoveNotifications("bbl.print_error");
 				}
 			}
 		}
@@ -770,16 +796,37 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			}
 		}
 
-		private void OnMessagePrintHMS(JsonElement printJSON, ref BBLMQTTData data)
+		private static void OnMessagePrintHMS(JsonElement printJSON, ref BBLMQTTData data)
 		{
-			// Sample
-			// print.hms
-			// "hms": [
-			// {
-			//     "attr": 83886848,
-			//    "code": 131086
-			// }
-			// ],
+			// HMS (Health Management System) errors arrive as an array in print.hms.
+			// Each entry has "attr" (int) and "code" (int).
+			// The ecode is derived as: attr hex (8 chars) + code hex (8 chars), formatted with underscores.
+
+			if (!printJSON.TryGetProperty("hms", out var hmsArray))
+				return;
+
+			data.ActiveHMSIds = [];
+
+			foreach (var entry in hmsArray.EnumerateArray())
+			{
+				if (!entry.TryGetProperty("attr", out var attrEl) || !entry.TryGetProperty("code", out var codeEl))
+					continue;
+
+				long attr = attrEl.GetInt64();
+				long code = codeEl.GetInt64();
+
+				string ecode = $"{attr:X8}_{code:X8}";
+				string id = $"bbl.hms.{ecode}";
+				data.ActiveHMSIds.Add(id);
+
+				data.Changes.SetNotifications(new MachineMessage(
+					id,
+					"HMS Error Detected",
+					$"HMS error code: {ecode}",
+					MachineMessageSeverity.Warning,
+					MachineMessageActions.None,
+					default));
+			}
 		}
 
 		private void OnMessageTemps(JsonElement printJSON, ref BBLMQTTData data)

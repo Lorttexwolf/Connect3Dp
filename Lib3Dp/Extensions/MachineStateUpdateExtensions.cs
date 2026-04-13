@@ -12,7 +12,7 @@ namespace Lib3Dp.Extensions
 		public static MachineStateUpdate SetNotifications(this MachineStateUpdate update, MachineMessage message)
 		{
 			var now = DateTimeOffset.UtcNow;
-			update.UpdateNotifications(message, n => { n.SetIssuedAt(now); n.SetLastSeenAt(now); });
+			update.UpdateNotifications(message.Id, n => { n.SetMessage(message); n.SetIssuedAt(now); n.SetLastSeenAt(now); });
 			return update;
 		}
 	}

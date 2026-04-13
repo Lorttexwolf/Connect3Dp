@@ -12,16 +12,23 @@ public class AMSCapabilityValidationTest : ValidationTest
 
 	public override Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
-		if (spec.Brand != PrinterBrand.BambuLab)
-			return Task.FromResult(TestResult.Skip("AMS validation only available for BambuLab"));
+		if (spec.ExpectedAMSModel == null)
+			return Task.FromResult(TestResult.Skip("Standalone configuration — AMS validation skipped"));
 
 		var units = connection.State.MaterialUnits.ToList();
 
 		if (units.Count == 0)
-			return Task.FromResult(TestResult.Skip("No AMS units to validate"));
+			return Task.FromResult(TestResult.Fail($"Expected {spec.ExpectedAMSModel} but no AMS units detected"));
 
 		var failures = new List<string>();
 		int validated = 0;
+
+		// Verify at least one unit matches the expected AMS model
+		if (!units.Any(u => u.Model == spec.ExpectedAMSModel))
+		{
+			var found = string.Join(", ", units.Select(u => u.Model ?? "Unknown"));
+			failures.Add($"No unit matches expected model {spec.ExpectedAMSModel} (found: {found})");
+		}
 
 		foreach (var unit in units)
 		{

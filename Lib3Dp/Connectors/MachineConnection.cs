@@ -152,25 +152,26 @@ namespace Lib3Dp.Connectors
 
 			// Auto-resolve Messages
 
-			foreach (var (message, _) in _State.Notifications)
+			foreach (var (id, notification) in _State.Notifications)
 			{
+				var autoResolve = notification.Message.AutoResolve;
 				bool doResolve = false;
 
 				// Auto-resolve if the current machine state matches the desired on-resolve state
-				if (message.AutoResolve.WhenPrinting.HasValue && message.AutoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
+				if (autoResolve.WhenPrinting.HasValue && autoResolve.WhenPrinting.Value && _State.Status is MachineStatus.Printing or MachineStatus.Printed)
 				{
 					doResolve = true;
 				}
-				else if (message.AutoResolve.WhenStatus.HasValue && _State.Status == message.AutoResolve.WhenStatus.Value)
+				else if (autoResolve.WhenStatus.HasValue && _State.Status == autoResolve.WhenStatus.Value)
 				{
 					doResolve = true;
 				}
-				else if (message.AutoResolve.WhenConnected.HasValue && message.AutoResolve.WhenConnected.Value && _State.Status is not MachineStatus.Disconnected)
+				else if (autoResolve.WhenConnected.HasValue && autoResolve.WhenConnected.Value && _State.Status is not MachineStatus.Disconnected)
 				{
 					doResolve = true;
 				}
 
-				if (doResolve) updatedState.RemoveNotifications(message);
+				if (doResolve) updatedState.RemoveNotifications(id);
 			}
 
 			// Check if any removed local jobs have associated scheduled prints
@@ -313,7 +314,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is not MachineStatus.Disconnected,
 				TimeSpan.FromSeconds(15));
 
-			return mutateResult.IntoOperationResult(MachineMessages.FailedToConnect.Title, autoResolve: MachineMessages.FailedToConnect.AutoResolve);
+			return mutateResult.IntoOperationResult(MachineMessages.FailedToConnect.Id, MachineMessages.FailedToConnect.Title, autoResolve: MachineMessages.FailedToConnect.AutoResolve);
 		}
 
 		protected abstract Task<MachineOperationResult> Connect_Internal();
@@ -338,7 +339,7 @@ namespace Lib3Dp.Connectors
 
 			if (State.Status != MachineStatus.Idle)
 			{
-				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToStartLocalPrint.Title, $"Cannot start print: Machine is not {nameof(MachineStatus.Idle)}. Current status: {State.Status}");
+				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToStartLocalPrint.Id, Constants.MachineMessages.FailedToStartLocalPrint.Title, $"Cannot start print: Machine is not {nameof(MachineStatus.Idle)}. Current status: {State.Status}");
 			}
 
 			var mutateResult = await this.Mono.MutateUntil(
@@ -346,7 +347,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is MachineStatus.Printing,
 				TimeSpan.FromSeconds(60));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStartLocalPrint.Title, autoResolve: Constants.MachineMessages.FailedToStartLocalPrint.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStartLocalPrint.Id, Constants.MachineMessages.FailedToStartLocalPrint.Title, autoResolve: Constants.MachineMessages.FailedToStartLocalPrint.AutoResolve);
 		}
 
 		protected virtual Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)
@@ -373,7 +374,7 @@ namespace Lib3Dp.Connectors
 				() => this._State.MaterialUnits.GetValueOrDefault(location.MUID)?.Trays.GetValueOrDefault(location.Slot).Material == material,
 				TimeSpan.FromSeconds(15));
 
-			return changeMaterialOp.IntoOperationResult("Change Material");
+			return changeMaterialOp.IntoOperationResult("machine.material.change.failed", "Change Material");
 		}
 
 		protected virtual Task<MachineOperationResult> Invoke_ChangeMaterial(SpoolLocation location, Material material)
@@ -395,7 +396,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is MachineStatus.Paused,
 				TimeSpan.FromSeconds(20));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToPause.Title, autoResolve: Constants.MachineMessages.FailedToPause.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToPause.Id, Constants.MachineMessages.FailedToPause.Title, autoResolve: Constants.MachineMessages.FailedToPause.AutoResolve);
 		}
 		protected virtual Task Pause_Internal()
 		{
@@ -411,7 +412,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is not MachineStatus.Paused,
 				TimeSpan.FromSeconds(20));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToResume.Title, autoResolve: Constants.MachineMessages.FailedToResume.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToResume.Id, Constants.MachineMessages.FailedToResume.Title, autoResolve: Constants.MachineMessages.FailedToResume.AutoResolve);
 		}
 		protected virtual Task Resume_Internal()
 		{
@@ -427,7 +428,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is MachineStatus.Canceled,
 				TimeSpan.FromSeconds(15));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStop.Title, autoResolve: Constants.MachineMessages.FailedToStop.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStop.Id, Constants.MachineMessages.FailedToStop.Title, autoResolve: Constants.MachineMessages.FailedToStop.AutoResolve);
 		}
 		protected virtual Task Stop_Internal()
 		{
@@ -452,6 +453,7 @@ namespace Lib3Dp.Connectors
 			if (!(this.State.Status is MachineStatus.Printed or MachineStatus.Canceled))
 			{
 				return MachineOperationResult.Fail(
+					Constants.MachineMessages.FailedToClearBed.Id,
 					Constants.MachineMessages.FailedToClearBed.Title,
 					$"Machine must be {nameof(MachineStatus.Printed)} or {nameof(MachineStatus.Canceled)}.");
 			}
@@ -463,7 +465,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.Status is MachineStatus.Idle,
 				TimeSpan.FromSeconds(30));
 
-			return mutateAction.IntoOperationResult(Constants.MachineMessages.FailedToClearBed.Title, autoResolve: Constants.MachineMessages.FailedToClearBed.AutoResolve);
+			return mutateAction.IntoOperationResult(Constants.MachineMessages.FailedToClearBed.Id, Constants.MachineMessages.FailedToClearBed.Title, autoResolve: Constants.MachineMessages.FailedToClearBed.AutoResolve);
 		}
 		protected virtual Task ClearBed_Internal()
 		{
@@ -484,7 +486,7 @@ namespace Lib3Dp.Connectors
 				() => this.State.AirDuctMode == mode,
 				TimeSpan.FromSeconds(10));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToChangeAirDuct.Title, autoResolve: Constants.MachineMessages.FailedToChangeAirDuct.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToChangeAirDuct.Id, Constants.MachineMessages.FailedToChangeAirDuct.Title, autoResolve: Constants.MachineMessages.FailedToChangeAirDuct.AutoResolve);
 		}
 		protected virtual Task ChangeAirDuctMode_Internal(MachineAirDuctMode mode)
 		{
@@ -502,14 +504,14 @@ namespace Lib3Dp.Connectors
 			if (State.OpIfNotCapable(MachineCapabilities.Lighting, out var uncapableResult)) return uncapableResult.Value;
 
 			if (!State.Lights.ContainsKey(fixtureName))
-				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToToggleLight.Title, $"Light fixture '{fixtureName}' does not exist");
+				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToToggleLight.Id, Constants.MachineMessages.FailedToToggleLight.Title, $"Light fixture '{fixtureName}' does not exist");
 
 			var mutateResult = await this.Mono.MutateUntil(
 				() => ToggleLight_Internal(fixtureName, isOn),
 				() => this.State.Lights.TryGetValue(fixtureName, out var current) && current == isOn,
 				TimeSpan.FromSeconds(10));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToToggleLight.Title, autoResolve: default);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToToggleLight.Id, Constants.MachineMessages.FailedToToggleLight.Title, autoResolve: default);
 		}
 		protected virtual Task ToggleLight_Internal(string fixtureName, bool isOn)
 		{
@@ -525,7 +527,7 @@ namespace Lib3Dp.Connectors
 		{
 			var unit = _State.MaterialUnits.GetValueOrDefault(unitID);
 
-			if (unit == null) return MachineOperationResult.Fail(Constants.MachineMessages.FailedToBeginMUHeating.Title, $"Unit of ID {unitID} does not exist!");
+			if (unit == null) return MachineOperationResult.Fail(Constants.MachineMessages.FailedToBeginMUHeating.Id, Constants.MachineMessages.FailedToBeginMUHeating.Title, $"Unit of ID {unitID} does not exist!");
 
 			// Check for AMS Heating Capability 
 
@@ -537,7 +539,7 @@ namespace Lib3Dp.Connectors
 
 			if (!unit.HeatingConstraints.HasValue || !settings.IsInRange(unit.HeatingConstraints.Value))
 			{
-				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToBeginMUHeating.Title, $"Temp must be in Range {unit.HeatingConstraints!.Value}");
+				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToBeginMUHeating.Id, Constants.MachineMessages.FailedToBeginMUHeating.Title, $"Temp must be in Range {unit.HeatingConstraints!.Value}");
 			}
 
 			var mutateResult = await this.Mono.MutateUntil(
@@ -545,7 +547,7 @@ namespace Lib3Dp.Connectors
 				() => _State.MaterialUnits.Values.Any(item => item.ID.Equals(unitID) && item.HeatingJob != null),
 				TimeSpan.FromSeconds(30));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToBeginMUHeating.Title, autoResolve: Constants.MachineMessages.FailedToBeginMUHeating.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToBeginMUHeating.Id, Constants.MachineMessages.FailedToBeginMUHeating.Title, autoResolve: Constants.MachineMessages.FailedToBeginMUHeating.AutoResolve);
 		}
 		protected virtual Task BeginMUHeating_Internal(string unitID, HeatingSettings settings)
 		{
@@ -556,7 +558,7 @@ namespace Lib3Dp.Connectors
 		{
 			var unit = _State.MaterialUnits.GetValueOrDefault(unitID);
 
-			if (unit == null) return MachineOperationResult.Fail(Constants.MachineMessages.FailedToEndMUHeating.Title, $"Unit of ID {unitID} does not exist!");
+			if (unit == null) return MachineOperationResult.Fail(Constants.MachineMessages.FailedToEndMUHeating.Id, Constants.MachineMessages.FailedToEndMUHeating.Title, $"Unit of ID {unitID} does not exist!");
 
 			if (unit.HeatingJob == null) return MachineOperationResult.Ok;
 
@@ -569,7 +571,7 @@ namespace Lib3Dp.Connectors
 				() => _State.MaterialUnits.Values.Any(item => item.ID.Equals(unitID) && !item.HeatingJob.HasValue),
 				TimeSpan.FromSeconds(30));
 
-			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToEndMUHeating.Title, autoResolve: Constants.MachineMessages.FailedToEndMUHeating.AutoResolve);
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToEndMUHeating.Id, Constants.MachineMessages.FailedToEndMUHeating.Title, autoResolve: Constants.MachineMessages.FailedToEndMUHeating.AutoResolve);
 		}
 		protected virtual Task EndMaterialUnitHeating_Internal(string unitID)
 		{

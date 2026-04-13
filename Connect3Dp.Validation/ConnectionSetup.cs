@@ -27,6 +27,22 @@ public static class ConnectionSetup
 
 		var spec = ModelSpecs.All[modelName];
 
+		// Nozzle confirmation
+		AnsiConsole.WriteLine();
+		AnsiConsole.MarkupLine("[bold]Nozzle Configuration[/]");
+
+		var nozzleDiameter = AnsiConsole.Prompt(
+			new TextPrompt<double>("Installed nozzle diameter (mm)?")
+				.DefaultValue(spec.DefaultNozzleDiameter)
+				.Validate(d => d > 0 && d < 5, "Diameter must be between 0 and 5 mm"));
+
+		var nozzleCount = AnsiConsole.Prompt(
+			new TextPrompt<int>("Number of nozzles?")
+				.DefaultValue(spec.ExpectedNozzleCount)
+				.Validate(n => n >= 1 && n <= 4, "Nozzle count must be between 1 and 4"));
+
+		spec = spec with { DefaultNozzleDiameter = nozzleDiameter, ExpectedNozzleCount = nozzleCount };
+
 		// File store (temp directory for validation)
 		var tempPath = Path.Combine(Path.GetTempPath(), "Connect3Dp.Validation", Guid.NewGuid().ToString("N")[..8]);
 		var fileStore = new FileSystemMachineFileStore(new FileSystemMachineFileStoreOptions(tempPath, false));

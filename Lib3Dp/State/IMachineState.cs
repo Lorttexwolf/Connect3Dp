@@ -17,8 +17,8 @@ namespace Lib3Dp.State
 		IEnumerable<MachineNozzle> Nozzles { get; }
 		IEnumerable<IMaterialUnit> MaterialUnits { get; }
 		[JsonIgnore]
-		IReadOnlyDictionary<MachineMessage, Notification> MappedNotifications { get; }
-		IEnumerable<KeyValuePair<MachineMessage, Notification>> Notifications => MappedNotifications.AsEnumerable();
+		IReadOnlyDictionary<string, Notification> MappedNotifications { get; }
+		IEnumerable<KeyValuePair<string, Notification>> Notifications => MappedNotifications.AsEnumerable();
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }
 		IReadOnlyDictionary<string, bool> Lights { get; }
 		IReadOnlyDictionary<string, int> Fans { get; }

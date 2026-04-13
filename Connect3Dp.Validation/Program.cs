@@ -37,7 +37,7 @@ specTable.AddRow("Model", spec.ModelName);
 specTable.AddRow("Expected Capabilities", spec.ExpectedCapabilities.ToString());
 specTable.AddRow("Absent Capabilities", spec.ExplicitlyAbsentCapabilities.ToString());
 specTable.AddRow("SD/USB Required", spec.RequiresSDOrUSB.ToString());
-specTable.AddRow("Camera", spec.CameraType ?? "None");
+specTable.AddRow("AMS", spec.ExpectedAMSModel ?? "None (Standalone)");
 
 if (spec.ExpectedHeatingConstraints != null)
 {
@@ -69,12 +69,21 @@ var tests = new List<ValidationTest>
 	new TemperatureConstraintsTest(),
 	new AMSDetectionTest(),
 	new AMSCapabilityValidationTest(),
+	new LocalJobsTest(),
+	new LocalJobPrintReadinessTest(),
+	new NozzleInfoTest(),
+	new ExtruderInfoTest(),
+	new ActiveJobInfoTest(),
+	new PrintHistoryTest(),
+	new AMSHeatingConstraintsTest(),
 
 	// Non-destructive
 	new LightToggleTest(),
 	new AirDuctToggleTest(),
+	new AMSHeatingToggleTest(),
 
 	// Destructive
+	new PrintLocalFileTest(),
 	new PauseTest(),
 	new ResumeTest(),
 	new StopTest(),

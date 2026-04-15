@@ -1,4 +1,3 @@
-using Lib3Dp.Connectors.BambuLab.Constants;
 using Lib3Dp.Constants;
 using Lib3Dp.State;
 
@@ -9,6 +8,7 @@ public static class ModelSpecs
 	// Common capability sets for BambuLab
 	private static readonly MachineCapabilities BBLBase =
 		MachineCapabilities.StartLocalJob |
+		MachineCapabilities.LocalJobs |
 		MachineCapabilities.Control |
 		MachineCapabilities.Lighting |
 		MachineCapabilities.PrintHistory |
@@ -36,8 +36,8 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(20, 110),
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
-			RequiresSDOrUSB: false,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		var x1e = new ModelSpec(
@@ -51,8 +51,8 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 320),
 				[HeatingElementNames.Chamber] = new(40, 60),
 			},
-			RequiresSDOrUSB: false,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		var p1s = new ModelSpec(
@@ -69,7 +69,7 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		var p2s = new ModelSpec(
@@ -82,8 +82,8 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(20, 110),
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
-			RequiresSDOrUSB: false,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		var a1 = new ModelSpec(
@@ -99,7 +99,7 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		var a1Mini = new ModelSpec(
@@ -115,7 +115,7 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			ValidationPrintFileName: "Connect3Dp_Validation.3mf"
+			ValidationPrintFileName: "Connect3Dp_Validation"
 		);
 
 		// ── ELEGOO ────────────────────────────────────────────
@@ -139,7 +139,7 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(0, 110),
 				[HeatingElementNames.Nozzle] = new(0, 300),
 			},
-			RequiresSDOrUSB: false
+			RequiresSDOrUSB: true
 		);
 
 		// ── Creality ──────────────────────────────────────────
@@ -162,49 +162,21 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(0, 300),
 				[HeatingElementNames.Chamber] = new(0, 60),
 			},
-			RequiresSDOrUSB: false
+			RequiresSDOrUSB: true
 		);
 
-		// ── Build dictionary with AMS variants ────────────────
+		// ── Build dictionary ──────────────────────────────────
+		// AMS units are detected dynamically after connecting.
 
 		return new Dictionary<string, ModelSpec>
 		{
-			// BambuLab — X1C
 			["X1C"] = x1c,
-			["X1C + AMS"] = x1c with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["X1C + AMS 2 Pro"] = x1c with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// BambuLab — X1E
 			["X1E"] = x1e,
-			["X1E + AMS"] = x1e with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["X1E + AMS 2 Pro"] = x1e with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// BambuLab — P1S
 			["P1S"] = p1s,
-			["P1S + AMS"] = p1s with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["P1S + AMS 2 Pro"] = p1s with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// BambuLab — P2S
 			["P2S"] = p2s,
-			["P2S + AMS"] = p2s with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["P2S + AMS 2 Pro"] = p2s with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// BambuLab — A1 (supports AMS, AMS Lite, AMS 2 Pro)
 			["A1"] = a1,
-			["A1 + AMS"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["A1 + AMS Lite"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMSLite },
-			["A1 + AMS 2 Pro"] = a1 with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// BambuLab — A1 Mini (supports AMS, AMS Lite, AMS 2 Pro)
 			["A1 Mini"] = a1Mini,
-			["A1 Mini + AMS"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMS },
-			["A1 Mini + AMS Lite"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMSLite },
-			["A1 Mini + AMS 2 Pro"] = a1Mini with { ExpectedAMSModel = BBLConstants.ModelAMS2Pro },
-
-			// ELEGOO
 			["Centauri Carbon"] = centauriCarbon,
-
-			// Creality
 			["K1C"] = k1c,
 		};
 	}

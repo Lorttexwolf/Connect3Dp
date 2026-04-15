@@ -22,6 +22,7 @@ namespace Lib3Dp.State
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }
 		IReadOnlyDictionary<string, bool> Lights { get; }
 		IReadOnlyDictionary<string, int> Fans { get; }
+		bool IsLocalStorageScanning { get; }
 		string? StreamingOMEURL { get; }
 		string? ThumbnailOMEURL { get; }
 	}

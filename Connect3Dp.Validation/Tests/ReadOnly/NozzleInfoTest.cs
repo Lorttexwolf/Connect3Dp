@@ -14,7 +14,7 @@ public class NozzleInfoTest : ValidationTest
 		var nozzles = connection.State.Nozzles.ToList();
 
 		if (nozzles.Count == 0)
-			return Task.FromResult(TestResult.Skip("No nozzle data reported by connector"));
+			return Task.FromResult(TestResult.Skip("No nozzle data"));
 
 		var issues = new List<string>();
 
@@ -42,6 +42,6 @@ public class NozzleInfoTest : ValidationTest
 
 		var details = nozzles.Select(n => $"#{n.Number}: {n.Diameter}mm");
 		return Task.FromResult(TestResult.Pass(
-			$"{nozzles.Count} nozzle(s) verified: {string.Join(", ", details)}"));
+			$"{nozzles.Count} nozzle(s): {string.Join(", ", details)}"));
 	}
 }

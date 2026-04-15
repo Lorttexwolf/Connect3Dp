@@ -17,7 +17,7 @@ public class CapabilityAbsenceTest : ValidationTest
 		var unexpected = shouldBeAbsent & actual;
 
 		if (unexpected == 0)
-			return Task.FromResult(TestResult.Pass("No unexpected capabilities found"));
+			return Task.FromResult(TestResult.Pass("None unexpected"));
 
 		var unexpectedNames = new List<string>();
 		foreach (MachineCapabilities cap in Enum.GetValues<MachineCapabilities>())

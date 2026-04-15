@@ -6,24 +6,28 @@ namespace Connect3Dp.Validation.Tests.ReadOnly;
 
 public class LocalJobsTest : ValidationTest
 {
-	public override string Name => "Local Jobs";
+	public override string Name => "Local Storage File Discovery";
 	public override string Description => "Verify local jobs are discoverable and the validation print file is present";
 	public override RiskTier Tier => RiskTier.ReadOnly;
 
-	public override Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
+	public override async Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
 		if (!connection.State.Capabilities.HasFlag(MachineCapabilities.LocalJobs))
-			return Task.FromResult(TestResult.Skip("LocalJobs capability not present (FTP may not be connected)"));
+			return TestResult.Skip("LocalJobs not present");
+
+		// Wait for FTP scan to fully complete
+		while (connection.State.IsLocalStorageScanning)
+			await Task.Delay(500, ct);
 
 		var jobs = connection.State.LocalJobs;
 
 		if (jobs.Count == 0)
-			return Task.FromResult(TestResult.Skip("LocalJobs capability present but no files found on device"));
+			return TestResult.Skip("LocalJobs capability present but no files found on device");
 
 		// Validate each job has basic required data
 		var invalid = jobs.Where(j => string.IsNullOrWhiteSpace(j.Name)).ToList();
 		if (invalid.Count > 0)
-			return Task.FromResult(TestResult.Fail($"{invalid.Count} job(s) have empty names"));
+			return TestResult.Fail($"{invalid.Count} job(s) have empty names");
 
 		// Check for the validation print file if one is defined in the spec
 		if (!string.IsNullOrEmpty(spec.ValidationPrintFileName))
@@ -33,18 +37,14 @@ public class LocalJobsTest : ValidationTest
 
 			if (validationJob.Name == null)
 			{
-				var jobNames = string.Join(", ", jobs.Select(j => j.Name).Take(10));
-				return Task.FromResult(TestResult.Fail(
-					$"Validation file '{spec.ValidationPrintFileName}' not found on printer",
-					$"Found {jobs.Count} file(s): {jobNames}"));
+				return TestResult.Fail(
+					$"Validation file '{spec.ValidationPrintFileName}' not found among {jobs.Count} file(s) on printer");
 			}
 
-			return Task.FromResult(TestResult.Pass(
-				$"Found validation file '{validationJob.Name}' among {jobs.Count} local job(s)"));
+			return TestResult.Pass(
+				$"Found '{validationJob.Name}' ({jobs.Count} file(s) total)");
 		}
 
-		var names = string.Join(", ", jobs.Select(j => j.Name).Take(5));
-		return Task.FromResult(TestResult.Pass(
-			$"{jobs.Count} local job(s) found: {names}{(jobs.Count > 5 ? "..." : "")}"));
+		return TestResult.Pass($"{jobs.Count} file(s) found");
 	}
 }

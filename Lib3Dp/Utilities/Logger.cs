@@ -7,6 +7,10 @@ namespace Lib3Dp.Utilities
 	{
 		//internal static Logger Default { get; } = new Logger("Lib3Dp");
 
+		private static Level _globalMinimumLevel = Level.Trace;
+
+		public static void SetGlobalMinimumLevel(Level level) => _globalMinimumLevel = level;
+
 		private static readonly Dictionary<string, Level> OverriddenCategoryLevels = [];
 
 		private static readonly Dictionary<string, Logger> CategoriesToLogger = [];
@@ -24,6 +28,8 @@ namespace Lib3Dp.Utilities
 		
 		public void Log(Level level, string message, ConsoleColor foregroundColor = ConsoleColor.White)
 		{
+			if (level > _globalMinimumLevel) return;
+
 			Level visibleLevels = VisibleLevels;
 			if (OverriddenCategoryLevels.TryGetValue(CategoryName, out var overiddenLevel))
 			{
@@ -135,6 +141,7 @@ namespace Lib3Dp.Utilities
 
 		public enum Level
 		{
+			None = -1,
 			Error,
 			Warning,
 			Info,

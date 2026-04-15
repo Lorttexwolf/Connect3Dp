@@ -1,6 +1,6 @@
-using Connect3Dp.Validation.Reporting;
 using Connect3Dp.Validation.Specs;
 using Lib3Dp.Connectors;
+using Lib3Dp.Extensions;
 using Lib3Dp.State;
 using Spectre.Console;
 
@@ -27,52 +27,110 @@ public class TestRunner
 
 		foreach (var tier in tiers)
 		{
-			AnsiConsole.Write(new Rule($"[bold]{tier.Key} Tests[/]").LeftJustified());
-			AnsiConsole.WriteLine();
-
 			if (tier.Key == RiskTier.Destructive)
 			{
-				if (!await PrepareForDestructiveTests(ct))
-				{
-					foreach (var test in tier)
-						results.Add((test, TestResult.Skip("Skipped: printer not printing")));
-					continue;
-				}
-			}
-			else
-			{
-				string tierDesc = tier.Key == RiskTier.ReadOnly
-					? "These tests only read state and do not modify the printer."
-					: "These tests will toggle lights or air duct mode (non-destructive).";
-
-				if (!AnsiConsole.Confirm($"{tierDesc} Proceed?"))
+				AnsiConsole.WriteLine();
+				if (!AnsiConsole.Confirm("Run destructive tests? (will start, pause, resume, and stop a print)"))
 				{
 					foreach (var test in tier)
 						results.Add((test, TestResult.Skip("Skipped by user")));
 					continue;
 				}
-			}
+				AnsiConsole.WriteLine();
 
-			AnsiConsole.WriteLine();
-
-			foreach (var test in tier)
-			{
-				if (tier.Key == RiskTier.Destructive)
+				if (_connection.State.Status != MachineStatus.Idle)
 				{
-					AnsiConsole.MarkupLine($"[bold]Next:[/] {test.Name} - {test.Description}");
-					if (!AnsiConsole.Confirm("  Execute this step?"))
+					AnsiConsole.MarkupLine($"[yellow]Printer is not idle (status: {_connection.State.Status}). Please clear the bed before proceeding.[/]");
+					if (!AnsiConsole.Confirm("Is the bed clear and ready to print?", defaultValue: false))
 					{
-						results.Add((test, TestResult.Skip("Skipped by user")));
+						foreach (var test in tier)
+							results.Add((test, TestResult.Skip("Skipped: bed not confirmed clear")));
 						continue;
+					}
+					AnsiConsole.WriteLine();
+				}
+
+				// Display material mapping before firing the print
+				if (!string.IsNullOrEmpty(_spec.ValidationPrintFileName))
+				{
+					var job = _connection.State.LocalJobs.FirstOrDefault(j =>
+						j.Name.Contains(_spec.ValidationPrintFileName, StringComparison.OrdinalIgnoreCase));
+
+					if (job.Name != null && job.MaterialsToPrint?.Count > 0)
+					{
+						var matches = _connection.State.FindMatchingSpools(job.MaterialsToPrint);
+
+						var mapTable = new Table()
+							.Border(TableBorder.Rounded)
+							.AddColumn("Filament")
+							.AddColumn("Material")
+							.AddColumn("Color")
+							.AddColumn("→ Slot");
+
+						foreach (var (filamentId, match) in matches.Match)
+						{
+							var mat = job.MaterialsToPrint[filamentId].Material;
+							mapTable.AddRow(
+								filamentId.ToString(),
+								Markup.Escape(mat.Name),
+								Markup.Escape(mat.Color.Name ?? $"#{mat.Color.Hex}"),
+								Markup.Escape($"{match.Location.MUID} / {match.Location.Slot}"));
+						}
+
+						foreach (var missing in matches.Missing)
+						{
+							var mat = job.MaterialsToPrint[missing].Material;
+							mapTable.AddRow(
+								missing.ToString(),
+								Markup.Escape(mat.Name),
+								Markup.Escape(mat.Color.Name ?? $"#{mat.Color.Hex}"),
+								"[red]No match[/]");
+						}
+
+						AnsiConsole.Write(new Panel(mapTable)
+							.Header("[bold]Material Mapping[/]")
+							.Border(BoxBorder.Rounded));
+
+						if (!AnsiConsole.Confirm("Is this material binding correct?", defaultValue: true))
+						{
+							foreach (var test in tier)
+								results.Add((test, TestResult.Skip("Skipped: material binding not confirmed")));
+							continue;
+						}
+
+						AnsiConsole.WriteLine();
 					}
 				}
 
+				// Run as a pipeline — if any step fails, skip the rest
+				bool pipelineBroken = false;
+				foreach (var test in tier)
+				{
+					if (pipelineBroken)
+					{
+						var skip = TestResult.Skip("Skipped: previous step failed");
+						results.Add((test, skip));
+						PrintResult(test, skip);
+						continue;
+					}
+
+					var result = await ExecuteTest(test, ct);
+					results.Add((test, result));
+					PrintResult(test, result);
+
+					if (result.Outcome == TestOutcome.Fail)
+						pipelineBroken = true;
+				}
+
+				continue;
+			}
+
+			foreach (var test in tier)
+			{
 				var result = await ExecuteTest(test, ct);
 				results.Add((test, result));
 				PrintResult(test, result);
 			}
-
-			AnsiConsole.WriteLine();
 		}
 
 		return results;
@@ -114,46 +172,5 @@ public class TestRunner
 
 		if (result.Detail != null)
 			AnsiConsole.MarkupLine($"       [dim]{Markup.Escape(result.Detail)}[/]");
-	}
-
-	private async Task<bool> PrepareForDestructiveTests(CancellationToken ct)
-	{
-		AnsiConsole.MarkupLine("[bold yellow]DESTRUCTIVE TESTS[/]");
-		AnsiConsole.MarkupLine("These tests will pause, resume, and stop a print job.");
-		AnsiConsole.MarkupLine("Please start a test print from your printer's touchscreen or slicer software.");
-		AnsiConsole.WriteLine();
-
-		if (!AnsiConsole.Confirm("Have you started a test print and want to proceed?"))
-			return false;
-
-		// Wait for printer to report Printing status
-		bool isPrinting = await AnsiConsole.Status()
-			.Spinner(Spinner.Known.Dots)
-			.SpinnerStyle(Style.Parse("yellow"))
-			.StartAsync("Waiting for printer to report 'Printing' status...", async ctx =>
-			{
-				var timeout = TimeSpan.FromSeconds(120);
-				var sw = System.Diagnostics.Stopwatch.StartNew();
-
-				while (sw.Elapsed < timeout)
-				{
-					if (_connection.State.Status == MachineStatus.Printing)
-						return true;
-
-					await Task.Delay(1000, ct);
-				}
-
-				return false;
-			});
-
-		if (!isPrinting)
-		{
-			AnsiConsole.MarkupLine("[red]Printer did not report 'Printing' status within 120 seconds.[/]");
-			return false;
-		}
-
-		AnsiConsole.MarkupLine("[green]Printer is printing. Proceeding with destructive tests.[/]");
-		AnsiConsole.WriteLine();
-		return true;
 	}
 }

@@ -14,7 +14,7 @@ public class ExtruderInfoTest : ValidationTest
 		var extruders = connection.State.Extruders.ToList();
 
 		if (extruders.Count == 0)
-			return Task.FromResult(TestResult.Skip("No extruder data reported by connector"));
+			return Task.FromResult(TestResult.Skip("No extruder data"));
 
 		var issues = new List<string>();
 

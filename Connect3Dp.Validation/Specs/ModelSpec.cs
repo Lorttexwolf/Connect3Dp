@@ -13,6 +13,5 @@ public record ModelSpec(
 	bool RequiresSDOrUSB,
 	int ExpectedNozzleCount = 1,
 	double DefaultNozzleDiameter = 0.4,
-	string? ValidationPrintFileName = null,
-	string? ExpectedAMSModel = null
+	string? ValidationPrintFileName = null
 );

@@ -12,7 +12,7 @@ public class ConnectionTest : ValidationTest
 
 	public override async Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
-		var result = await connection.Connect(ct);
+		var result = await connection.ConnectIfDisconnected(ct);
 
 		if (!result.Success)
 			return TestResult.Fail("Failed to connect", result.Reasoning?.ToString());
@@ -27,6 +27,6 @@ public class ConnectionTest : ValidationTest
 		if (connection.State.Status == MachineStatus.Disconnected)
 			return TestResult.Fail("Connected but status reverted to Disconnected");
 
-		return TestResult.Pass($"Connected, status: {connection.State.Status}");
+		return TestResult.Pass($"Status: {connection.State.Status}");
 	}
 }

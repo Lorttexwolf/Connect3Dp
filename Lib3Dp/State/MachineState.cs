@@ -26,6 +26,8 @@ namespace Lib3Dp.State
 		public Dictionary<string, bool> Lights { get; set; } = [];
 		public Dictionary<string, HeatingElement> HeatingElements { get; set; } = [];
 
+		public bool IsLocalStorageScanning { get; set; }
+
 		public string? StreamingOMEURL { get; set; }
 		public string? ThumbnailOMEURL { get; set; }
 

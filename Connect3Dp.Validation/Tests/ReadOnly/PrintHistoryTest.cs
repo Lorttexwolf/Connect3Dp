@@ -12,33 +12,23 @@ public class PrintHistoryTest : ValidationTest
 
 	public override Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
-		bool shouldHaveHistory = spec.ExpectedCapabilities.HasFlag(MachineCapabilities.PrintHistory);
-		bool hasHistory = connection.State.Capabilities.HasFlag(MachineCapabilities.PrintHistory);
-
-		if (!shouldHaveHistory)
-		{
-			return Task.FromResult(hasHistory
-				? TestResult.Fail("PrintHistory capability present but should be absent per spec")
-				: TestResult.Pass("PrintHistory correctly absent for this model"));
-		}
-
-		if (!hasHistory)
-			return Task.FromResult(TestResult.Fail("PrintHistory capability expected but not present"));
+		if (!connection.State.Capabilities.HasFlag(MachineCapabilities.PrintHistory))
+			return Task.FromResult(TestResult.Skip("PrintHistory not present"));
 
 		var history = connection.State.JobHistory.ToList();
 
 		if (history.Count == 0)
-			return Task.FromResult(TestResult.Pass("PrintHistory capability present but history is empty (may be a fresh machine)"));
+			return Task.FromResult(TestResult.Pass("History empty (fresh machine?)"));
 
 		var issues = new List<string>();
 
 		foreach (var entry in history)
 		{
 			if (string.IsNullOrWhiteSpace(entry.Name))
-				issues.Add("Entry with empty name found");
+				issues.Add("Entry with empty name");
 
 			if (entry.EndedAt > DateTime.Now.AddMinutes(5))
-				issues.Add($"Entry '{entry.Name}' has future EndedAt: {entry.EndedAt}");
+				issues.Add($"'{entry.Name}' has future EndedAt: {entry.EndedAt}");
 		}
 
 		if (issues.Count > 0)

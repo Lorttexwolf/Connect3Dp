@@ -88,8 +88,6 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			// For additional metadata subtask_id seems to be able to hold them.
 
-			// TODO: There may be an issue with a long subtask_id, I've noticed some prints take 30 seconds to begin and lockup the whole system. More testing is required.
-
 			var commandData = new JsonObject
 			{
 				{ "auto_bed_leveling", 2 },
@@ -101,12 +99,13 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				{ "nozzle_offset_cali", 0 },
 				{ "param", $"Metadata/plate_{options.PlateIndex}.gcode" },
 				{ "plate", options.PlateIndex },
-				{ "subtask_name", "" },
+				{ "subtask_name", options.SubTaskId },
 				{ "task_type", 1 },
-				{ "subtask_id", options.SubTaskId },
+				//{ "subtask_id", options.SubTaskId }, There may be an issue with a long subtask_id, I've noticed some prints take 30 seconds to begin and lockup the whole system. More testing is required.
 				{ "timelapse", options.Timelapse },
 				{ "toolhead_offset_cali", false },
-				{ "url", $"file:///media/usb0/{options.FileName}" }
+				//{ "url", $"file:///media/usb0/{options.FileName}" } // Works on P2S
+				{ "url", $"ftp://{options.FileName}" } // Works on X1C
 			};
 
 			if (options.AMSMapping != null && options.AMSMapping.Count > 0)
@@ -213,13 +212,15 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// https://github.com/greghesp/ha-bambulab/issues/1448
 			var commandData = new JsonObject
 			{
-				{ "duration", settings.Duration.TotalHours },
-				{ "humidity", 0 },
 				{ "ams_id", SNToAMSID[amsSN] },
+				{ "close_power_conflict", false },
+				{ "duration", (int)Math.Ceiling(settings.Duration.TotalHours) },
+				{ "humidity", 0 },
 				{ "mode", 1 },
+				{ "filament", "" },
 				{ "rotate_tray", settings.DoSpin },
 				{ "temp", settings.TempC },
-				{ "cooling_temp", 40 } // Unsure what this field does. 
+				{ "cooling_temp", 20 } // Unsure what this field does. Bambu Lab uses 20.
 
             };
 			return PublishCommand("print", "ams_filament_drying", commandData);
@@ -230,13 +231,13 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// https://github.com/greghesp/ha-bambulab/issues/1448
 			var commandData = new JsonObject
 			{
-				{ "duration", 0 },
-				{ "humidity", 0 },
 				{ "ams_id", SNToAMSID[amsSN] },
-				{ "mode", 0 },
+				{ "duration", 0 },
+                { "filament", "" },
+				{ "humidity", 0 },
+                { "mode", 0 },
 				{ "rotate_tray", false },
-				{ "temp", 0 },
-				{ "cooling_temp", 40 } // Unsure what this field does. 
+				{ "temp", 0 }
 
             };
 			return PublishCommand("print", "ams_filament_drying", commandData);

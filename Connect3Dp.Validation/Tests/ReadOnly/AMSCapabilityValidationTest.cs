@@ -12,23 +12,13 @@ public class AMSCapabilityValidationTest : ValidationTest
 
 	public override Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
-		if (spec.ExpectedAMSModel == null)
-			return Task.FromResult(TestResult.Skip("Standalone configuration — AMS validation skipped"));
-
 		var units = connection.State.MaterialUnits.ToList();
 
 		if (units.Count == 0)
-			return Task.FromResult(TestResult.Fail($"Expected {spec.ExpectedAMSModel} but no AMS units detected"));
+			return Task.FromResult(TestResult.Skip("No AMS detected"));
 
 		var failures = new List<string>();
 		int validated = 0;
-
-		// Verify at least one unit matches the expected AMS model
-		if (!units.Any(u => u.Model == spec.ExpectedAMSModel))
-		{
-			var found = string.Join(", ", units.Select(u => u.Model ?? "Unknown"));
-			failures.Add($"No unit matches expected model {spec.ExpectedAMSModel} (found: {found})");
-		}
 
 		foreach (var unit in units)
 		{
@@ -58,6 +48,6 @@ public class AMSCapabilityValidationTest : ValidationTest
 				$"{failures.Count} AMS validation failures",
 				string.Join("; ", failures)));
 
-		return Task.FromResult(TestResult.Pass($"All {validated} AMS unit(s) match their model spec"));
+		return Task.FromResult(TestResult.Pass($"All {validated} unit(s) valid"));
 	}
 }

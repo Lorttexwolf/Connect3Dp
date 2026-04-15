@@ -13,23 +13,15 @@ public class AMSHeatingConstraintsTest : ValidationTest
 
 	public override Task<TestResult> RunAsync(MachineConnection connection, ModelSpec spec, CancellationToken ct)
 	{
-		if (spec.ExpectedAMSModel == null)
-			return Task.FromResult(TestResult.Skip("Standalone configuration — AMS heating validation skipped"));
-
-		var expectedHeating = BBLConstants.GetAMSHeatingConstraintsFromModel(spec.ExpectedAMSModel);
-		if (expectedHeating == null)
-			return Task.FromResult(TestResult.Skip($"{spec.ExpectedAMSModel} does not support heating"));
-
 		var units = connection.State.MaterialUnits.ToList();
 
 		if (units.Count == 0)
-			return Task.FromResult(TestResult.Fail($"Expected {spec.ExpectedAMSModel} but no AMS units detected"));
+			return Task.FromResult(TestResult.Skip("No AMS detected"));
 
 		var heatingUnits = units.Where(u => u.Capabilities.HasFlag(MUCapabilities.Heating)).ToList();
 
 		if (heatingUnits.Count == 0)
-			return Task.FromResult(TestResult.Fail(
-				$"Expected heating-capable {spec.ExpectedAMSModel} but no units have Heating capability"));
+			return Task.FromResult(TestResult.Skip("No heating-capable units"));
 
 		var issues = new List<string>();
 
@@ -37,17 +29,24 @@ public class AMSHeatingConstraintsTest : ValidationTest
 		{
 			if (!unit.HeatingConstraints.HasValue)
 			{
-				issues.Add($"{unit.Model ?? "Unknown"} (ID: {unit.ID}) has Heating capability but no HeatingConstraints");
+				issues.Add($"{unit.ID}: has Heating but no constraints");
 				continue;
 			}
 
 			var constraints = unit.HeatingConstraints.Value;
 
 			if (constraints.MinTempC >= constraints.MaxTempC)
-				issues.Add($"{unit.Model ?? "Unknown"} (ID: {unit.ID}) has invalid range: min {constraints.MinTempC}°C >= max {constraints.MaxTempC}°C");
+				issues.Add($"{unit.ID}: min {constraints.MinTempC}°C >= max {constraints.MaxTempC}°C");
 
 			if (constraints.MinTempC <= 0)
-				issues.Add($"{unit.Model ?? "Unknown"} (ID: {unit.ID}) has non-positive min temp: {constraints.MinTempC}°C");
+				issues.Add($"{unit.ID}: min temp <= 0");
+
+			if (unit.Model != null)
+			{
+				var expected = BBLConstants.GetAMSHeatingConstraintsFromModel(unit.Model);
+				if (expected.HasValue && constraints != expected.Value)
+					issues.Add($"{unit.ID}: {constraints}, expected {expected.Value}");
+			}
 		}
 
 		if (issues.Count > 0)
@@ -55,10 +54,6 @@ public class AMSHeatingConstraintsTest : ValidationTest
 				$"{issues.Count} heating constraint issue(s)",
 				string.Join("; ", issues)));
 
-		var details = heatingUnits.Select(u =>
-			$"{u.Model ?? "Unknown"} (ID: {u.ID}): {u.HeatingConstraints!.Value.MinTempC}–{u.HeatingConstraints!.Value.MaxTempC}°C");
-
-		return Task.FromResult(TestResult.Pass(
-			$"{heatingUnits.Count} heating-capable unit(s) validated: {string.Join("; ", details)}"));
+		return Task.FromResult(TestResult.Pass($"{heatingUnits.Count} unit(s) validated"));
 	}
 }

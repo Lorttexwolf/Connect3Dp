@@ -1,7 +1,6 @@
 using Connect3Dp.Validation.Specs;
 using Lib3Dp.Connectors;
 using Lib3Dp.State;
-using System.Text;
 
 namespace Connect3Dp.Validation.Tests.ReadOnly;
 
@@ -18,7 +17,7 @@ public class CapabilityPresenceTest : ValidationTest
 		var missing = expected & ~actual;
 
 		if (missing == 0)
-			return Task.FromResult(TestResult.Pass($"All expected capabilities present"));
+			return Task.FromResult(TestResult.Pass("All present"));
 
 		var missingNames = new List<string>();
 		foreach (MachineCapabilities cap in Enum.GetValues<MachineCapabilities>())

@@ -15,7 +15,6 @@ public static class TestReport
 		var table = new Table()
 			.Border(TableBorder.Rounded)
 			.AddColumn("Test")
-			.AddColumn("Tier")
 			.AddColumn("Result")
 			.AddColumn("Message");
 
@@ -35,29 +34,18 @@ public static class TestReport
 
 			table.AddRow(
 				Markup.Escape(test.Name),
-				Markup.Escape(test.Tier.ToString()),
 				resultMarkup,
 				message);
 		}
 
 		AnsiConsole.Write(table);
 
-		// Summary
 		int passed = results.Count(r => r.Result.Outcome == TestOutcome.Pass);
 		int failed = results.Count(r => r.Result.Outcome == TestOutcome.Fail);
 		int skipped = results.Count(r => r.Result.Outcome == TestOutcome.Skip);
 
 		AnsiConsole.WriteLine();
 		AnsiConsole.MarkupLine($"[green]{passed} passed[/], [red]{failed} failed[/], [yellow]{skipped} skipped[/] — {results.Count} total");
-
-		if (spec.Brand is PrinterBrand.ELEGOO or PrinterBrand.Creality)
-		{
-			int testable = results.Count - skipped;
-			if (testable > 0)
-				AnsiConsole.MarkupLine($"[cyan]Implementation progress: {passed}/{testable} testable tests passing[/]");
-			else
-				AnsiConsole.MarkupLine("[cyan]Implementation progress: connector is a skeleton — all tests skipped[/]");
-		}
 
 		AnsiConsole.WriteLine();
 

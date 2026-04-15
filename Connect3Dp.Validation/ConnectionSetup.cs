@@ -12,6 +12,20 @@ public static class ConnectionSetup
 {
 	public static (MachineConnection Connection, ModelSpec Spec) Run()
 	{
+		// Check for saved configuration
+		var saved = SavedConfiguration.Load();
+		if (saved != null && ModelSpecs.All.ContainsKey(saved.ModelName))
+		{
+			AnsiConsole.MarkupLine($"[bold]Last used:[/] {saved.Brand} {saved.ModelName} @ {saved.IP}");
+			if (AnsiConsole.Confirm("Use this configuration?", defaultValue: true))
+			{
+				var spec = ModelSpecs.All[saved.ModelName];
+				var connection = CreateConnection(saved.Brand, saved.ModelName, saved.IP, saved.Serial, saved.AccessCode);
+				return (connection, spec);
+			}
+			AnsiConsole.WriteLine();
+		}
+
 		// Brand selection
 		var brand = AnsiConsole.Prompt(
 			new SelectionPrompt<PrinterBrand>()
@@ -25,7 +39,7 @@ public static class ConnectionSetup
 				.Title("Select [bold]printer model[/]:")
 				.AddChoices(models));
 
-		var spec = ModelSpecs.All[modelName];
+		var selectedSpec = ModelSpecs.All[modelName];
 
 		// Nozzle confirmation
 		AnsiConsole.WriteLine();
@@ -33,34 +47,17 @@ public static class ConnectionSetup
 
 		var nozzleDiameter = AnsiConsole.Prompt(
 			new TextPrompt<double>("Installed nozzle diameter (mm)?")
-				.DefaultValue(spec.DefaultNozzleDiameter)
+				.DefaultValue(selectedSpec.DefaultNozzleDiameter)
 				.Validate(d => d > 0 && d < 5, "Diameter must be between 0 and 5 mm"));
 
 		var nozzleCount = AnsiConsole.Prompt(
 			new TextPrompt<int>("Number of nozzles?")
-				.DefaultValue(spec.ExpectedNozzleCount)
+				.DefaultValue(selectedSpec.ExpectedNozzleCount)
 				.Validate(n => n >= 1 && n <= 4, "Nozzle count must be between 1 and 4"));
 
-		spec = spec with { DefaultNozzleDiameter = nozzleDiameter, ExpectedNozzleCount = nozzleCount };
+		selectedSpec = selectedSpec with { DefaultNozzleDiameter = nozzleDiameter, ExpectedNozzleCount = nozzleCount };
 
-		// File store (temp directory for validation)
-		var tempPath = Path.Combine(Path.GetTempPath(), "Connect3Dp.Validation", Guid.NewGuid().ToString("N")[..8]);
-		var fileStore = new FileSystemMachineFileStore(new FileSystemMachineFileStoreOptions(tempPath, false));
-
-		// Connection details — brand-specific
-		MachineConnection connection = brand switch
-		{
-			PrinterBrand.BambuLab => SetupBambuLab(fileStore),
-			PrinterBrand.ELEGOO => SetupELEGOO(fileStore, modelName),
-			PrinterBrand.Creality => SetupCreality(fileStore),
-			_ => throw new InvalidOperationException($"Unknown brand: {brand}")
-		};
-
-		return (connection, spec);
-	}
-
-	private static MachineConnection SetupBambuLab(FileSystemMachineFileStore fileStore)
-	{
+		// Connection details
 		var ip = AnsiConsole.Prompt(
 			new TextPrompt<string>("Printer [bold]IP address[/]:")
 				.Validate(v => !string.IsNullOrWhiteSpace(v), "IP address is required"));
@@ -69,44 +66,42 @@ public static class ConnectionSetup
 			new TextPrompt<string>("Printer [bold]serial number[/]:")
 				.Validate(v => v.Length >= 3, "Serial number must be at least 3 characters"));
 
-		var accessCode = AnsiConsole.Prompt(
-			new TextPrompt<string>("Printer [bold]access code[/]:")
-				.Secret()
-				.Validate(v => !string.IsNullOrWhiteSpace(v), "Access code is required"));
+		var accessCode = brand == PrinterBrand.BambuLab
+			? AnsiConsole.Prompt(
+				new TextPrompt<string>("Printer [bold]access code[/]:")
+					.Secret()
+					.Validate(v => !string.IsNullOrWhiteSpace(v), "Access code is required"))
+			: "";
 
-		var config = new BBLMachineConfiguration(null, ip, serial, accessCode);
-		return BBLMachineConnection.LAN(fileStore, config);
-	}
-
-	private static MachineConnection SetupELEGOO(FileSystemMachineFileStore fileStore, string modelName)
-	{
-		var ip = AnsiConsole.Prompt(
-			new TextPrompt<string>("Printer [bold]IP address[/]:")
-				.Validate(v => !string.IsNullOrWhiteSpace(v), "IP address is required"));
-
-		var serial = AnsiConsole.Prompt(
-			new TextPrompt<string>("Printer [bold]serial number[/]:"));
-
-		var kind = modelName switch
+		// Save for next time
+		new SavedConfiguration
 		{
-			"Centauri Carbon" => ELEGOOMachineKind.CentauriCarbon,
-			_ => ELEGOOMachineKind.CentauriCarbon
-		};
+			Brand = brand,
+			ModelName = modelName,
+			IP = ip,
+			Serial = serial,
+			AccessCode = accessCode
+		}.Save();
 
-		var config = new ELEGOOMachineConfiguration(null, kind, serial, ip);
-		return new ELEGOOMachineConnector(fileStore, config);
+		var conn = CreateConnection(brand, modelName, ip, serial, accessCode);
+		return (conn, selectedSpec);
 	}
 
-	private static MachineConnection SetupCreality(FileSystemMachineFileStore fileStore)
+	private static MachineConnection CreateConnection(PrinterBrand brand, string modelName, string ip, string serial, string accessCode)
 	{
-		var ip = AnsiConsole.Prompt(
-			new TextPrompt<string>("Printer [bold]IP address[/]:")
-				.Validate(v => !string.IsNullOrWhiteSpace(v), "IP address is required"));
+		var tempPath = Path.Combine(Path.GetTempPath(), "Connect3Dp.Validation", Guid.NewGuid().ToString("N")[..8]);
+		var fileStore = new FileSystemMachineFileStore(new FileSystemMachineFileStoreOptions(tempPath, false));
 
-		var serial = AnsiConsole.Prompt(
-			new TextPrompt<string>("Printer [bold]serial number[/]:"));
-
-		var config = new CrealityK1CConfiguration(null, ip, serial);
-		return CrealityK1CConnection.CreateFromConfiguration(fileStore, config);
+		return brand switch
+		{
+			PrinterBrand.BambuLab => BBLMachineConnection.LAN(fileStore, new BBLMachineConfiguration(null, ip, serial, accessCode)),
+			PrinterBrand.ELEGOO => new ELEGOOMachineConnector(fileStore, new ELEGOOMachineConfiguration(null, modelName switch
+			{
+				"Centauri Carbon" => ELEGOOMachineKind.CentauriCarbon,
+				_ => ELEGOOMachineKind.CentauriCarbon
+			}, serial, ip)),
+			PrinterBrand.Creality => CrealityK1CConnection.CreateFromConfiguration(fileStore, new CrealityK1CConfiguration(null, ip, serial)),
+			_ => throw new InvalidOperationException($"Unknown brand: {brand}")
+		};
 	}
 }

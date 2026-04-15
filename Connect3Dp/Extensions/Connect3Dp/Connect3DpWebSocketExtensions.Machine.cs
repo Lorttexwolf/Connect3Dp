@@ -11,9 +11,9 @@ namespace Connect3Dp.Extensions.Connect3Dp
 	{
 		public record struct SubscribeToMachinePayload(string MachineID, [property: JsonRequired] Connect3DpWebSocketClient.StateDetails DetailOfState) : IMachineSpecificPayload;
 		public record struct UnsubscribeFromMachinePayload(string MachineID) : IMachineSpecificPayload;
-		public record struct SubscribeActionResult(IMachineState? FullState, AtAGlanceMachineState? AtAGlanceState, string? FailureReason) : IWebSocketClientActionResult
+		public record struct SubscribeActionResult(MachineState? FullState, AtAGlanceMachineState? AtAGlanceState, string? FailureReason) : IWebSocketClientActionResult
 		{
-			public readonly bool IsSuccess => true;
+			public readonly bool IsSuccess => FailureReason is null;
 		}
 
 		public static WebSocketServer<Connect3DpWebSocketClient> WithSubscribeAndUnsubscribeAction(
@@ -29,7 +29,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 
 				var result = payload.DetailOfState switch
 				{
-					Connect3DpWebSocketClient.StateDetails.Full => new SubscribeActionResult(machine.State, null, null),
+					Connect3DpWebSocketClient.StateDetails.Full => new SubscribeActionResult((MachineState)machine.State, null, null),
 					Connect3DpWebSocketClient.StateDetails.AtAGlance => new SubscribeActionResult(null, AtAGlanceMachineState.Of(machine.State), null),
 					_ => new SubscribeActionResult(null, null, null)
 				};

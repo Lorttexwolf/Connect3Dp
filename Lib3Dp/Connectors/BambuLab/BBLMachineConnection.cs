@@ -416,7 +416,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			// Remove HMS notifications that are no longer active
 			if (data.ActiveHMSIds != null)
 			{
-				foreach (var (id, _) in this.State.MappedNotifications)
+				foreach (var (id, _) in this.State.Notifications)
 				{
 					if (id.StartsWith("bbl.hms.") && !data.ActiveHMSIds.Contains(id))
 						data.Changes.RemoveNotifications(id);

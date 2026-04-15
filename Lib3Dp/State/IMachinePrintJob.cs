@@ -1,4 +1,5 @@
-﻿using Lib3Dp.Files;
+using Lib3Dp.Files;
+using System.Text.Json.Serialization;
 
 namespace Lib3Dp.State
 {
@@ -17,7 +18,9 @@ namespace Lib3Dp.State
 
 		/// <summary>
 		/// Maps each material source used by this print job to the amount consumed in grams.
+		/// Excluded from JSON — use PrintJob.SpoolMaterialUsages via a Full subscription instead.
 		/// </summary>
+		[JsonIgnore]
 		IReadOnlyDictionary<SpoolLocation, int>? MaterialUsages { get; }
 	}
 }

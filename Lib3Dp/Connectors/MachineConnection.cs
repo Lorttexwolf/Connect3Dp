@@ -218,15 +218,15 @@ namespace Lib3Dp.Connectors
 
 			var justEnded = changes.StatusHasChanged && State.Status is MachineStatus.Printed or MachineStatus.Canceled && changes.StatusPrevious is MachineStatus.Printing;
 
-			if (justEnded && State.Job is not null)
+			if (justEnded && State.CurrentJob is not null)
 			{
 				updatedState.SetJobHistory(new HistoricPrintJob(
-					State.Job.Name, 
+					State.CurrentJob.Name, 
 					State.Status is MachineStatus.Printed, 
 					DateTime.Now, 
-					State.Job.TotalTime - State.Job.RemainingTime,
-					State.Job.Thumbnail,
-					State.Job.File));
+					State.CurrentJob.TotalTime - State.CurrentJob.RemainingTime,
+					State.CurrentJob.Thumbnail,
+					State.CurrentJob.File));
 			}
 
 			// Scheduling

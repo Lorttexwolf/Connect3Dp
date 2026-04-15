@@ -36,7 +36,8 @@ namespace Lib3Dp.State
 
 		IReadOnlyDictionary<string, bool> IMachineState.Lights => Lights;
 		IReadOnlyDictionary<string, int> IMachineState.Fans => Fans;
-		IMachinePrintJob? IMachineState.Job => CurrentJob;
+		IReadOnlyDictionary<string, HeatingElement> IMachineState.HeatingElements => HeatingElements;
+		IMachinePrintJob? IMachineState.CurrentJob => CurrentJob;
 		IEnumerable<HistoricPrintJob> IMachineState.JobHistory => JobHistory;
 		IReadOnlyDictionary<string, Notification> IMachineState.MappedNotifications => Notifications;
 		IEnumerable<IMaterialUnit> IMachineState.MaterialUnits => MaterialUnits.Values;

@@ -15,10 +15,10 @@ public class ActiveJobInfoTest : ValidationTest
 		if (connection.State.Status is not (MachineStatus.Printing or MachineStatus.Paused))
 			return Task.FromResult(TestResult.Skip($"Printer is not printing (status: {connection.State.Status})"));
 
-		var job = connection.State.Job;
+		var job = connection.State.CurrentJob;
 
 		if (job == null)
-			return Task.FromResult(TestResult.Fail("Status is Printing/Paused but State.Job is null"));
+			return Task.FromResult(TestResult.Fail("Status is Printing/Paused but State.CurrentJob is null"));
 
 		var issues = new List<string>();
 

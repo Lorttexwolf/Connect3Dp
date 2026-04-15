@@ -12,6 +12,6 @@ namespace Connect3Dp.Extensions.Connect3Dp
 			machineState.Status,
 			machineState.Capabilities,
 			machineState.Nickname,
-			machineState.Job);
+			machineState.CurrentJob);
 	}
 }

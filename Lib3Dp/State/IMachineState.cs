@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Lib3Dp.State
 {
@@ -9,7 +9,7 @@ namespace Lib3Dp.State
 		string? Nickname { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineCapabilities Capabilities { get; }
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineStatus Status { get; }
-		IMachinePrintJob? Job { get; }
+		IMachinePrintJob? CurrentJob { get; }
 		IEnumerable<HistoricPrintJob> JobHistory { get; }
 		IReadOnlySet<LocalPrintJob> LocalJobs { get; }
 		IEnumerable<ScheduledPrint> ScheduledPrints { get; }
@@ -22,6 +22,7 @@ namespace Lib3Dp.State
 		[JsonConverter(typeof(JsonStringEnumConverter))] MachineAirDuctMode AirDuctMode { get; }
 		IReadOnlyDictionary<string, bool> Lights { get; }
 		IReadOnlyDictionary<string, int> Fans { get; }
+		IReadOnlyDictionary<string, HeatingElement> HeatingElements { get; }
 		bool IsLocalStorageScanning { get; }
 		string? StreamingOMEURL { get; }
 		string? ThumbnailOMEURL { get; }

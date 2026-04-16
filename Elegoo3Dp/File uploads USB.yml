@@ -1,0 +1,40 @@
+info:
+  name: File uploads USB
+  type: http
+  seq: 13
+
+http:
+  method: POST
+  url: http://10.200.2.22:3030/uploadFile/uploadUSB
+  headers:
+    - name: S-File-MD5
+      value: 754c7d8a8c751424cc73779b42e70fed
+  body:
+    type: multipart-form
+    data:
+      - name: Check
+        type: text
+        value: "0"
+      - name: Offset
+        type: text
+        value: "0"
+      - name: TotalSize
+        type: text
+        value: "  1669943"
+      - name: Uuid
+        type: text
+        value: cc2694a2676b436daec74e53220f87b0
+      - name: File
+        type: file
+        value:
+          - C:\Users\Jay\Desktop\Connect3D\Stand.gcode
+      - name: S-File-MD5
+        type: text
+        value: " 8f726ea14ca4cb86d691f2667e52d9ed"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

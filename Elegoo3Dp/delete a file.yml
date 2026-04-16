@@ -1,0 +1,32 @@
+info:
+  name: delete a file
+  type: websocket
+  seq: 11
+
+websocket:
+  url: ws://10.200.2.22:3030/websocket
+  message:
+    type: json
+    data: |-
+      {
+        "Id": "",
+        "Data": {
+          "Cmd": 259,
+          "Data": {
+            "FileList": [
+              "/local/ABSWallHook.gcode"
+            ],
+            "FolderList": []
+          },
+          "RequestID": "delete-002",
+          "MainboardID": "3c421cd80103147000001c0000000000",
+          "TimeStamp": 0,
+          "From": 0
+        },
+        "Topic": "sdcp/request/3c421cd80103147000001c0000000000"
+      }
+  auth: inherit
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0

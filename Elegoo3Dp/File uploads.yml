@@ -1,0 +1,40 @@
+info:
+  name: File uploads
+  type: http
+  seq: 12
+
+http:
+  method: POST
+  url: http://10.200.2.22:3030/uploadFile/upload
+  headers:
+    - name: S-File-MD5
+      value: 8b590a782abf03d6dfab5e320ba98c4d
+  body:
+    type: multipart-form
+    data:
+      - name: Check
+        type: text
+        value: "0"
+      - name: Offset
+        type: text
+        value: "0"
+      - name: TotalSize
+        type: text
+        value: "17368338"
+      - name: Uuid
+        type: text
+        value: cc2694a2676b436daec74e53220f87b0
+      - name: File
+        type: file
+        value:
+          - C:\Users\Jay\Desktop\Connect3D\PenHolder.gcode
+      - name: S-File-MD5
+        type: text
+        value: 8b590a782abf03d6dfab5e320ba98c4d
+    auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

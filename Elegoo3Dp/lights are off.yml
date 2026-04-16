@@ -1,0 +1,31 @@
+info:
+  name: lights are off
+  type: websocket
+  seq: 16
+
+websocket:
+  url: ws://10.200.2.22:3030/websocket
+  message:
+    type: json
+    data: |
+      {
+        "Id": "",
+        "Data": {
+          "Cmd": 403,
+          "Data": {
+            "LightStatus": {
+              "SecondLight": 0,
+              "RgbLight": [255, 255, 255]
+            }
+          },
+          "RequestID": "test123",
+          "MainboardID": "",
+          "TimeStamp": 0,
+          "From": 1
+        }
+      }
+  auth: inherit
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0

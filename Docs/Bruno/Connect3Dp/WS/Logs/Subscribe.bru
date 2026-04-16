@@ -1,0 +1,25 @@
+meta {
+  name: Subscribe
+  type: ws
+  seq: 1
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: none
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "log/subscribe",
+      "ResponseMessageID": "123",
+      "Data": {
+        "MinInterval": "0:10"
+      }
+    }
+  '''
+}

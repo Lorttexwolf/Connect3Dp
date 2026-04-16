@@ -1,0 +1,26 @@
+meta {
+  name: Upload Machine File
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5193/machineFileStore/upload
+  body: multipartForm
+  auth: inherit
+}
+
+params:query {
+  machineId: BLL22E8AJ591501848
+  uri: /3mf/myprint.3mf
+  mimeType: application/vnd.ms-package.3dmanufacturing-3dmodel+xml
+}
+
+body:multipart {
+  file: @file()
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

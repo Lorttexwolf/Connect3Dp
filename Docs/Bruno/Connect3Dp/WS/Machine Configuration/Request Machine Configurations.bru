@@ -1,0 +1,22 @@
+meta {
+  name: Request Machine Configurations
+  type: ws
+  seq: 1
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/configuration/all",
+      "ResponseMessageID": "123"
+    }
+  '''
+}

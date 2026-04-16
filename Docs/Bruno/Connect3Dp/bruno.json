@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Connect3Dp",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

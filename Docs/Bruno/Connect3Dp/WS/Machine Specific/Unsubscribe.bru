@@ -1,0 +1,25 @@
+meta {
+  name: Unsubscribe
+  type: ws
+  seq: 7
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/unsubscribe",
+      "ResponseMessageID": "123",
+      "Data": {
+        "MachineID": "BLL22E8AJ591501848"
+      }
+    }
+  '''
+}

@@ -168,11 +168,18 @@ namespace Lib3Dp
 		protected virtual void ListenForChanges(MachineConnection machineConnection)
 		{
 			machineConnection.OnChanges += MachineConnection_OnChanges;
+			machineConnection.OnConfigurationChanged += MachineConnection_OnConfigurationChanged;
 		}
 
 		private void MachineConnection_OnChanges(MachineConnection connection, MachineStateChanges changes)
 		{
 			OnStateChange?.Invoke(this, new OnMachineStateUpdatedArgs(connection.ID, changes));
+		}
+
+		private async void MachineConnection_OnConfigurationChanged(MachineConnection connection)
+		{
+			if (connection is IConfigurableConnection c)
+				await ConfigurationStore.StoreConfiguration(connection.ID, c.GetConfigurationWithDiscrimination());
 		}
 	}
 }

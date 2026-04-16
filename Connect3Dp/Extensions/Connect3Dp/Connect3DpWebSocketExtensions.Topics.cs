@@ -26,6 +26,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 				public const string ToggleLight = "machine/toggleLight";
 				public const string SetFanSpeed = "machine/setFanSpeed";
 				public const string FindMatchingSpools = "machine/findMatchingSpools";
+				public const string ChangeMaterial = "machine/changeMaterial";
 
 				public static class Configurations
 				{

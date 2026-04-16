@@ -14,7 +14,8 @@ namespace Lib3Dp.Connectors.Creality
     public record CrealityK1CConfiguration(
         string? Nickname,
         string Address,
-        string SerialNumber
+        string SerialNumber,
+        Material? LoadedMaterial = null
     );
 
     public class CrealityK1CConnection : MachineConnection, IConfigurableConnection<CrealityK1CConnection, CrealityK1CConfiguration>
@@ -95,6 +96,21 @@ namespace Lib3Dp.Connectors.Creality
                     update.SetStatus(MachineStatus.Idle);
                     update.SetCapabilities(CrealityK1CConstants.BaseCapabilities);
                     update.SetLights(CrealityK1CConstants.LightFixtureChamber, false);
+
+                    // Register the framework-managed filament slot. Creality K1C does not report
+                    // what material is loaded; the user tracks it here via ChangeMaterial.
+                    update.UpdateMaterialUnits("External", mu => mu
+                        .SetCapacity(1)
+                        .SetCapabilities(MUCapabilities.ModifyTray));
+
+                    if (Configuration.LoadedMaterial is { } mat)
+                        update.UpdateMaterialUnits("External", mu => mu
+                            .UpdateTrays(0, t => t.UpdateMaterial(m => m
+                                .SetName(mat.Name)
+                                .SetColor(mat.Color)
+                                .SetFProfileIDX(mat.FProfileIDX))));
+
+                    update.UpdateExtruders(0, e => e.SetLoadedSpool(new SpoolLocation("External", 0)));
                 });
 
                 await SendGetRefreshAsync();
@@ -531,6 +547,21 @@ namespace Lib3Dp.Connectors.Creality
             // Apply optimistically so the base class ToggleLight predicate resolves. Same as ELEGOO.
             if (fixtureName == CrealityK1CConstants.LightFixtureChamber)
                 CommitState(u => u.SetLights(CrealityK1CConstants.LightFixtureChamber, isOn));
+        }
+
+        protected override Task<MachineOperationResult> Invoke_ChangeMaterial(SpoolLocation location, Material material)
+        {
+            CommitState(update =>
+                update.UpdateMaterialUnits(location.MUID, mu =>
+                    mu.UpdateTrays(location.Slot, t => t.UpdateMaterial(m => m
+                        .SetName(material.Name)
+                        .SetColor(material.Color)
+                        .SetFProfileIDX(material.FProfileIDX)))));
+
+            Configuration = Configuration with { LoadedMaterial = material };
+            NotifyConfigurationChanged();
+
+            return Task.FromResult(MachineOperationResult.Ok);
         }
 
         #endregion

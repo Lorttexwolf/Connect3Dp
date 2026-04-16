@@ -43,6 +43,9 @@ namespace Lib3Dp.Connectors
 		public string ID { get; internal set; }
 
 		public event Action<MachineConnection, MachineStateChanges>? OnChanges;
+		public event Action<MachineConnection>? OnConfigurationChanged;
+
+		protected void NotifyConfigurationChanged() => OnConfigurationChanged?.Invoke(this);
 
 		public IMachineState State => _State;
 

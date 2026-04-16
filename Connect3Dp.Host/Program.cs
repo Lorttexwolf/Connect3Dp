@@ -157,7 +157,8 @@ namespace Connect3Dp.Host
 				.WithFindMatchingSpoolsMachineAction(mc)
 				.WithPauseMachine(mc)
 				.WithToggleLightMachine(mc)
-				.WithSetFanSpeedMachine(mc);
+				.WithSetFanSpeedMachine(mc)
+				.WithChangeMaterialMachine(mc);
 
 			return services;
 		}

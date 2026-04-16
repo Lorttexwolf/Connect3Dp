@@ -128,6 +128,13 @@ namespace Connect3Dp.Extensions.Connect3Dp
 			ws.MapMachineSpecificAction<FindMatchingSpoolsPayload, FindMatchingSpoolsResult>(machineCollection, Topics.Machine.FindMatchingSpools,
 				(_, payload, machine) => Task.FromResult(new FindMatchingSpoolsResult(machine.State.FindMatchingSpools(payload.MaterialsToPrint))));
 
+		public record struct ChangeMaterialPayload(string MachineID, SpoolLocation Location, Material Material) : IMachineSpecificPayload;
+
+		public static WebSocketServer<Connect3DpWebSocketClient> WithChangeMaterialMachine(
+			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
+			ws.MapMachineSpecificAction<ChangeMaterialPayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.ChangeMaterial,
+				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.ChangeMaterial(payload.Location, payload.Material)));
+
 		public interface IMachineSpecificPayload
 		{
 			[JsonRequired]

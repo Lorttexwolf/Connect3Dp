@@ -762,6 +762,10 @@ namespace Lib3Dp.Connectors.ELEGOO
 				this.CommitState(u => u.SetLights("Chamber", isOn));
 		}
 
+		// TODO: Fan capability model — some fans (BoxFan) are binary (0 = off, any non-zero = on)
+		// while others (ModelFan, AuxiliaryFan) support a 0–100 percentage. Future work: introduce
+		// a per-fan capability flag (e.g. FanMode.OnOff vs FanMode.Percentage) so the framework
+		// can validate/clamp appropriately per fan rather than treating all fans as percentage-based.
 		protected override async Task SetFanSpeed_Internal(string fanName, int speedPercent)
 		{
 			var model = State.Fans.GetValueOrDefault("ModelFan", 0);
@@ -782,7 +786,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 				default:
 					await SendCommand(ELEGOOCmd.EditStatusData, new
 					{
-						CurrentFanSpeed = new Dictionary<string, int> { { fanName, speedPercent } }
+						TargetFanSpeed = new Dictionary<string, int> { { fanName, speedPercent } }
 					});
 					this.CommitState(u => u.SetFans(fanName, speedPercent));
 					return;
@@ -790,7 +794,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 
 			await SendCommand(ELEGOOCmd.EditStatusData, new
 			{
-				CurrentFanSpeed = new
+				TargetFanSpeed = new
 				{
 					ModelFan = model,
 					AuxiliaryFan = aux,

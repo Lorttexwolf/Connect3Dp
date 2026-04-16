@@ -263,7 +263,7 @@ namespace Lib3Dp.Connectors.Creality
                 update.SetNickname(host);
         }
 
-        private static void MapTelemetryAndJob(JsonElement obj, MachineStateUpdate update)
+        private void MapTelemetryAndJob(JsonElement obj, MachineStateUpdate update)
         {
             if (obj.TryGetDoubleLenient("nozzleTemp", out var nozzleCur))
             {
@@ -297,53 +297,72 @@ namespace Lib3Dp.Connectors.Creality
             if (obj.TryGetInt32Lenient("lightSw", out var light))
                 update.SetLights(CrealityK1CConstants.LightFixtureChamber, light != 0);
 
-            if (!obj.TryGetInt32Lenient("state", out var crealityState))
-                return;
-
-            var mapped = CrealityK1CConstants.MapDeviceState(crealityState);
-            update.SetStatus(mapped);
-
-            var active = mapped is MachineStatus.Printing or MachineStatus.Paused;
-            var ended = mapped is MachineStatus.Printed or MachineStatus.Canceled;
-
-            if (active || ended)
+            // Pass 1 — Status: only when the message includes a state field.
+            // Sets MachineStatus and initialises the job name/path on the first active message.
+            bool stateWasActive = false;
+            if (obj.TryGetInt32Lenient("state", out var crealityState))
             {
-                var path = obj.TryGetStringValue("printFileName", out var pfn) ? pfn
-                    : obj.TryGetStringValue("filePath", out var fp) ? fp
-                    : obj.TryGetStringValue("printPath", out var pp) ? pp : "";
+                var mapped = CrealityK1CConstants.MapDeviceState(crealityState);
+                update.SetStatus(mapped);
 
-                var name = string.IsNullOrEmpty(path) ? "Unknown" : Path.GetFileNameWithoutExtension(path);
+                var active = mapped is MachineStatus.Printing or MachineStatus.Paused;
+                var ended  = mapped is MachineStatus.Printed  or MachineStatus.Canceled;
 
-                var progress = obj.TryGetInt32Lenient("printProgress", out var prog) ? Math.Clamp(prog, 0, 100) : 0;
-                var remaining = obj.TryGetDurationLenient("printLeftTime", out var rem) ? rem : TimeSpan.Zero;
-                var elapsed = obj.TryGetDurationLenient("printJobTime", out var el) ? el : TimeSpan.Zero;
+                if (active || ended)
+                {
+                    stateWasActive = true;
+                    var path = obj.TryGetStringValue("printFileName", out var pfn) ? pfn
+                             : obj.TryGetStringValue("filePath",      out var fp)  ? fp
+                             : obj.TryGetStringValue("printPath",     out var pp)  ? pp : "";
+                    var name = string.IsNullOrEmpty(path) ? "Unknown" : Path.GetFileNameWithoutExtension(path);
 
-                if (ended && mapped is MachineStatus.Printed)
-                    progress = 100;
+                    update.UpdateCurrentJob(job =>
+                    {
+                        job.SetName(name);
+                        if (!string.IsNullOrEmpty(path)) job.SetLocalPath(path);
+                        if (ended && mapped is MachineStatus.Printed) job.SetPercentageComplete(100);
+                    });
+                }
+                else
+                {
+                    update.UnsetCurrentJob();
+                }
+            }
 
-                var totalTime = elapsed;
-                if (remaining > TimeSpan.Zero && progress > 0 && progress < 100)
-                    totalTime = TimeSpan.FromSeconds(remaining.TotalSeconds / (1.0 - progress / 100.0));
-                else if (remaining > TimeSpan.Zero && elapsed > TimeSpan.Zero)
-                    totalTime = elapsed + remaining;
+            // Pass 2 — Progress: runs on every message that carries progress/time/layer fields,
+            // regardless of whether state was present. The K1C sends these in separate push
+            // messages that do not include state, so they must not be gated on pass 1.
+            var hasActiveJob = stateWasActive || State.CurrentJob != null;
+            if (hasActiveJob)
+            {
+                var hasProgress  = obj.TryGetInt32Lenient("printProgress",  out var prog);
+                var hasRemaining = obj.TryGetDurationLenient("printLeftTime", out var rem);
+                var hasElapsed   = obj.TryGetDurationLenient("printJobTime",  out var el);
 
                 string? subStage = null;
                 if (obj.TryGetStringValue("layer", out var layerStr) && obj.TryGetStringValue("TotalLayer", out var totalStr))
                     subStage = $"Layer {layerStr}/{totalStr}";
 
-                update.UpdateCurrentJob(job =>
+                if (hasProgress || hasRemaining || hasElapsed || subStage != null)
                 {
-                    job.SetName(name);
-                    job.SetPercentageComplete(progress);
-                    job.SetRemainingTime(remaining);
-                    job.SetTotalTime(totalTime);
-                    if (!string.IsNullOrEmpty(path)) job.SetLocalPath(path);
-                    if (subStage != null) job.SetSubStage(subStage);
-                });
-            }
-            else
-            {
-                update.UnsetCurrentJob();
+                    update.UpdateCurrentJob(job =>
+                    {
+                        if (hasProgress)  job.SetPercentageComplete(Math.Clamp(prog, 0, 100));
+                        if (hasRemaining) job.SetRemainingTime(rem);
+
+                        if (hasRemaining || hasElapsed)
+                        {
+                            var total = hasElapsed ? el : TimeSpan.Zero;
+                            if (rem > TimeSpan.Zero && prog > 0 && prog < 100)
+                                total = TimeSpan.FromSeconds(rem.TotalSeconds / (1.0 - prog / 100.0));
+                            else if (rem > TimeSpan.Zero && hasElapsed && el > TimeSpan.Zero)
+                                total = el + rem;
+                            if (total > TimeSpan.Zero) job.SetTotalTime(total);
+                        }
+
+                        if (subStage != null) job.SetSubStage(subStage);
+                    });
+                }
             }
         }
 

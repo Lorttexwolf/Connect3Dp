@@ -1,18 +1,20 @@
-import type { MessageToClient, MessageToServer } from "./types/common.js";
-import { Topics } from "./types/common.js";
-import type { BroadcastedMachineStateUpdateData } from "./types/changes.js";
 import type {
+  ClientMessageMachineOperationResult,
+  PrintOptions,
   StateDetails,
   SubscribeActionResult,
   WebSocketClientActionResult,
-  ClientMessageMachineOperationResult,
 } from "./types/actions.js";
-import type { LogEntry, LogHistoryParams, LogHistoryResult } from "./types/logging.js";
-import type {
-  MachineFileStoreTotalUsageResult,
-  MachineFileStoreMachineUsageResult,
-} from "./types/file-store.js";
+import type { BroadcastedMachineStateUpdateData } from "./types/changes.js";
+import type { MessageToClient, MessageToServer } from "./types/common.js";
+import { Topics } from "./types/common.js";
 import type { AllMachineConfigurationsResult } from "./types/configuration.js";
+import type {
+  MachineFileStoreMachineUsageResult,
+  MachineFileStoreTotalUsageResult,
+} from "./types/file-store.js";
+import type { LogEntry, LogHistoryParams, LogHistoryResult } from "./types/logging.js";
+import type { MachineFileHandle } from "./types/state.js";
 
 // ---------------------------------------------------------------------------
 // Options
@@ -263,6 +265,24 @@ export class Connect3DpClient {
     return this._request(
       Topics.Machine.SetFanSpeed,
       { MachineID: machineId, FanName: fanName, SpeedPercent: speedPercent },
+      this._opts.controlRequestTimeoutMs
+    );
+  }
+
+  /**
+   * Start printing a local file. `file` must be the full {@link MachineFileHandle}
+   * from a job in {@link IMachineState.localJobs}. All four fields (machineID,
+   * uri, mime, hashSha256) must match. Use {@link IMachineState.localJobs} to
+   * list available files first.
+   */
+  startPrint(
+    machineId: string,
+    file: MachineFileHandle,
+    options: PrintOptions
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this._request(
+      Topics.Machine.StartPrint,
+      { MachineID: machineId, File: file, Options: options },
       this._opts.controlRequestTimeoutMs
     );
   }

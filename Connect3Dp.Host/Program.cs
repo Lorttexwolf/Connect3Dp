@@ -158,6 +158,7 @@ namespace Connect3Dp.Host
 				.WithPauseMachine(mc)
 				.WithToggleLightMachine(mc)
 				.WithSetFanSpeedMachine(mc)
+				.WithStartPrintMachine(mc)
 				.WithChangeMaterialMachine(mc);
 
 			return services;

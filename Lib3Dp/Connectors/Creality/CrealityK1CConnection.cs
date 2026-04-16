@@ -32,6 +32,18 @@ namespace Lib3Dp.Connectors.Creality
         private string? _LastHistoryFingerprint;
         private bool _hasLocalFiles;
 
+        // File-list pagination. The K1C pages file listings (typically 5 per page),
+        // so we request pages sequentially and accumulate results across responses
+        // before committing the full list to state.
+        private const int DesiredFilePageSize = 100;
+        private const int MaxFilePages = 200;
+        private readonly object _paginationLock = new();
+        private List<LocalPrintJob> _pendingFiles = new();
+        private int _nextFilePage = 1;
+        private int _firstPageSize = -1;
+        private bool _paginatingFiles;
+        private DateTime _paginationLastActivity = DateTime.MinValue;
+
         public CrealityK1CConfiguration Configuration { get; private set; }
 
         public CrealityK1CConnection(IMachineFileStore fileStore, CrealityK1CConfiguration configuration) : base(
@@ -171,6 +183,15 @@ namespace Lib3Dp.Connectors.Creality
 
             _LastHistoryFingerprint = null;
             _hasLocalFiles = false;
+
+            lock (_paginationLock)
+            {
+                _pendingFiles = new List<LocalPrintJob>();
+                _nextFilePage = 1;
+                _firstPageSize = -1;
+                _paginatingFiles = false;
+                _paginationLastActivity = DateTime.MinValue;
+            }
         }
 
         private void OnWebSocketDisconnected(WebSocketCloseStatus? status, string? description)
@@ -203,19 +224,57 @@ namespace Lib3Dp.Connectors.Creality
             return SendJsonAsync(new { method = "set", @params = parameters });
         }
 
-        /// <summary>Periodic GET used to refresh file list and history (printer also pushes live telemetry).</summary>
+        /// <summary>
+        /// Periodic GET used to refresh file list and history. The K1C paginates file listings
+        /// (typically 5 per page regardless of <c>onePageNum</c>), so this kicks off a fresh
+        /// pagination cycle starting at page 1. Subsequent pages are requested from
+        /// <see cref="HandleFilePage"/> as each response arrives.
+        /// </summary>
         private Task SendGetFilesAndHistoryAsync()
         {
+            bool startFresh;
+
+            lock (_paginationLock)
+            {
+                // If a pagination cycle is active and fresh, don't disrupt it — just wait for completion.
+                if (_paginatingFiles && (DateTime.UtcNow - _paginationLastActivity) < TimeSpan.FromSeconds(30))
+                    return Task.CompletedTask;
+
+                _pendingFiles = new List<LocalPrintJob>();
+                _nextFilePage = 1;
+                _firstPageSize = -1;
+                _paginatingFiles = true;
+                _paginationLastActivity = DateTime.UtcNow;
+                startFresh = true;
+            }
+
+            return startFresh ? SendFileRequestAsync(1, includeHistory: true) : Task.CompletedTask;
+        }
+
+        /// <summary>Requests a single page of the paginated file list.</summary>
+        private Task SendFileRequestAsync(int page, bool includeHistory)
+        {
+            if (includeHistory)
+            {
+                return SendJsonAsync(new
+                {
+                    method = "get",
+                    @params = new
+                    {
+                        reqHistory = 1,
+                        pFileList = page,
+                        onePageNum = DesiredFilePageSize
+                    }
+                });
+            }
+
             return SendJsonAsync(new
             {
                 method = "get",
                 @params = new
                 {
-                    reqGcodeFile = 1,
-                    reqHistory = 1,
-                    pFileList = 1,
-                    page_num = 1,
-                    page_size = 100
+                    pFileList = page,
+                    onePageNum = DesiredFilePageSize
                 }
             });
         }
@@ -228,7 +287,6 @@ namespace Lib3Dp.Connectors.Creality
                 method = "get",
                 @params = new
                 {
-                    reqGcodeFile = 1,
                     reqHistory = 1,
                     boxConfig = 1,
                     reqPrintObjects = 1
@@ -386,7 +444,7 @@ namespace Lib3Dp.Connectors.Creality
         {
             if (obj.TryGetProperty("pFileList", out var pFileList) && pFileList.ValueKind == JsonValueKind.Array)
             {
-                IngestFileArray(pFileList, update);
+                HandleFilePage(pFileList, update);
                 return;
             }
 
@@ -396,16 +454,74 @@ namespace Lib3Dp.Connectors.Creality
             if (!info.TryGetProperty("fileInfo", out var fileInfo) || fileInfo.ValueKind != JsonValueKind.Array)
                 return;
 
-            IngestFileArray(fileInfo, update);
+            // Non-paginated full listing fallback. Replace state in one shot.
+            CommitFileList(ExtractFiles(fileInfo).ToList(), update);
         }
 
-        private void IngestFileArray(JsonElement array, MachineStateUpdate update)
+        /// <summary>
+        /// Accumulates one page of paginated file results. When the page is empty or smaller than
+        /// the first page received this cycle, commits the accumulated list and ends the cycle.
+        /// Otherwise requests the next page.
+        /// </summary>
+        private void HandleFilePage(JsonElement pageArray, MachineStateUpdate update)
         {
-            foreach (var existing in State.LocalJobs)
-                update.RemoveLocalJobs(existing);
+            var pageFiles = ExtractFiles(pageArray).ToList();
 
-            int fileCount = 0;
+            bool commitNow;
+            int nextPageToRequest = 0;
+            List<LocalPrintJob>? toCommit = null;
 
+            lock (_paginationLock)
+            {
+                _pendingFiles.AddRange(pageFiles);
+                _paginationLastActivity = DateTime.UtcNow;
+
+                bool isEmpty = pageFiles.Count == 0;
+                bool isShorterThanFirstPage = _firstPageSize > 0 && pageFiles.Count < _firstPageSize;
+                bool hitMax = _nextFilePage >= MaxFilePages;
+
+                if (_firstPageSize < 0 && pageFiles.Count > 0)
+                    _firstPageSize = pageFiles.Count;
+
+                if (isEmpty || isShorterThanFirstPage || hitMax)
+                {
+                    toCommit = _pendingFiles;
+                    _pendingFiles = new List<LocalPrintJob>();
+                    _nextFilePage = 1;
+                    _firstPageSize = -1;
+                    _paginatingFiles = false;
+                    commitNow = true;
+                }
+                else
+                {
+                    _nextFilePage++;
+                    nextPageToRequest = _nextFilePage;
+                    commitNow = false;
+                }
+            }
+
+            if (commitNow && toCommit != null)
+                CommitFileList(toCommit, update);
+            else if (nextPageToRequest > 0)
+            {
+                var page = nextPageToRequest;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        if (Socket?.State == WebSocketState.Open)
+                            await SendFileRequestAsync(page, includeHistory: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Failed to request next file page ({page})");
+                    }
+                });
+            }
+        }
+
+        private IEnumerable<LocalPrintJob> ExtractFiles(JsonElement array)
+        {
             foreach (var file in array.EnumerateArray())
             {
                 var path = file.TryGetStringValue("path", out var p) ? p : "";
@@ -418,22 +534,32 @@ namespace Lib3Dp.Connectors.Creality
 
                 long size = file.TryGetInt64Lenient("file_size", out var sz) ? sz : 0;
 
-                var hash = Convert.ToHexStringLower(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes($"{path}:{size}")));
-                var uri = path;
-                var handle = new MachineFileHandle(ID, uri, "application/gcode", hash);
+                var hash = Convert.ToHexStringLower(SHA256.HashData(
+                    System.Text.Encoding.UTF8.GetBytes($"{path}:{size}")));
+                var handle = new MachineFileHandle(ID, path, "application/gcode", hash);
                 var jobName = Path.GetFileNameWithoutExtension(string.IsNullOrEmpty(name) ? path : name);
 
-                update.SetLocalJobs(new LocalPrintJob(
+                yield return new LocalPrintJob(
                     string.IsNullOrEmpty(jobName) ? "Unknown" : jobName,
-                    handle,
-                    0,
-                    TimeSpan.Zero,
-                    new Dictionary<int, MaterialToPrint>()));
-
-                fileCount++;
+                    handle, 0, TimeSpan.Zero,
+                    new Dictionary<int, MaterialToPrint>());
             }
+        }
 
-            _hasLocalFiles = fileCount > 0;
+        private void CommitFileList(List<LocalPrintJob> files, MachineStateUpdate update)
+        {
+            var seen = new HashSet<MachineFileHandle>();
+            var deduped = new List<LocalPrintJob>();
+            foreach (var job in files)
+                if (seen.Add(job.File)) deduped.Add(job);
+
+            foreach (var existing in State.LocalJobs)
+                update.RemoveLocalJobs(existing);
+
+            foreach (var job in deduped)
+                update.SetLocalJobs(job);
+
+            _hasLocalFiles = deduped.Count > 0;
         }
 
         private void MapHistory(JsonElement obj, MachineStateUpdate update)

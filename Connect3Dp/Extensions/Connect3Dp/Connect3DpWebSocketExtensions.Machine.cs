@@ -2,6 +2,7 @@ using Connect3Dp.Services;
 using Lib3Dp;
 using Lib3Dp.Connectors;
 using Lib3Dp.Extensions;
+using Lib3Dp.Files;
 using Lib3Dp.State;
 using System.Text.Json.Serialization;
 
@@ -85,6 +86,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 		public record struct StopMachinePayload(string MachineID) : IMachineSpecificPayload;
 		public record struct ToggleLightMachinePayload(string MachineID, string FixtureName, bool IsOn) : IMachineSpecificPayload;
 		public record struct SetFanSpeedMachinePayload(string MachineID, string FanName, int SpeedPercent) : IMachineSpecificPayload;
+		public record struct StartPrintPayload(string MachineID, MachineFileHandle File, PrintOptions Options) : IMachineSpecificPayload;
 
 		public static WebSocketServer<Connect3DpWebSocketClient> WithMarkAsIdleAction(
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
@@ -115,6 +117,17 @@ namespace Connect3Dp.Extensions.Connect3Dp
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
 			ws.MapMachineSpecificAction<SetFanSpeedMachinePayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.SetFanSpeed,
 				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.SetFanSpeed(payload.FanName, payload.SpeedPercent)));
+
+		public static WebSocketServer<Connect3DpWebSocketClient> WithStartPrintMachine(
+			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
+			ws.MapMachineSpecificAction<StartPrintPayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.StartPrint,
+				async (_, payload, machine) =>
+				{
+					var job = machine.State.LocalJobs.FirstOrDefault(j => j.File == payload.File);
+					if (job == default)
+						return new ClientMessageMachineOperationResult(false, $"No local job found matching file handle '{payload.File}'", null);
+					return ClientMessageMachineOperationResult.Of(await machine.PrintLocal(job, payload.Options));
+				});
 
 		public record struct FindMatchingSpoolsPayload(string MachineID, IDictionary<int, MaterialToPrint> MaterialsToPrint) : IMachineSpecificPayload;
 		public record struct FindMatchingSpoolsResult(Matches<int, SpoolMatch> Matches) : IWebSocketClientActionResult

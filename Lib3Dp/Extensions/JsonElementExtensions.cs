@@ -86,5 +86,127 @@ namespace Lib3Dp.Extensions
 
 			return result.TryGetDouble(out value);
 		}
-	}
+
+        // ── Lenient single-property helpers ──────────────────────
+        // These handle firmware quirks where numeric values may arrive as JSON strings
+        // (e.g. "123" instead of 123). Used by connectors whose protocol is loosely typed.
+
+        /// <summary>
+        /// Gets a non-empty string from a named property.
+        /// </summary>
+        public static bool TryGetStringValue(this JsonElement obj, string name, [NotNullWhen(true)] out string? value)
+        {
+            if (!obj.TryGetProperty(name, out var el))
+            {
+                value = null;
+                return false;
+            }
+
+            value = el.GetString();
+            return !string.IsNullOrEmpty(value);
+        }
+
+        /// <summary>
+        /// Gets an int from a named property, coercing from a JSON string if necessary.
+        /// </summary>
+        public static bool TryGetInt32Lenient(this JsonElement obj, string name, out int value)
+        {
+            if (!obj.TryGetProperty(name, out var el))
+            {
+                value = 0;
+                return false;
+            }
+
+            if (el.ValueKind == JsonValueKind.String && int.TryParse(el.GetString(), out var parsed))
+            {
+                value = parsed;
+                return true;
+            }
+
+            return el.TryGetInt32(out value);
+        }
+
+        /// <summary>
+        /// Gets a long from a named property, coercing from a JSON string if necessary.
+        /// </summary>
+        public static bool TryGetInt64Lenient(this JsonElement obj, string name, out long value)
+        {
+            if (!obj.TryGetProperty(name, out var el))
+            {
+                value = 0;
+                return false;
+            }
+
+            if (el.ValueKind == JsonValueKind.String && long.TryParse(el.GetString(), out var parsed))
+            {
+                value = parsed;
+                return true;
+            }
+
+            return el.TryGetInt64(out value);
+        }
+
+        /// <summary>
+        /// Gets a double from a named property, coercing from a JSON string if necessary.
+        /// </summary>
+        public static bool TryGetDoubleLenient(this JsonElement obj, string name, out double value)
+        {
+            if (!obj.TryGetProperty(name, out var el))
+            {
+                value = 0;
+                return false;
+            }
+
+            if (el.ValueKind == JsonValueKind.String && double.TryParse(el.GetString(), System.Globalization.NumberStyles.Float, null, out var parsed))
+            {
+                value = parsed;
+                return true;
+            }
+
+            return el.TryGetDouble(out value);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="TimeSpan"/> from a named property. Handles integer seconds, double seconds,
+        /// string-encoded seconds, and <see cref="TimeSpan.TryParse"/> formats.
+        /// </summary>
+        public static bool TryGetDurationLenient(this JsonElement obj, string name, out TimeSpan value)
+        {
+            value = TimeSpan.Zero;
+            if (!obj.TryGetProperty(name, out var el))
+                return false;
+
+            if (el.ValueKind == JsonValueKind.String)
+            {
+                var s = el.GetString();
+                if (!string.IsNullOrEmpty(s) && TimeSpan.TryParse(s, out var ts))
+                {
+                    value = ts;
+                    return true;
+                }
+
+                if (int.TryParse(s, out var sec))
+                {
+                    value = TimeSpan.FromSeconds(sec);
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (el.TryGetInt32(out var i))
+            {
+                value = TimeSpan.FromSeconds(i);
+                return true;
+            }
+
+            if (el.TryGetDouble(out var d))
+            {
+                value = TimeSpan.FromSeconds(d);
+                return true;
+            }
+
+            return false;
+        }
+    }
 }

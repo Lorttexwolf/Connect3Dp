@@ -15,7 +15,15 @@ namespace Lib3Dp.Constants
 			MachineMessageActions.CheckConfiguration,
 			new MachineMessageAutoResole { WhenConnected = true });
 
-		public static MachineMessage FailedToConnect => new(
+        public static MachineMessage SDCardOrUSBMissing => new(
+			"machine.sdcard.missing", 
+			"SD Card or USB Drive is Missing", 
+			"An SD Card or USB Drive is required to send prints to this Machine.", 
+			MachineMessageSeverity.Warning, 
+			MachineMessageActions.None, 
+			default);
+
+        public static MachineMessage FailedToConnect => new(
 			"machine.connect.failed",
 			"Unable to connect to Machine",
 			"An issue occurred connecting to this Machine",

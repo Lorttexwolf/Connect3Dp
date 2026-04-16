@@ -138,8 +138,9 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(0, 110),
 				[HeatingElementNames.Nozzle] = new(0, 300),
 			},
-			RequiresSDOrUSB: true
-		);
+			RequiresSDOrUSB: true,
+            ValidationPrintFileName: "Connect3Dp_Validation"
+        );
 
 		// ── Creality ──────────────────────────────────────────
 
@@ -161,8 +162,9 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(0, 300),
 				[HeatingElementNames.Chamber] = new(0, 60),
 			},
-			RequiresSDOrUSB: true
-		);
+			RequiresSDOrUSB: true,
+            ValidationPrintFileName: "Connect3Dp_Validation"
+        );
 
 		// ── Build dictionary ──────────────────────────────────
 		// AMS units are detected dynamically after connecting.

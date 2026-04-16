@@ -37,7 +37,8 @@ namespace Lib3Dp.State
 		Refresh = 8,
 		CheckConfiguration = 16,
 		UnsupportedFirmware = 32,
-		ClearBed = 64
+		ClearBed = 64,
+		InsertStorageDevice = 128
 	}
 
 	public record struct MachineMessageAutoResole(bool? WhenConnected, MachineStatus? WhenStatus, bool? WhenPrinting);

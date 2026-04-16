@@ -47,7 +47,7 @@ public class USBStorageRemovalTest : ValidationTest
 		if (!reinserted)
 			return TestResult.Fail("StartLocalJob capability was not restored within timeout after storage reinsertion");
 
-		bool notificationCleared = !connection.State.MappedNotifications.ContainsKey("bbl.sdcard.missing");
+		bool notificationCleared = !connection.State.MappedNotifications.ContainsKey("machine.sdcard.missing");
 
 		string detail = $"Notification on removal: {(hasNotification ? "yes" : "NO")}, cleared on reinsert: {(notificationCleared ? "yes" : "NO")}";
 

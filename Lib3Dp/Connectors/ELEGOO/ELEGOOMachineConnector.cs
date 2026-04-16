@@ -71,7 +71,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 				await Connect_Internal();
 			}, () => this.State.Status is not MachineStatus.Disconnected, TimeSpan.FromSeconds(30));
 
-			return opResult.IntoOperationResult("Update Configuration");
+			return opResult.IntoOperationResult("elegoo.config.update.failed", "Update Configuration");
 		}
 
 		public static ELEGOOMachineConnector CreateFromConfiguration(IMachineFileStore fileStore, ELEGOOMachineConfiguration configuration)
@@ -140,6 +140,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 				Log.Error(ex, $"Failed to connect to ELEGOO printer at {NormalizePrinterHost(Configuration.IPAddress)} (from config: {Configuration.IPAddress})");
 
 				return MachineOperationResult.Fail(
+					"elegoo.connect.failed",
 					"Unable to Connect",
 					ex.Message,
 					MachineMessageActions.CheckConfiguration,
@@ -397,7 +398,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 			{
 				// No PrintInfo — if we were previously printing, transition through Printed
 				// so the base class CommitState can record history
-				if (this.State.Status is MachineStatus.Printing && this.State.Job is not null)
+				if (this.State.Status is MachineStatus.Printing && this.State.CurrentJob is not null)
 					stateUpdate.SetStatus(MachineStatus.Printed);
 				else
 					stateUpdate.SetStatus(MachineStatus.Idle);
@@ -586,6 +587,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 			Log.Error(null!, $"Printer error received: {errorDetail}");
 
 			this.AddNotification(new MachineMessage(
+				"elegoo.printer.error",
 				"Printer Error",
 				errorDetail,
 				MachineMessageSeverity.Error,
@@ -756,7 +758,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 			catch (Exception ex)
 			{
 				Log.Error(ex, $"Failed to upload file: {fileName}");
-				return MachineOperationResult.Fail("File Upload Failed", ex.Message);
+				return MachineOperationResult.Fail("elegoo.upload.failed", "File Upload Failed", ex.Message);
 			}
 		}
 
@@ -781,7 +783,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 			catch (Exception ex)
 			{
 				Log.Error(ex, $"Failed to delete file: {filePath}");
-				return MachineOperationResult.Fail("Delete File Failed", ex.Message);
+				return MachineOperationResult.Fail("elegoo.delete.file.failed", "Delete File Failed", ex.Message);
 			}
 		}
 
@@ -799,7 +801,7 @@ namespace Lib3Dp.Connectors.ELEGOO
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Failed to toggle video stream");
-				return MachineOperationResult.Fail("Video Stream Toggle Failed", ex.Message);
+				return MachineOperationResult.Fail("elegoo.video.stream.failed", "Video Stream Toggle Failed", ex.Message);
 			}
 		}
 

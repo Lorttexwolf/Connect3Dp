@@ -126,8 +126,7 @@ public static class ModelSpecs
 			ExpectedCapabilities:
 				MachineCapabilities.StartLocalJob |
 				MachineCapabilities.Control |
-				MachineCapabilities.Lighting |
-				MachineCapabilities.Fans,
+				MachineCapabilities.Lighting,
 			ExplicitlyAbsentCapabilities:
 				MachineCapabilities.AirDuct |
 				MachineCapabilities.PrintHistory |

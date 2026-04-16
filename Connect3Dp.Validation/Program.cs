@@ -6,6 +6,7 @@ using Connect3Dp.Validation.Tests.ReadOnly;
 using Connect3Dp.Validation.Tests.NonDestructive;
 using Connect3Dp.Validation.Tests.Destructive;
 using Lib3Dp.State;
+using Lib3Dp.Testing;
 using Lib3Dp.Utilities;
 using Spectre.Console;
 
@@ -65,6 +66,32 @@ await AnsiConsole.Status()
 		while (connection.State.Status == MachineStatus.Connecting && sw.Elapsed < TimeSpan.FromSeconds(15))
 			await Task.Delay(500);
 	});
+
+// Mode selection
+var selectedMode = AnsiConsole.Prompt(new SelectionPrompt<string>()
+	.Title("Select [bold]mode[/]:")
+	.AddChoices("Normal Mode (Validation)", "Test Mode (State Logger)"));
+
+if (selectedMode.Contains("Test"))
+{
+	await using var testMode = new TestMode(connection);
+	testMode.Enable();
+	testMode.LogFullState();
+
+	AnsiConsole.MarkupLine("[cyan]Test Mode active.[/]");
+	AnsiConsole.MarkupLine("[dim]Keys: S=Stop  P=Pause  R=Resume  L=Light  D=DumpState  Q=Quit[/]");
+	AnsiConsole.WriteLine();
+
+	while (true)
+	{
+		await Task.Delay(100);
+		if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
+			break;
+	}
+
+	try { await connection.Disconnect(); } catch { }
+	return;
+}
 
 // Dynamic MU (AMS) detection
 var detectedUnits = connection.State.MaterialUnits.ToList();

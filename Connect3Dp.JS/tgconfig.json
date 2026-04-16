@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jburzynski/TypeGen/master/src/TypeGen.Cli/tgconfig-schema.json",
+  "assemblies": [
+    "../Lib3Dp/bin/Debug/net9.0/Lib3Dp.dll",
+    "../Connect3Dp/bin/Debug/net9.0/Connect3Dp.dll"
+  ],
+  "outputPath": "src/generated",
+  "csNullableTranslation": "optional",
+  "exportCollectionType": "Array",
+  "singleQuotes": false,
+  "addFilesToProject": false
+}

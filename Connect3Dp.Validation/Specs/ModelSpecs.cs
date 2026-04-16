@@ -8,6 +8,7 @@ public static class ModelSpecs
 	// Common capability sets for BambuLab
 	private static readonly MachineCapabilities BBLBase =
 		MachineCapabilities.StartLocalJob |
+		MachineCapabilities.LocalJobs |
 		MachineCapabilities.Control |
 		MachineCapabilities.Lighting |
 		MachineCapabilities.PrintHistory |
@@ -19,11 +20,13 @@ public static class ModelSpecs
 	private static readonly MachineCapabilities BBLWithFlowAndInspect =
 		BBLWithFlowCali | MachineCapabilities.Print_Options_InspectFirstLayer;
 
-	public static readonly Dictionary<string, ModelSpec> All = new()
-	{
-		// ── BambuLab ──────────────────────────────────────────
+	public static readonly Dictionary<string, ModelSpec> All = BuildAll();
 
-		["X1C"] = new ModelSpec(
+	private static Dictionary<string, ModelSpec> BuildAll()
+	{
+		// ── BambuLab standalone specs ──────────────────────────
+
+		var x1c = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "X1C",
 			ExpectedCapabilities: BBLWithFlowAndInspect,
@@ -33,11 +36,11 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(20, 110),
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
-		["X1E"] = new ModelSpec(
+		var x1e = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "X1E",
 			ExpectedCapabilities: BBLWithFlowAndInspect,
@@ -48,11 +51,11 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 320),
 				[HeatingElementNames.Chamber] = new(40, 60),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
-		["P1S"] = new ModelSpec(
+		var p1s = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "P1S",
 			ExpectedCapabilities: BBLBase,
@@ -66,10 +69,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
-		["P2S"] = new ModelSpec(
+		var p2s = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "P2S",
 			ExpectedCapabilities: BBLWithFlowCali | MachineCapabilities.AirDuct,
@@ -79,11 +82,11 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(20, 110),
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "RTSPS"
-		),
+			RequiresSDOrUSB: true,
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
-		["A1"] = new ModelSpec(
+		var a1 = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "A1",
 			ExpectedCapabilities: BBLWithFlowCali,
@@ -96,10 +99,10 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
-		["A1 Mini"] = new ModelSpec(
+		var a1Mini = new ModelSpec(
 			Brand: PrinterBrand.BambuLab,
 			ModelName: "A1 Mini",
 			ExpectedCapabilities: BBLWithFlowCali,
@@ -112,12 +115,12 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(20, 300),
 			},
 			RequiresSDOrUSB: true,
-			CameraType: "30FPM"
-		),
+			ValidationPrintFileName: "Connect3Dp_Validation"
+		);
 
 		// ── ELEGOO ────────────────────────────────────────────
 
-		["Centauri Carbon"] = new ModelSpec(
+		var centauriCarbon = new ModelSpec(
 			Brand: PrinterBrand.ELEGOO,
 			ModelName: "Centauri Carbon",
 			ExpectedCapabilities:
@@ -136,13 +139,12 @@ public static class ModelSpecs
 				[HeatingElementNames.Bed] = new(0, 110),
 				[HeatingElementNames.Nozzle] = new(0, 300),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "WebRTC"
-		),
+			RequiresSDOrUSB: true
+		);
 
 		// ── Creality ──────────────────────────────────────────
 
-		["K1C"] = new ModelSpec(
+		var k1c = new ModelSpec(
 			Brand: PrinterBrand.Creality,
 			ModelName: "K1C",
 			ExpectedCapabilities:
@@ -160,10 +162,24 @@ public static class ModelSpecs
 				[HeatingElementNames.Nozzle] = new(0, 300),
 				[HeatingElementNames.Chamber] = new(0, 60),
 			},
-			RequiresSDOrUSB: false,
-			CameraType: "RTSP"
-		),
-	};
+			RequiresSDOrUSB: true
+		);
+
+		// ── Build dictionary ──────────────────────────────────
+		// AMS units are detected dynamically after connecting.
+
+		return new Dictionary<string, ModelSpec>
+		{
+			["X1C"] = x1c,
+			["X1E"] = x1e,
+			["P1S"] = p1s,
+			["P2S"] = p2s,
+			["A1"] = a1,
+			["A1 Mini"] = a1Mini,
+			["Centauri Carbon"] = centauriCarbon,
+			["K1C"] = k1c,
+		};
+	}
 
 	public static IEnumerable<string> GetModelsForBrand(PrinterBrand brand) =>
 		All.Where(kv => kv.Value.Brand == brand).Select(kv => kv.Key);

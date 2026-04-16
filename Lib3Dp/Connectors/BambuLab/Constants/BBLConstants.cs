@@ -128,8 +128,11 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 		{
 			return machineModel switch
 			{
+				ModelX1C => true,
+				ModelX1E => true,
 				ModelP1P => true,
 				ModelP1S => true,
+				ModelP2S => true,
 				ModelA1 => true,
 				ModelA1Mini => true,
 				_ => false
@@ -218,6 +221,8 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 			public static readonly string[] WithRTSPSCamera = [ModelX1C, ModelX1E, ModelH2D, ModelP2S];
 
 			public static readonly string[] With30FPMCamera = [ModelP1P, ModelP1S, ModelA1, ModelA1Mini];
+
+			public static readonly string[] WithFTPSessionReuse = [ModelX1C, ModelX1E];
 		}
 	}
 }

@@ -45,6 +45,6 @@ public class TemperatureConstraintsTest : ValidationTest
 				$"{failures.Count} constraint mismatches",
 				string.Join("; ", failures)));
 
-		return Task.FromResult(TestResult.Pass($"All {spec.ExpectedHeatingConstraints.Count} heating constraints match"));
+		return Task.FromResult(TestResult.Pass($"All {spec.ExpectedHeatingConstraints.Count} match"));
 	}
 }

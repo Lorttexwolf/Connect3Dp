@@ -88,8 +88,6 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			// For additional metadata subtask_id seems to be able to hold them.
 
-			// TODO: There may be an issue with a long subtask_id, I've noticed some prints take 30 seconds to begin and lockup the whole system. More testing is required.
-
 			var commandData = new JsonObject
 			{
 				{ "auto_bed_leveling", 2 },
@@ -101,12 +99,13 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				{ "nozzle_offset_cali", 0 },
 				{ "param", $"Metadata/plate_{options.PlateIndex}.gcode" },
 				{ "plate", options.PlateIndex },
-				{ "subtask_name", "" },
+				{ "subtask_name", options.SubTaskId },
 				{ "task_type", 1 },
-				{ "subtask_id", options.SubTaskId },
+				//{ "subtask_id", options.SubTaskId }, There may be an issue with a long subtask_id, I've noticed some prints take 30 seconds to begin and lockup the whole system. More testing is required.
 				{ "timelapse", options.Timelapse },
 				{ "toolhead_offset_cali", false },
-				{ "url", $"file:///media/usb0/{options.FileName}" }
+				//{ "url", $"file:///media/usb0/{options.FileName}" } // Works on P2S
+				{ "url", $"ftp://{options.FileName}" } // Works on X1C
 			};
 
 			if (options.AMSMapping != null && options.AMSMapping.Count > 0)
@@ -213,13 +212,15 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// https://github.com/greghesp/ha-bambulab/issues/1448
 			var commandData = new JsonObject
 			{
-				{ "duration", settings.Duration.TotalHours },
-				{ "humidity", 0 },
 				{ "ams_id", SNToAMSID[amsSN] },
+				{ "close_power_conflict", false },
+				{ "duration", (int)Math.Ceiling(settings.Duration.TotalHours) },
+				{ "humidity", 0 },
 				{ "mode", 1 },
+				{ "filament", "" },
 				{ "rotate_tray", settings.DoSpin },
 				{ "temp", settings.TempC },
-				{ "cooling_temp", 40 } // Unsure what this field does. 
+				{ "cooling_temp", 20 } // Unsure what this field does. Bambu Lab uses 20.
 
             };
 			return PublishCommand("print", "ams_filament_drying", commandData);
@@ -230,13 +231,13 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			// https://github.com/greghesp/ha-bambulab/issues/1448
 			var commandData = new JsonObject
 			{
-				{ "duration", 0 },
-				{ "humidity", 0 },
 				{ "ams_id", SNToAMSID[amsSN] },
-				{ "mode", 0 },
+				{ "duration", 0 },
+                { "filament", "" },
+				{ "humidity", 0 },
+                { "mode", 0 },
 				{ "rotate_tray", false },
-				{ "temp", 0 },
-				{ "cooling_temp", 40 } // Unsure what this field does. 
+				{ "temp", 0 }
 
             };
 			return PublishCommand("print", "ams_filament_drying", commandData);
@@ -281,6 +282,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 					.SetStatus(MachineStatus.Disconnected)
 					.SetNotifications(new MachineMessage()
 					{
+						Id = "bbl.mqtt.disconnected",
 						Title = "MQTT Disconnected",
 						Body = $"An issue occurred connecting to the MQTT Broker: {(ev.ConnectResult?.ResultCode != null ? ev.ConnectResult.ResultCode.ToString() : null) ?? ev.Exception?.Message ?? "Unknown"}",
 						Severity = MachineMessageSeverity.Error,
@@ -336,7 +338,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			BBLMQTTData readData;
 			try
 			{
-				readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null);
+				readData = new BBLMQTTData(new MachineStateUpdate(), null, null, null, null, null);
 			}
 			catch (Exception ex)
 			{
@@ -348,6 +350,7 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			{
 				TryRun(() => OnMessagePrintMQTTSecurity(printJSON, ref readData), "Print.Security");
 				TryRun(() => OnMessagePrintSDCard(printJSON, ref readData), "Print.SDCard");
+				TryRun(() => OnMessagePrintHMS(printJSON, ref readData), "Print.HMS");
 				TryRun(() => OnMessagePrintGcodeState(printJSON, ref readData), "Print.GcodeState");
 				TryRun(() => OnMessagePrintJob(printJSON, ref readData), "Print.Job");
 
@@ -437,10 +440,34 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 
 			if (printJSON.TryGetInt32(out var print_error, "print_error"))
 			{
-				if (print_error != 0 && data.Changes.Status == MachineStatus.Printing)
+				if (print_error != 0)
 				{
-					// Sometimes machine reports running when print_error is present..?
-					data.Changes.SetStatus(MachineStatus.Paused);
+					if (data.Changes.Status == MachineStatus.Printing)
+					{
+						// Sometimes machine reports running when print_error is present..?
+						data.Changes.SetStatus(MachineStatus.Paused);
+					}
+
+					// Only notify if this error isn't already covered by an active HMS entry
+					string printErrorHex = $"{print_error:X8}";
+					bool coveredByHMS = data.ActiveHMSIds != null
+						&& data.ActiveHMSIds.Any(id => id.Contains(printErrorHex));
+
+					if (!coveredByHMS)
+					{
+						data.Changes.SetNotifications(new MachineMessage(
+							"bbl.print_error",
+							"Print Error Detected",
+							$"Print error code: {printErrorHex}",
+							MachineMessageSeverity.Error,
+							MachineMessageActions.None,
+							new MachineMessageAutoResole { WhenPrinting = true }));
+					}
+				}
+				else
+				{
+					// print_error cleared
+					data.Changes.RemoveNotifications("bbl.print_error");
 				}
 			}
 		}
@@ -770,16 +797,37 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			}
 		}
 
-		private void OnMessagePrintHMS(JsonElement printJSON, ref BBLMQTTData data)
+		private static void OnMessagePrintHMS(JsonElement printJSON, ref BBLMQTTData data)
 		{
-			// Sample
-			// print.hms
-			// "hms": [
-			// {
-			//     "attr": 83886848,
-			//    "code": 131086
-			// }
-			// ],
+			// HMS (Health Management System) errors arrive as an array in print.hms.
+			// Each entry has "attr" (int) and "code" (int).
+			// The ecode is derived as: attr hex (8 chars) + code hex (8 chars), formatted with underscores.
+
+			if (!printJSON.TryGetProperty("hms", out var hmsArray))
+				return;
+
+			data.ActiveHMSIds = [];
+
+			foreach (var entry in hmsArray.EnumerateArray())
+			{
+				if (!entry.TryGetProperty("attr", out var attrEl) || !entry.TryGetProperty("code", out var codeEl))
+					continue;
+
+				long attr = attrEl.GetInt64();
+				long code = codeEl.GetInt64();
+
+				string ecode = $"{attr:X8}_{code:X8}";
+				string id = $"bbl.hms.{ecode}";
+				data.ActiveHMSIds.Add(id);
+
+				data.Changes.SetNotifications(new MachineMessage(
+					id,
+					"HMS Error Detected",
+					$"HMS error code: {ecode}",
+					MachineMessageSeverity.Warning,
+					MachineMessageActions.None,
+					default));
+			}
 		}
 
 		private void OnMessageTemps(JsonElement printJSON, ref BBLMQTTData data)

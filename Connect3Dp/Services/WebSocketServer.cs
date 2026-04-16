@@ -20,6 +20,7 @@ namespace Connect3Dp.Services
 		private static readonly JsonSerializerOptions JsonOptions = new()
 		{
 			PropertyNameCaseInsensitive = true,
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 			NumberHandling = JsonNumberHandling.Strict
 		};
 
@@ -219,7 +220,7 @@ namespace Connect3Dp.Services
 
 			try
 			{
-				jsonOfMessage = JsonSerializer.Serialize(messageToClient, messageToClient.GetType());
+				jsonOfMessage = JsonSerializer.Serialize(messageToClient, messageToClient.GetType(), JsonOptions);
 			}
 			catch (Exception ex)
 			{
@@ -233,7 +234,7 @@ namespace Connect3Dp.Services
 
 		public static async Task BroadcastMessageAsync<T>(MessageToClient<T> messageToBroadcast, IEnumerable<IWebSocketClient> connections) where T : notnull
 		{
-			var jsonOfMessage = JsonSerializer.Serialize(messageToBroadcast, messageToBroadcast.GetType());
+			var jsonOfMessage = JsonSerializer.Serialize(messageToBroadcast, messageToBroadcast.GetType(), JsonOptions);
 			var bytesOfJson = Encoding.UTF8.GetBytes(jsonOfMessage);
 
 			foreach (var connection in connections)

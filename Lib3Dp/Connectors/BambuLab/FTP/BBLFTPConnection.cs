@@ -1,15 +1,11 @@
-﻿using FluentFTP;
+using FluentFTP;
 using FluentFTP.GnuTLS;
-using FluentFTP.Monitors;
 using Lib3Dp.Connectors.BambuLab.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using Lib3Dp.Files;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Net;
 using System.Security.Cryptography;
-using System.Threading.Channels;
 using Lib3Dp.Connectors.BambuLab.Constants;
 using FluentFTP.Exceptions;
 
@@ -17,21 +13,38 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 {
 	// https://github.com/robinrodricks/FluentFTP/wiki/FTP-Connection
 
-	// TODO: Fix reconnection, push events for disconnected, and etc.
-
-	internal class BBLFTPConnection : IDisposable
+	internal class BBLFTPConnection : IAsyncDisposable
 	{
+		private class FluentFtpLogAdapter(Logger logger) : IFtpLogger
+		{
+			public void Log(FtpLogEntry entry)
+			{
+				if (entry.Severity == FtpTraceLevel.Error)
+					logger.Error($"[FluentFTP] {entry.Message}");
+				else if (entry.Severity == FtpTraceLevel.Warn)
+					logger.Warning($"[FluentFTP] {entry.Message}");
+			}
+		}
+
 		private readonly Logger Logger;
 
 		public AsyncFtpClient? FTP;
-		private BlockingAsyncFtpMonitor? Monitor;
-		private CancellationTokenSource? MonitorCancellationSource;
+		private CancellationTokenSource? cts;
+		private Task? scanLoopTask;
 
 		public event Action<string, string, BambuLab3MF>? OnLocal3MFAdded;
 		public event Action<string[]>? OnLocal3MFRemoved;
 		public event Action? OnDisconnected;
+		public event Action? OnInitialScanComplete;
 
-		public bool IsConnected => FTP != null && FTP.IsConnected;
+		public bool IsConnected
+		{
+			get
+			{
+				try { return FTP != null && FTP.IsConnected; }
+				catch { return false; }
+			}
+		}
 
 		private const int MaxCacheSize = 100;
 
@@ -42,155 +55,201 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 		private readonly object LRULock = new();
 
 		private readonly SemaphoreSlim FTPDownloadLock = new(1, 1);
-		private readonly SemaphoreSlim FTPReconnectLock = new(1, 1);
 
-		private Channel<string> DownloadQueue = Channel.CreateUnbounded<string>();
+		private readonly HashSet<string> _knownPaths = new(StringComparer.OrdinalIgnoreCase);
 
-		private readonly List<Task> DownloadWorkers = new();
-		
+		/// <summary>
+		/// Tracks files that failed to parse (corrupt ZIP, not a real 3MF, etc.)
+		/// Keyed by path, value is (size, modified) at time of failure.
+		/// Cleared when a file is removed or its size/modified changes.
+		/// </summary>
+		private readonly Dictionary<string, (long Size, DateTime Modified)> _failedFiles = new(StringComparer.OrdinalIgnoreCase);
+
 		private readonly IMachineFileStore FileStore;
 		private string? MachineID;
 
 		public BBLFTPConnection(IMachineFileStore fileStore, Logger logger)
 		{
 			this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
 			this.FileStore = fileStore;
-
-			this.MonitorCancellationSource = new();
-		}
-
-		private async Task Monitor_ChangeDetected(FtpMonitorEventArgs e)
-		{
-			Logger.Trace($"Monitor detected changes! {e}");
-
-			var removed = e.Deleted.Where(e => e.EndsWith(".3mf")).ToArray();
-			OnLocal3MFRemoved?.Invoke(removed);
-
-			foreach (var r in removed)
-			{
-				PathToHash.TryRemove(r, out _);
-			}
-
-			foreach (var added in e.Added.Where(e => e.EndsWith(".3mf")))
-			{
-				await DownloadQueue.Writer.WriteAsync(added);
-			}
 		}
 
 		/// <exception cref="FtpException"></exception>
-		public async Task ConnectAsync(string address, string accessCode, string machineID)
+		public async Task ConnectAsync(string address, string accessCode, string machineID, bool useGnuTls = false)
 		{
-			if (FTP != null && FTP.IsConnected) return;
+			if (IsConnected) return;
 
-			// store machine id for file handle generation
+			_knownPaths.Clear();
+			_failedFiles.Clear();
 			this.MachineID = machineID;
 
-			// If a previous queue was completed (from a disconnect), recreate it so workers can run again
-			if (DownloadQueue.Reader.Completion.IsCompleted)
+			var ftpConfig = new FtpConfig()
 			{
-				DownloadQueue = Channel.CreateUnbounded<string>();
-				DownloadWorkers.Clear();
+				EncryptionMode = FtpEncryptionMode.Implicit,
+				ValidateAnyCertificate = true,
+				RetryAttempts = 3,
+			};
+
+			// Some models (X1C, X1E) require SSL session reuse, which .NET's SslStream
+			// doesn't support. GnuTLS handles this transparently.
+			if (useGnuTls)
+			{
+				ftpConfig.CustomStream = typeof(GnuTlsStream);
 			}
 
-			// Create FTP client and monitor for this connection
-			FTP = new AsyncFtpClient(address.ToString(), "bblp", accessCode, port: 990, new FtpConfig()
-			{
-				EncryptionMode = FtpEncryptionMode.Auto,
-				ValidateAnyCertificate = true
-			});
+			FTP = new AsyncFtpClient(address.ToString(), "bblp", accessCode, port: 990, ftpConfig, logger: new FluentFtpLogAdapter(Logger));
 
-			MonitorCancellationSource = new();
-
-			Monitor = new BlockingAsyncFtpMonitor(FTP, [ "/" ])
-			{
-				PollInterval = TimeSpan.FromSeconds(30),
-				WaitForUpload = true,
-				Recursive = true,
-				ChangeDetected = Monitor_ChangeDetected
-			};
+			cts = new CancellationTokenSource();
 
 			await FTP.AutoConnect();
 
-			StartWorkers();
+			scanLoopTask = Task.Run(() => ScanLoop(cts.Token));
+		}
 
-			if (!this.Monitor!.Active)
+		private async Task ScanLoop(CancellationToken ct)
+		{
+			bool initialScanDone = false;
+
+			while (!ct.IsCancellationRequested)
 			{
-				_ = Task.Run(async () =>
+				try
 				{
-					try
+					// Reconnect if needed
+					if (!IsConnected)
 					{
-						await Monitor!.Start(this.MonitorCancellationSource!.Token);
+						await Task.Delay(5_000, ct);
+						await FTP!.AutoConnect();
 					}
-					catch (Exception ex)
+
+					// Get current file listing
+					var items = await FTP!.GetListing("/", FtpListOption.Recursive, ct);
+					var currentFiles = new Dictionary<string, FtpListItem>(StringComparer.OrdinalIgnoreCase);
+
+					foreach (var item in items)
 					{
-						Logger.Error($"FTP Monitor error: {ex}");
-						// Runs on disconnect
+						if (item.Type == FtpObjectType.File && item.FullName.EndsWith(".3mf", StringComparison.OrdinalIgnoreCase))
+							currentFiles[item.FullName] = item;
 					}
-				});
+
+					// Detect removed files
+					var removed = _knownPaths.Where(p => !currentFiles.ContainsKey(p)).ToArray();
+					if (removed.Length > 0)
+					{
+						foreach (var r in removed)
+						{
+							_knownPaths.Remove(r);
+							_failedFiles.Remove(r);
+							PathToHash.TryRemove(r, out _);
+						}
+						OnLocal3MFRemoved?.Invoke(removed);
+					}
+
+					// Also clear failed entries for files that have been removed
+					foreach (var failedPath in _failedFiles.Keys.ToList())
+					{
+						if (!currentFiles.ContainsKey(failedPath))
+							_failedFiles.Remove(failedPath);
+					}
+
+					// Build list of files to download (skip known and unchanged-failed files)
+					var toDownload = new List<(string Path, FtpListItem Item)>();
+
+					foreach (var (path, item) in currentFiles)
+					{
+						if (_knownPaths.Contains(path))
+							continue;
+
+						if (_failedFiles.TryGetValue(path, out var prev) && prev.Size == item.Size && prev.Modified == item.Modified)
+							continue;
+
+						toDownload.Add((path, item));
+					}
+
+					// Download sequentially — FluentFTP can't handle concurrent transfers on one connection
+					foreach (var (path, item) in toDownload)
+					{
+						ct.ThrowIfCancellationRequested();
+						try
+						{
+							var nPath = path.StartsWith("/") ? path[1..] : path;
+							var (bbl3MF, hash) = await Download3MF(path);
+							OnLocal3MFAdded?.Invoke(nPath, hash, bbl3MF);
+							_knownPaths.Add(path);
+							_failedFiles.Remove(path);
+						}
+						catch (OperationCanceledException) { throw; }
+						catch (Exception ex)
+						{
+							Logger.Warning($"Failed to process {path}: {ex.Message}");
+							_failedFiles[path] = (item.Size, item.Modified);
+						}
+					}
+
+					// Signal initial scan complete after first successful pass
+					if (!initialScanDone)
+					{
+						initialScanDone = true;
+						try { OnInitialScanComplete?.Invoke(); } catch { }
+					}
+				}
+				catch (OperationCanceledException) { return; }
+				catch (Exception ex)
+				{
+					Logger.Warning($"FTP scan failed: {ex.Message}");
+
+					// Attempt one reconnect
+					if (!await TryReconnect(ct))
+					{
+						try { OnDisconnected?.Invoke(); } catch { }
+						return;
+					}
+
+					// Signal initial scan even on failure so consumers aren't stuck waiting
+					if (!initialScanDone)
+					{
+						initialScanDone = true;
+						try { OnInitialScanComplete?.Invoke(); } catch { }
+					}
+				}
+
+				// Wait before next poll
+				try { await Task.Delay(TimeSpan.FromSeconds(30), ct); }
+				catch (OperationCanceledException) { return; }
 			}
 		}
 
-		private void StartWorkers()
+		private async Task<bool> TryReconnect(CancellationToken ct)
 		{
-			if (DownloadWorkers.Count > 0)
-				return;
-
-			for (int i = 0; i < 4; i++)
+			try
 			{
-				DownloadWorkers.Add(Task.Run(async () =>
+				if (!IsConnected)
 				{
-					await foreach (var path in DownloadQueue.Reader.ReadAllAsync())
-					{
-						try
-						{
-							var nPath = path[1..];
-
-							var (bbl3MF, hash) = await Download3MF(path);
-
-							OnLocal3MFAdded?.Invoke(nPath, hash, bbl3MF);
-						}
-						catch (Exception ex)
-						{
-							Logger.Error($"Worker failed processing {path}\n{ex}");
-						}
-					}
-				}));
+					await Task.Delay(5_000, ct);
+					await FTP!.AutoConnect();
+				}
+				return true;
+			}
+			catch (OperationCanceledException) { throw; }
+			catch (Exception ex)
+			{
+				Logger.Error($"FTP reconnect failed: {ex.Message}");
+				return false;
 			}
 		}
 
 		public async Task DisconnectAsync()
 		{
-			// Cancel monitor
-			try
-			{
-				MonitorCancellationSource?.Cancel();
-			}
-			catch { }
+			// Cancel scan loop
+			try { cts?.Cancel(); } catch { }
 
-			// Complete the download queue so workers exit
+			// Wait for scan loop to exit
 			try
 			{
-				DownloadQueue.Writer.TryComplete();
-			}
-			catch { }
-
-			// Wait for workers to finish
-			try
-			{
-				if (DownloadWorkers.Count > 0)
+				if (scanLoopTask != null)
 				{
-					await Task.WhenAll(DownloadWorkers.ToArray());
-					DownloadWorkers.Clear();
+					await Task.WhenAny(scanLoopTask, Task.Delay(10_000));
+					scanLoopTask = null;
 				}
-			}
-			catch { }
-
-			// Dispose monitor
-			try
-			{
-				Monitor?.Dispose();
-				Monitor = null;
 			}
 			catch { }
 
@@ -206,36 +265,21 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			}
 			catch
 			{
-				// best-effort
 				try { FTP?.Dispose(); } catch { }
 				FTP = null;
 			}
 		}
 
-		private async Task EnsureConnected()
+		private void EnsureConnected()
 		{
-			if (FTP != null && FTP.IsConnected)
-				return;
+			bool connected;
+			try { connected = FTP != null && FTP.IsConnected; }
+			catch { connected = false; }
 
-			await FTPReconnectLock.WaitAsync();
-
-			try
+			if (!connected)
 			{
-				if (FTP == null || !FTP.IsConnected)
-				{
-					Logger.Warning("FTP disconnected. Raising OnDisconnected and Reconnecting...");
-					try 
-					{ 
-						OnDisconnected?.Invoke(); 
-					} 
-					catch { }
-					// We don't have connection details here, so just throw to indicate disconnected state
-					throw new InvalidOperationException("FTP is not connected and auto-reconnect requires calling ConnectAsync with credentials.");
-				}
-			}
-			finally
-			{
-				FTPReconnectLock.Release();
+				try { OnDisconnected?.Invoke(); } catch { }
+				throw new InvalidOperationException("FTP is not connected.");
 			}
 		}
 
@@ -259,7 +303,7 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 
 		public async Task<string> DownloadFile(string remotePath, Stream destinationStream)
 		{
-			await EnsureConnected();
+			EnsureConnected();
 
 			await FTPDownloadLock.WaitAsync();
 
@@ -284,7 +328,7 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 		{
 			try
 			{
-				await EnsureConnected();
+				EnsureConnected();
 
 				// Download into a temporary stream first so we can compute the hash
 				using var tempStream = FileUtils.CreateTempFileStream();
@@ -350,14 +394,9 @@ namespace Lib3Dp.Connectors.BambuLab.FTP
 			return Convert.ToHexString(hash);
 		}
 
-		public void Dispose()
+		public async ValueTask DisposeAsync()
 		{
-			try { MonitorCancellationSource?.Cancel(); } catch { }
-			try { DownloadQueue.Writer.TryComplete(); } catch { }
-
-			try { Monitor?.Dispose(); } catch { }
-			try { FTP?.Dispose(); } catch { }
-
+			await DisconnectAsync();
 			GC.SuppressFinalize(this);
 		}
 	}

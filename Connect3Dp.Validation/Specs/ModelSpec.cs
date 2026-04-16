@@ -11,5 +11,7 @@ public record ModelSpec(
 	MachineCapabilities ExplicitlyAbsentCapabilities,
 	Dictionary<string, HeatingConstraints>? ExpectedHeatingConstraints,
 	bool RequiresSDOrUSB,
-	string? CameraType
+	int ExpectedNozzleCount = 1,
+	double DefaultNozzleDiameter = 0.4,
+	string? ValidationPrintFileName = null
 );

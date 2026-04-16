@@ -1,4 +1,4 @@
-﻿using Lib3Dp.State;
+using Lib3Dp.State;
 
 namespace Lib3Dp.Constants
 {
@@ -8,6 +8,7 @@ namespace Lib3Dp.Constants
 	internal static class MachineMessages
 	{
 		public static MachineMessage DisconnectedMessage => new(
+			"machine.disconnected",
 			"Disconnected from Machine",
 			"Unable to establish connection to Machine",
 			MachineMessageSeverity.Error,
@@ -15,6 +16,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenConnected = true });
 
 		public static MachineMessage FailedToConnect => new(
+			"machine.connect.failed",
 			"Unable to connect to Machine",
 			"An issue occurred connecting to this Machine",
 			MachineMessageSeverity.Error,
@@ -22,6 +24,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenConnected = true });
 
 		public static MachineMessage FailedToPause => new(
+			"machine.pause.failed",
 			"Unable to Pause",
 			"An issue occurred pausing this Machine",
 			MachineMessageSeverity.Error,
@@ -29,6 +32,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenStatus = MachineStatus.Paused });
 
 		public static MachineMessage FailedToResume => new(
+			"machine.resume.failed",
 			"Unable to Resume",
 			"An issue occurred resuming this Machine",
 			MachineMessageSeverity.Error,
@@ -36,6 +40,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenStatus = MachineStatus.Printing });
 
 		public static MachineMessage FailedToStop => new(
+			"machine.stop.failed",
 			"Unable to stop the Machine",
 			"An issue occurred stopping this Machine",
 			MachineMessageSeverity.Error,
@@ -43,6 +48,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenStatus = MachineStatus.Canceled });
 
 		public static MachineMessage FailedToClearBed => new(
+			"machine.clearbed.failed",
 			"Unable to Clear Bed",
 			"An issue occurred clearing the build plate",
 			MachineMessageSeverity.Error,
@@ -50,6 +56,7 @@ namespace Lib3Dp.Constants
 			new MachineMessageAutoResole { WhenStatus = MachineStatus.Idle });
 
 		public static MachineMessage FailedToStartLocalPrint => new(
+			"machine.localprint.failed",
 			"Unable to Start Local Print",
 			"An issue occurred starting a local print",
 			MachineMessageSeverity.Error,
@@ -57,6 +64,7 @@ namespace Lib3Dp.Constants
 			default);
 
 		public static MachineMessage FailedToBeginMUHeating => new(
+			"machine.mu.heating.begin.failed",
 			"Unable to Begin Material Unit Heating",
 			"An issue occurred starting material unit heating",
 			MachineMessageSeverity.Error,
@@ -64,6 +72,7 @@ namespace Lib3Dp.Constants
 			default);
 
 		public static MachineMessage FailedToEndMUHeating => new(
+			"machine.mu.heating.end.failed",
 			"Unable to End Material Unit Heating",
 			"An issue occurred stopping material unit heating",
 			MachineMessageSeverity.Error,
@@ -71,6 +80,7 @@ namespace Lib3Dp.Constants
 			default);
 
 		public static MachineMessage FailedToChangeAirDuct => new(
+			"machine.airduct.failed",
 			"Unable to Change Air Duct Mode",
 			"An issue occurred changing the air duct mode",
 			MachineMessageSeverity.Error,
@@ -78,6 +88,7 @@ namespace Lib3Dp.Constants
 			default);
 
 		public static MachineMessage FailedToToggleLight => new(
+			"machine.light.failed",
 			"Unable to Toggle Light",
 			"An issue occurred toggling the light",
 			MachineMessageSeverity.Error,
@@ -85,6 +96,7 @@ namespace Lib3Dp.Constants
 			default);
 
 		public static MachineMessage MUDoesNotExist(string unitID) => new(
+			$"machine.mu.notfound.{unitID}",
 			"Material Unit does not Exist",
 			$"Material Unit of ID {unitID} does not exist",
 			MachineMessageSeverity.Error,
@@ -94,6 +106,7 @@ namespace Lib3Dp.Constants
 		public static MachineMessage NoFeature(MachineCapabilities desiredFeature)
 		{
 			return new MachineMessage(
+				$"machine.feature.unsupported.{Enum.GetName(desiredFeature)}",
 				"Unsupported Feature",
 				$"Machine does not support feature {Enum.GetName(desiredFeature)}",
 				MachineMessageSeverity.Error,
@@ -104,6 +117,7 @@ namespace Lib3Dp.Constants
 		public static MachineMessage NoMUFeature(MUCapabilities desiredFeature)
 		{
 			return new MachineMessage(
+				$"machine.mu.feature.unsupported.{Enum.GetName(desiredFeature)}",
 				"Unsupported Material Unit Feature",
 				$"Material Unit does not support feature {Enum.GetName(desiredFeature)}",
 				MachineMessageSeverity.Error,
@@ -114,6 +128,7 @@ namespace Lib3Dp.Constants
 		public static MachineMessage ScheduledPrintSkipped(string jobName, string reason)
 		{
 			return new MachineMessage(
+				$"machine.scheduled.skipped.{jobName}",
 				"Scheduled Print Skipped",
 				$"The scheduled print '{jobName}' was skipped: {reason}",
 				MachineMessageSeverity.Warning,
@@ -124,6 +139,7 @@ namespace Lib3Dp.Constants
 		public static MachineMessage ScheduledPrintFailed(string jobName, string error)
 		{
 			return new MachineMessage(
+				$"machine.scheduled.failed.{jobName}",
 				"Scheduled Print Failed",
 				$"The scheduled print '{jobName}' failed to start: {error}",
 				MachineMessageSeverity.Error,

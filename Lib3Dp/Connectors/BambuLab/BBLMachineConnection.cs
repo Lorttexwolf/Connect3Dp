@@ -45,6 +45,7 @@ namespace Lib3Dp.Connectors.BambuLab
 			this.FTP.OnLocal3MFAdded += FTP_OnLocal3MFAdded;
 			this.FTP.OnLocal3MFRemoved += FTP_OnLocal3MFRemoved;
 			this.FTP.OnDisconnected += FTP_OnDisconnected;
+			this.FTP.OnInitialScanComplete += FTP_OnInitialScanComplete;
 
 			// TODO: Monitor MQTT & FTP connection to determine disconnection status.
 		}
@@ -78,7 +79,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			}, () => this.MQTT.IsConnected && this.FTP.IsConnected, TimeSpan.FromSeconds(30));
 
-			return opResult.IntoOperationResult("Update Configuration");
+			return opResult.IntoOperationResult("bbl.config.update.failed", "Update Configuration");
 		}
 
 		public static Type GetConfigurationType()
@@ -101,30 +102,31 @@ namespace Lib3Dp.Connectors.BambuLab
 			}
 			catch (Exception ex)
 			{
-				return MachineOperationResult.Fail("Unable to Connect to MQTT Broker", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
+				return MachineOperationResult.Fail("bbl.mqtt.connect.failed", "Unable to Connect to MQTT Broker", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
 				{
 					WhenConnected = true
 				});
 			}
 
-			//try
-			//{
-			//	await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.ID);
-			//}
-			//catch (Exception ex)
-			//{
-			//	return MachineOperationResult.Fail("Unable to Connect to FTP Server", ex.Message, MachineMessageActions.CheckConfiguration, new MachineMessageAutoResole()
-			//	{
-			//		WhenConnected = true
-			//	});
-			//}
+			try
+			{
+				bool useGnuTls = BBLConstants.ModelFeatures.WithFTPSessionReuse.Contains(this.Model);
+				await this.FTP.ConnectAsync(Configuration.Address, Configuration.AccessCode, this.ID, useGnuTls);
+				CommitState(new MachineStateUpdate().SetIsLocalStorageScanning(true));
+			}
+			catch (Exception ex)
+			{
+				Logger.OfCategory($"BBL FTP {Configuration.Nickname ?? Configuration.SerialNumber}").Warning($"FTP connection failed — local job features disabled: {ex.Message}");
+				AddNotification(BBLMessages.FTPDisconnected);
+			}
 
 			return MachineOperationResult.Ok;
 		}
 
-		public override Task Disconnect()
+		public override async Task Disconnect()
 		{
-			return Task.CompletedTask;
+			await this.MQTT.DisconnectAsync();
+			await this.FTP.DisconnectAsync();
 		}
 
 		protected override async Task DownloadLocalFile(MachineFileHandle fileHandle, Stream destinationStream)
@@ -290,7 +292,7 @@ namespace Lib3Dp.Connectors.BambuLab
 
 				if (jobToRemove == default) continue;
 
-				Console.WriteLine($"Removed Local Job {removed} from State");
+				Logger.OfCategory("BBL FTP").Trace($"Removed Local Job {removed} from State");
 
 				stateChanges.RemoveLocalJobs(jobToRemove);
 			}
@@ -317,35 +319,32 @@ namespace Lib3Dp.Connectors.BambuLab
 
 				this.CommitState(stateChanges);
 
-				Console.WriteLine($"Added Local Job {localJob} to State");
+				Logger.OfCategory("BBL FTP").Trace($"Added Local Job {localJob} to State");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to add Local Job {fileName} to State\n{ex}");
+				Logger.OfCategory("BBL FTP").Error($"Failed to add Local Job {fileName} to State\n{ex}");
 			}
 		}
 
 		private void MQTT_OnData(BBLMQTTData data)
 		{
-			// TODO: Reimplement
-			//if (data.HasUSBOrSDCard.HasValue && this.IsUSBOrSDCardRequired)
-			//{
-			//	bool hasMedia = data.HasUSBOrSDCard.Value;
-			//	var hasMissingMessage = this.State.Notifications.FirstOrDefault(BBLMessages.SDCardOrUSBMissing);
+			if (data.HasUSBOrSDCard.HasValue && this.IsUSBOrSDCardRequired)
+			{
+				bool hasMedia = data.HasUSBOrSDCard.Value;
+				bool hasMissingMessage = this.State.MappedNotifications.ContainsKey(BBLMessages.SDCardOrUSBMissing.Id);
 
-			//	if (!hasMedia && !hasMissingMessage)
-			//	{
-			//		// Removed
-			//		data.Changes.SetMessages(BBLMessages.SDCardOrUSBMissing);
-			//	}
-			//	else if (hasMedia && hasMissingMessage)
-			//	{
-			//		// Added
-			//		data.Changes.RemoveMessages(BBLMessages.SDCardOrUSBMissing);
-			//	}
+				if (!hasMedia && !hasMissingMessage)
+				{
+					data.Changes.SetNotifications(BBLMessages.SDCardOrUSBMissing);
+				}
+				else if (hasMedia && hasMissingMessage)
+				{
+					data.Changes.RemoveNotifications(BBLMessages.SDCardOrUSBMissing.Id);
+				}
 
-			//	this.HasUSBOrSDCard = hasMedia;
-			//}
+				this.HasUSBOrSDCard = hasMedia;
+			}
 
 			if (data.Changes.StatusIsSet)
 			{
@@ -361,7 +360,7 @@ namespace Lib3Dp.Connectors.BambuLab
 				this.FirmwareVersion = data.FirmwareVersion.Value;
 			}
 
-			MachineCapabilities machineFeatures = MachineCapabilities.StartLocalJob | MachineCapabilities.Lighting | MachineCapabilities.Control | MachineCapabilities.PrintHistory;
+			MachineCapabilities machineFeatures = MachineCapabilities.StartLocalJob | MachineCapabilities.LocalJobs | MachineCapabilities.Lighting | MachineCapabilities.Control | MachineCapabilities.PrintHistory;
 
 			// We will decide which features are available on this machine depending on the model!
 
@@ -409,18 +408,34 @@ namespace Lib3Dp.Connectors.BambuLab
 
 			if (!this.HasUSBOrSDCard && this.IsUSBOrSDCardRequired)
 			{
-				machineFeatures &= ~(MachineCapabilities.StartLocalJob);
+				machineFeatures &= ~(MachineCapabilities.StartLocalJob | MachineCapabilities.LocalJobs);
 			}
 
 			data.Changes.SetCapabilities(machineFeatures);
 
+			// Remove HMS notifications that are no longer active
+			if (data.ActiveHMSIds != null)
+			{
+				foreach (var (id, _) in this.State.Notifications)
+				{
+					if (id.StartsWith("bbl.hms.") && !data.ActiveHMSIds.Contains(id))
+						data.Changes.RemoveNotifications(id);
+				}
+			}
+
 			CommitState(data.Changes);
+		}
+
+		private void FTP_OnInitialScanComplete()
+		{
+			CommitState(new MachineStateUpdate().SetIsLocalStorageScanning(false));
 		}
 
 		private void FTP_OnDisconnected()
 		{
 			var stateUpdate = new MachineStateUpdate()
-				.SetCapabilities(this.State.Capabilities & ~(MachineCapabilities.StartLocalJob | MachineCapabilities.LocalJobs));
+				.SetCapabilities(this.State.Capabilities & ~(MachineCapabilities.StartLocalJob | MachineCapabilities.LocalJobs))
+				.SetIsLocalStorageScanning(false);
 
 			if (this.HasUSBOrSDCard)
 			{

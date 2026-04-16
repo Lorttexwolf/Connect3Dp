@@ -26,17 +26,20 @@ namespace Lib3Dp.State
 		public Dictionary<string, bool> Lights { get; set; } = [];
 		public Dictionary<string, HeatingElement> HeatingElements { get; set; } = [];
 
+		public bool IsLocalStorageScanning { get; set; }
+
 		public string? StreamingOMEURL { get; set; }
 		public string? ThumbnailOMEURL { get; set; }
 
 		// Store notifications keyed by MachineMessage so updates can be expressed as dictionary-updates in the generated updater.
-		public Dictionary<MachineMessage, Notification> Notifications { get; set; } = [];
+		public Dictionary<string, Notification> Notifications { get; set; } = [];
 
 		IReadOnlyDictionary<string, bool> IMachineState.Lights => Lights;
 		IReadOnlyDictionary<string, int> IMachineState.Fans => Fans;
-		IMachinePrintJob? IMachineState.Job => CurrentJob;
+		IReadOnlyDictionary<string, HeatingElement> IMachineState.HeatingElements => HeatingElements;
+		IMachinePrintJob? IMachineState.CurrentJob => CurrentJob;
 		IEnumerable<HistoricPrintJob> IMachineState.JobHistory => JobHistory;
-		IReadOnlyDictionary<MachineMessage, Notification> IMachineState.MappedNotifications => Notifications;
+		IReadOnlyDictionary<string, Notification> IMachineState.MappedNotifications => Notifications;
 		IEnumerable<IMaterialUnit> IMachineState.MaterialUnits => MaterialUnits.Values;
 		IReadOnlySet<LocalPrintJob> IMachineState.LocalJobs => LocalJobs;
 		IEnumerable<ScheduledPrint> IMachineState.ScheduledPrints => ScheduledPrints;

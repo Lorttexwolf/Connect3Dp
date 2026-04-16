@@ -8,6 +8,163 @@ These notes summarize observed but not fully verified behavior of Creality Print
 
 Creality Print 6.3 appears to communicate with printers over LAN using a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection on port `9999`. Messages are JSON objects using a `{ method, params }` structure.
 
+# SET REQUESTS
+
+If changing nozzle temp, sends new communication when temp changes
+Nozzle -> nozzleTemp
+Hotbed -> bedTemp0
+Chamber -> boxTemp
+
+## ORDER MATTERS - MUST PUT FanType before FanPct
+For all fans, it sets the fans to 1 if on, and 0 if off
+
+Turning on Chamber Fan
+Uses fanCase to denote Chamber Fan
+ "fanCase": 1,
+ "caseFanPct": 30,
+Turning Chamber Fan lower only changes “caseFanPct”
+
+Turning on Model Fan with Chamber Fan on
+Uses fan to denote Model Fan	
+  "fan": 1,
+  "modelFanPct": 10,
+
+Turning on Auxiliary Fan
+Uses fanAuxiliary to denote Auxiliary Fan
+  "fanAuxiliary": 1,
+  "auxiliaryFanPct": 20,
+
+Changing Filament temp in UI sends no packet change
+
+Normal send with no changes
+{
+  "maxBedTemp": 115,
+  "maxNozzleTemp": 320,
+  "webrtcSupport": 1
+}
+
+# GET REQUESTS
+Simply putting the GET request parameter in, means that it will return it. The 0 or 1 doesn’t matter, except for being correct syntax
+
+Not sure about this
+Theres no delay for get methods, only for UI changes?
+
+### reqGcodeFile
+reqGcodeList returns nothing
+  "method": "get",
+  "params": 
+  { 
+    "reqGcodeFile": 1,
+    “reqGcodeList”: 1
+  }
+Returns
+"retGcodeFileInfo": {
+    "totalNum": 33,
+    "fileInfo": all gcodes currently on machine
+
+### reqHistory
+Returns last ~30 prints with their info
+"historyList": [
+    {
+      "id": 55,
+      "filename": "/usr/data/printer_data/gcodes/brakeconnectorv2_PLA_41m15s.gcode",
+      "size": 3018616,
+      "ctime": 1775254066,
+      "starttime": 1775324469,
+      "totaltime": 2631,
+      "usagematerial": 5884,
+      "startway": 9,
+      "usagetime": 2404,
+      "printfinish": 1,
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    }
+
+### boxConfig
+boxsInfo does nothing
+  “boxConfig": {
+    "autoRefill": 0,
+    "cAutoFeed": 0,
+    "cSelfTest": 0,
+    "cAutoUpdateFilament": 0
+  }
+### reqPrintObjects
+{
+  "current_object": "",
+  "excluded_objects": "[]",
+  "objects": "[]"
+}
+
+### reqElapseVideoList
+{
+  "elapseVideoList": []
+}
+
+Neither of these exist
+"cfsList": 1,
+"reqMaterials": 1,
+
+### pFileList
+{
+  "pFileList": [
+    {
+      "file_create_time": 120,
+      "file_size": 26713870,
+      "name": "小武士刀_PLA_2h48m.gcode",
+      "path": "/usr/data/printer_data/gcodes/小武士刀_PLA_2h48m.gcode",
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    },
+    {
+      "file_create_time": 1282026,
+      "file_size": 18336693,
+      "name": "obj_1_85mm Train engine_PLA_2h42m.gcode",
+      "path": "/usr/data/printer_data/gcodes/obj_1_85mm Train engine_PLA_2h42m.gcode",
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    },
+    {
+      "file_create_time": 1768254940,
+      "file_size": 272621,
+      "name": "test mount profile_PLA_3m39s.gcode",
+      "path": "/usr/data/printer_data/gcodes/test mount profile_PLA_3m39s.gcode",
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    },
+    {
+      "file_create_time": 1768013256,
+      "file_size": 16660695,
+      "name": "bambu_spool_p2_PLA_2h5m.gcode",
+      "path": "/usr/data/printer_data/gcodes/bambu_spool_p2_PLA_2h5m.gcode",
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    },
+    {
+      "file_create_time": 1774042786,
+      "file_size": 239974,
+      "name": "Top Molds Copy 1 - Part 19_PLA_4m48s.gcode",
+      "path": "/usr/data/printer_data/gcodes/Top Molds Copy 1 - Part 19_PLA_4m48s.gcode",
+      "thumbnail": "/usr/data/printer_data/gcodes/.thumbs/dummpy.png"
+    }
+  ],
+  "total_page": 10,
+  "page_size": 5
+}
+
+onePageNum does nothing
+
+Constant package delay ~3s - adds new changes to front of package
+CHECK ORDER
+
+## Bruno Connection
+ws://10.200.2.9:9999 
+
+Start print using onboard gcode
+{    
+  "method": "set",
+  "params": 
+  { 
+    "opGcodeFile": "printprt:/usr/data/printer_data/gcodes/Part Studio 2 Copy 1 - Part 1_PLA_23m31s.gcode",
+    "enableSelfTest": 0
+  }
+}
+
+RESEARCH AREA
 ## Commands
 
 ### Stop
@@ -59,8 +216,9 @@ Creality Print 6.3 appears to communicate with printers over LAN using a [WebSoc
 }
 
 ```
+PLEASE LOOK LATER AAAAAA
 
-### Start Print
+### Start Print 
 
 Exact parameters are not confirmed.
 
@@ -74,7 +232,7 @@ Exact parameters are not confirmed.
 }
 ```
 
-## Requesting Information
+## Requesting Information - Finished
 
 Sending "method": "get" with various properties prompts the printer to return specific data. Exact returns aren't documented yet.
 
@@ -82,7 +240,7 @@ Sending "method": "get" with various properties prompts the printer to return sp
 {
     "method": "get",
     "params": {
-        "reqGcodeFile": 1,
+        "reqGcodeFile": 1, 
         "reqGcodeList": 1,
 
         "reqHistory": 1,
@@ -440,3 +598,4 @@ addPrinter(t, r, n = !1) {
         }! i.online || i.socket == null
 }
 ```
+

@@ -1,0 +1,39 @@
+meta {
+  name: Start Print without MU
+  type: ws
+  seq: 8
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/startPrint",
+      "ResponseMessageID": "optional-correlation-id",
+      "Data": {
+        "MachineID": "Mr.Worldwide",
+        "File": {
+          "machineID": "Mr.Worldwide",
+          "uri": "3MF/cache/Benchy_Aircraft_Carrier!.gcode.3mf",
+          "mime": "model/3mf",
+          "hashSha256": "95C43D3AB5B795A4DF8DE37D04DCBB1AE8513B34140C16AE664B2F9778948E2A"
+        },
+        "Options": {
+          "CustomID": null,
+          "LevelBed": false,
+          "FlowCalibration": false,
+          "VibrationCalibration": false,
+          "InspectFirstLayer": false,
+          "MaterialMap": null
+        }
+      }
+    }
+  '''
+}

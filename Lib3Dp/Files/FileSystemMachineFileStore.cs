@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 
 namespace Lib3Dp.Files;
 
@@ -9,8 +8,6 @@ public record struct FileSystemMachineFileStoreOptions(string BasePath, bool Ver
 public class FileSystemMachineFileStore : IMachineFileStore
 {
 	private const int MaxPathLength = 200;
-
-	private static readonly Regex ValidIdRegex = new Regex(@"^[a-zA-Z0-9_-]+$", RegexOptions.Compiled);
 	//private static readonly Regex ValidHashRegex = new Regex(@"^[a-fA-F0-9]{64}$", RegexOptions.Compiled);
 	
 	private readonly string BasePath;
@@ -155,12 +152,12 @@ public class FileSystemMachineFileStore : IMachineFileStore
 
 	public Task<StorageInfo> GetStorageInfo(string machineId)
 	{
-		if (string.IsNullOrWhiteSpace(machineId) || !ValidIdRegex.IsMatch(machineId))
+		if (string.IsNullOrWhiteSpace(machineId))
 		{
 			throw new ArgumentException("Invalid MachineID");
 		}
 
-		var machinePath = Path.Combine(BasePath, machineId);
+		var machinePath = Path.Combine(BasePath, NormalizeMachineId(machineId));
 		return Task.Run(() => ComputeStorageInfo(machinePath));
 	}
 
@@ -172,7 +169,7 @@ public class FileSystemMachineFileStore : IMachineFileStore
 
 			var searchPath = string.IsNullOrWhiteSpace(options.MachineID)
 				? BasePath
-				: Path.Combine(BasePath, options.MachineID);
+				: Path.Combine(BasePath, NormalizeMachineId(options.MachineID));
 
 			if (!Directory.Exists(searchPath))
 			{
@@ -282,9 +279,6 @@ public class FileSystemMachineFileStore : IMachineFileStore
 
 		if (fileHandle.MachineID.Length > 100)
 			throw new ArgumentException("MachineID too long");
-
-		if (!ValidIdRegex.IsMatch(fileHandle.MachineID))
-			throw new ArgumentException("MachineID contains invalid characters");
 	}
 
 	private string GetFilePath(MachineFileHandle fileHandle)
@@ -292,9 +286,13 @@ public class FileSystemMachineFileStore : IMachineFileStore
 		var safeFileName = fileHandle.HashSHA256.ToLowerInvariant();
 		var subDir = safeFileName[..2];
 
-		var fullPath = Path.GetFullPath(Path.Combine(BasePath, fileHandle.MachineID, subDir, safeFileName));
+		var fullPath = Path.GetFullPath(Path.Combine(BasePath, NormalizeMachineId(fileHandle.MachineID), subDir, safeFileName));
+		var relativePath = Path.GetRelativePath(BasePath, fullPath);
 
-		if (!fullPath.StartsWith(BasePath + Path.DirectorySeparatorChar) && !fullPath.Equals(BasePath))
+		if (Path.IsPathRooted(relativePath)
+			|| relativePath == ".."
+			|| relativePath.StartsWith(".." + Path.DirectorySeparatorChar)
+			|| relativePath.StartsWith(".." + Path.AltDirectorySeparatorChar))
 		{
 			throw new UnauthorizedAccessException("Path traversal attempt detected");
 		}
@@ -302,6 +300,11 @@ public class FileSystemMachineFileStore : IMachineFileStore
 		if (fullPath.Length > MaxPathLength) throw new ArgumentException("Resulting path too long");
 
 		return fullPath;
+	}
+
+	private static string NormalizeMachineId(string machineId)
+	{
+		return Uri.EscapeDataString(machineId);
 	}
 
 	private static async Task<string> ComputeFileHash(string filePath)

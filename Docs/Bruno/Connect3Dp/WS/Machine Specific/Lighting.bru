@@ -1,0 +1,27 @@
+meta {
+  name: Lighting
+  type: ws
+  seq: 9
+}
+
+ws {
+  url: ws://localhost:5193/ws
+  body: ws
+  auth: inherit
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+    {
+      "Action": "machine/toggleLight",
+      "ResponseMessageID": "optional-correlation-id",
+      "Data": {
+        "MachineID": "MrWorldwide",
+        "FixtureName": "Chamber",
+        "IsOn": true
+      }
+    }
+  '''
+}

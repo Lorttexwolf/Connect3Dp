@@ -125,7 +125,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 				{
 					var job = machine.State.LocalJobs.FirstOrDefault(j => j.File == payload.File);
 					if (job == default)
-						return new ClientMessageMachineOperationResult(false, $"No local job found matching file handle '{payload.File}'", null);
+						return new ClientMessageMachineOperationResult(false, $"No local job found matching file handle '{payload.File.URI}'", null);
 					return ClientMessageMachineOperationResult.Of(await machine.PrintLocal(job, payload.Options));
 				});
 

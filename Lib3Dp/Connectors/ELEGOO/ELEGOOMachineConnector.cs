@@ -587,10 +587,15 @@ namespace Lib3Dp.Connectors.ELEGOO
 
 				if (string.IsNullOrEmpty(name)) continue;
 
+				// The file list response returns bare filenames (e.g. "model.gcode") relative to the
+				// requested Url. StartPrint requires the full path ("/local/model.gcode" or "/usb/…").
+				// Guard against firmware that already returns a full path.
+				string uri = name.StartsWith('/') ? name : $"/local/{name}";
+
 				string hash = Convert.ToHexStringLower(
 					SHA256.HashData(System.Text.Encoding.UTF8.GetBytes($"{name}:{size}")));
 
-				var fileHandle = new MachineFileHandle(this.ID, name, "application/gcode", hash);
+				var fileHandle = new MachineFileHandle(this.ID, uri, "application/gcode", hash);
 				var localJob = new LocalPrintJob(
 					Path.GetFileNameWithoutExtension(name),
 					fileHandle,
@@ -762,6 +767,12 @@ namespace Lib3Dp.Connectors.ELEGOO
 			this.NotifyConfigurationChanged();
 
 			return Task.FromResult(MachineOperationResult.Ok);
+		}
+
+		protected override async Task<MachineOperationResult> UploadFileToMachine(MachineFileHandle handle, Stream stream)
+		{
+			var fileName = Path.GetFileName(handle.URI);
+			return await UploadFile(stream, fileName);
 		}
 
 		protected override async Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)

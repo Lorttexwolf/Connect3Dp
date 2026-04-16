@@ -345,6 +345,16 @@ namespace Lib3Dp.Connectors
 				return MachineOperationResult.Fail(Constants.MachineMessages.FailedToStartLocalPrint.Id, Constants.MachineMessages.FailedToStartLocalPrint.Title, $"Cannot start print: Machine is not {nameof(MachineStatus.Idle)}. Current status: {State.Status}");
 			}
 
+			if (!FileExistsOnMachine(localPrint.File))
+			{
+				if (!FileStore.Contains(localPrint.File))
+					return MachineOperationResult.Fail(Constants.MachineMessages.FileNotOnMachine(localPrint.File.URI));
+
+				using var fileStream = await FileStore.Read(localPrint.File);
+				var uploadResult = await UploadFileToMachine(localPrint.File, fileStream);
+				if (!uploadResult.Success) return uploadResult;
+			}
+
 			var mutateResult = await this.Mono.MutateUntil(
 				() => PrintLocal_Internal(localPrint, options),
 				() => this.State.Status is MachineStatus.Printing,
@@ -352,6 +362,20 @@ namespace Lib3Dp.Connectors
 
 			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToStartLocalPrint.Id, Constants.MachineMessages.FailedToStartLocalPrint.Title, autoResolve: Constants.MachineMessages.FailedToStartLocalPrint.AutoResolve);
 		}
+
+		/// <summary>
+		/// Returns true if the file identified by <paramref name="handle"/> is currently available on the machine's local storage.
+		/// Default implementation checks <see cref="IMachineState.LocalJobs"/> by URI.
+		/// </summary>
+		protected virtual bool FileExistsOnMachine(MachineFileHandle handle)
+			=> _State.LocalJobs.Any(lj => lj.File.URI == handle.URI);
+
+		/// <summary>
+		/// Uploads a file from the framework file store to the machine's local storage.
+		/// Default implementation returns a failure — connectors that support upload override this.
+		/// </summary>
+		protected virtual Task<MachineOperationResult> UploadFileToMachine(MachineFileHandle handle, Stream stream)
+			=> Task.FromResult(MachineOperationResult.Fail(Constants.MachineMessages.UploadNotSupported(GetType().Name)));
 
 		protected virtual Task PrintLocal_Internal(LocalPrintJob localPrint, PrintOptions options)
 		{

@@ -141,6 +141,22 @@ namespace Lib3Dp.Constants
 				default);
 		}
 
+		public static MachineMessage FileNotOnMachine(string uri) => new(
+			"machine.file.not.found",
+			"File Not Found",
+			$"'{uri}' is not on the printer and is not available in the file store.",
+			MachineMessageSeverity.Error,
+			MachineMessageActions.None,
+			default);
+
+		public static MachineMessage UploadNotSupported(string connectorName) => new(
+			"machine.upload.unsupported",
+			"Upload Not Supported",
+			$"{connectorName} does not support uploading files to the machine.",
+			MachineMessageSeverity.Error,
+			MachineMessageActions.None,
+			default);
+
 		public static MachineMessage ScheduledPrintSkipped(string jobName, string reason)
 		{
 			return new MachineMessage(

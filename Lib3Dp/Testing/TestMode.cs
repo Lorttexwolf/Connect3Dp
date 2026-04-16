@@ -1,6 +1,6 @@
 using Lib3Dp.Connectors;
 using Lib3Dp.State;
-using System.Text;
+using System.Text.Json;
 
 namespace Lib3Dp.Testing;
 
@@ -52,58 +52,13 @@ public class TestMode : IAsyncDisposable
 		Console.WriteLine(formatted);
 	}
 
-	/// <summary>Dumps a full snapshot of the current machine state to the console without mutating anything.</summary>
+	/// <summary>Dumps the full machine state as a JSON object to the console without mutating anything.</summary>
 	public void LogFullState()
 	{
-		var state = _connection.State;
-		var sb = new StringBuilder();
-		sb.AppendLine($"=== FULL STATE SNAPSHOT [{DateTime.Now:HH:mm:ss}] ===");
-		sb.AppendLine($"  Brand:        {state.Brand}");
-		sb.AppendLine($"  Model:        {state.Model}");
-		sb.AppendLine($"  Nickname:     {state.Nickname ?? "(none)"}");
-		sb.AppendLine($"  Status:       {state.Status}");
-		sb.AppendLine($"  Capabilities: {state.Capabilities}");
-
-		sb.AppendLine("  Heating Elements:");
-		if (!state.HeatingElements.Any())
-			sb.AppendLine("    (none)");
-		else
-			foreach (var (name, elem) in state.HeatingElements)
-				sb.AppendLine($"    {name}: {elem.TempC:F1}°C / {elem.TargetTempC:F1}°C target  [{elem.Constraints}]");
-
-		sb.AppendLine("  Lights:");
-		if (!state.Lights.Any())
-			sb.AppendLine("    (none)");
-		else
-			foreach (var (name, on) in state.Lights)
-				sb.AppendLine($"    {name}: {(on ? "on" : "off")}");
-
-		var job = state.CurrentJob;
-		if (job != null)
-		{
-			sb.AppendLine($"  Current Job:  {job.Name}");
-			sb.AppendLine($"    Progress:   {job.PercentageComplete}%");
-			sb.AppendLine($"    Remaining:  {job.RemainingTime}");
-			if (job.SubStage != null)
-				sb.AppendLine($"    SubStage:   {job.SubStage}");
-		}
-		else
-		{
-			sb.AppendLine("  Current Job:  (none)");
-		}
-
-		sb.AppendLine($"  Local Jobs:   {state.LocalJobs.Count}");
-
-		var notifications = state.MappedNotifications;
-		if (notifications.Count > 0)
-		{
-			sb.AppendLine("  Notifications:");
-			foreach (var (id, n) in notifications)
-				sb.AppendLine($"    [{id}] {n.Message.Severity}: {n.Message.Title}");
-		}
-
-		sb.AppendLine("=== END SNAPSHOT ===");
-		Console.Write(sb.ToString());
+		var json = JsonSerializer.Serialize(_connection.State, new JsonSerializerOptions { WriteIndented = true });
+		Console.WriteLine($"=== FULL STATE JSON [{DateTime.Now:HH:mm:ss}] ===");
+		Console.WriteLine(json);
+		Console.WriteLine("=== END STATE JSON ===");
 	}
 
 	private async Task KeyLoop(CancellationToken ct)

@@ -71,11 +71,17 @@ namespace Lib3Dp
 		{
 			foreach (var cfg in cfgs)
 			{
-				if (!ConfigurableConnections.TryCreateFromConfiguration(cfg, this.FileStore, out var createdConnection))
-				{
-					Logger.LogError("Unable to load Machine with Configuration: {}", cfg);
-					continue;
-				}
+			if (!ConfigurableConnections.TryCreateFromConfiguration(cfg, this.FileStore, out var createdConnection))
+			{
+				Logger.LogError("Unable to load Machine with Configuration: {}", cfg);
+				continue;
+			}
+
+			// The connector may generate its own ID (e.g. "ELEGOO123") that differs
+			// from the config store key ("123"). Align so that broadcasts, subscribe
+			// lookups, and dictionary keys all use the same identifier.
+			if (createdConnection.ID != cfg.MachineID)
+				createdConnection.ID = cfg.MachineID;
 
 				if (_Connections.TryGetValue(cfg.MachineID, out var existingConnection))
 				{

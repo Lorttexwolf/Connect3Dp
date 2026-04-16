@@ -72,6 +72,8 @@ export type {
   PauseMachinePayload,
   ResumeMachinePayload,
   StopMachinePayload,
+  ToggleLightMachinePayload,
+  SetFanSpeedMachinePayload,
 } from "./types/actions.js";
 export { StateDetails } from "./types/actions.js";
 
@@ -89,3 +91,9 @@ export type {
   MachineFileStoreTotalUsageResult,
   MachineFileStoreMachineUsageResult,
 } from "./types/file-store.js";
+
+// Machine discovery / configuration list
+export type {
+  MachineConfigurationSummary,
+  AllMachineConfigurationsResult,
+} from "./types/configuration.js";

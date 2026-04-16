@@ -12,6 +12,7 @@ import type {
   MachineFileStoreTotalUsageResult,
   MachineFileStoreMachineUsageResult,
 } from "./types/file-store.js";
+import type { AllMachineConfigurationsResult } from "./types/configuration.js";
 
 // ---------------------------------------------------------------------------
 // Options
@@ -234,6 +235,38 @@ export class Connect3DpClient {
     return this._request(Topics.Machine.MarkAsIdle, { MachineID: machineId }, this._opts.controlRequestTimeoutMs);
   }
 
+  /**
+   * Turn a light fixture on or off. `fixtureName` must match a key in {@link IMachineState.lights}
+   * (e.g. `"Chamber"` on many ELEGOO printers).
+   */
+  toggleLight(
+    machineId: string,
+    fixtureName: string,
+    isOn: boolean
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this._request(
+      Topics.Machine.ToggleLight,
+      { MachineID: machineId, FixtureName: fixtureName, IsOn: isOn },
+      this._opts.controlRequestTimeoutMs
+    );
+  }
+
+  /**
+   * Set a fan speed to 0–100. `fanName` must match a key in {@link IMachineState.fans}
+   * (e.g. `"ModelFan"`, `"AuxiliaryFan"`, `"BoxFan"` on ELEGOO).
+   */
+  setFanSpeed(
+    machineId: string,
+    fanName: string,
+    speedPercent: number
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this._request(
+      Topics.Machine.SetFanSpeed,
+      { MachineID: machineId, FanName: fanName, SpeedPercent: speedPercent },
+      this._opts.controlRequestTimeoutMs
+    );
+  }
+
   // -------------------------------------------------------------------------
   // Log streaming
   // -------------------------------------------------------------------------
@@ -282,6 +315,14 @@ export class Connect3DpClient {
 
   getMachineFileStoreUsage(machineId: string): Promise<MachineFileStoreMachineUsageResult> {
     return this._request(Topics.MachineFileStore.MachineUsage, { MachineID: machineId });
+  }
+
+  /**
+   * List machine configurations known to the Connect3dp server (e.g. discovered on the LAN).
+   * Requires an open WebSocket; connect with {@link connect} first.
+   */
+  getAllMachineConfigurations(): Promise<AllMachineConfigurationsResult> {
+    return this._request(Topics.Machine.Configurations.All, {});
   }
 
   // -------------------------------------------------------------------------

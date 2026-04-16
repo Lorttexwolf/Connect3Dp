@@ -155,7 +155,9 @@ namespace Connect3Dp.Host
 				.WithResumeMachine(mc)
 				.WithStopMachine(mc)
 				.WithFindMatchingSpoolsMachineAction(mc)
-				.WithPauseMachine(mc);
+				.WithPauseMachine(mc)
+				.WithToggleLightMachine(mc)
+				.WithSetFanSpeedMachine(mc);
 
 			return services;
 		}

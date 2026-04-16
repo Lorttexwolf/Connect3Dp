@@ -277,6 +277,11 @@ namespace Lib3Dp.Connectors.BambuLab
 			return this.MQTT.PublishLEDControl(mqttNode, isOn);
 		}
 
+		protected override Task SetFanSpeed_Internal(string fanName, int speedPercent)
+		{
+			throw new NotSupportedException($"Setting fan speed is not implemented for Bambu Lab connections (requested {fanName} = {speedPercent}%).");
+		}
+
 		protected override Task ClearBed_Internal()
 		{
 			return this.MQTT.PublishClearBed();

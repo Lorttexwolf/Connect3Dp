@@ -83,6 +83,8 @@ namespace Connect3Dp.Extensions.Connect3Dp
 		public record struct PauseMachinePayload(string MachineID) : IMachineSpecificPayload;
 		public record struct ResumeMachinePayload(string MachineID) : IMachineSpecificPayload;
 		public record struct StopMachinePayload(string MachineID) : IMachineSpecificPayload;
+		public record struct ToggleLightMachinePayload(string MachineID, string FixtureName, bool IsOn) : IMachineSpecificPayload;
+		public record struct SetFanSpeedMachinePayload(string MachineID, string FanName, int SpeedPercent) : IMachineSpecificPayload;
 
 		public static WebSocketServer<Connect3DpWebSocketClient> WithMarkAsIdleAction(
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
@@ -103,6 +105,16 @@ namespace Connect3Dp.Extensions.Connect3Dp
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
 			ws.MapMachineSpecificAction<StopMachinePayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.Stop,
 				async (_, _, machine) => ClientMessageMachineOperationResult.Of(await machine.Stop()));
+
+		public static WebSocketServer<Connect3DpWebSocketClient> WithToggleLightMachine(
+			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
+			ws.MapMachineSpecificAction<ToggleLightMachinePayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.ToggleLight,
+				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.ToggleLight(payload.FixtureName, payload.IsOn)));
+
+		public static WebSocketServer<Connect3DpWebSocketClient> WithSetFanSpeedMachine(
+			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
+			ws.MapMachineSpecificAction<SetFanSpeedMachinePayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.SetFanSpeed,
+				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.SetFanSpeed(payload.FanName, payload.SpeedPercent)));
 
 		public record struct FindMatchingSpoolsPayload(string MachineID, IDictionary<int, MaterialToPrint> MaterialsToPrint) : IMachineSpecificPayload;
 		public record struct FindMatchingSpoolsResult(Matches<int, SpoolMatch> Matches) : IWebSocketClientActionResult

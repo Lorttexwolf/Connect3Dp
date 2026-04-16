@@ -23,6 +23,8 @@ namespace Connect3Dp.Extensions.Connect3Dp
 				public const string Pause = "machine/pause";
 				public const string Resume = "machine/resume";
 				public const string Stop = "machine/stop";
+				public const string ToggleLight = "machine/toggleLight";
+				public const string SetFanSpeed = "machine/setFanSpeed";
 				public const string FindMatchingSpools = "machine/findMatchingSpools";
 
 				public static class Configurations

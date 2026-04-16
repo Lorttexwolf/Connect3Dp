@@ -40,7 +40,7 @@ namespace Lib3Dp.Connectors
 		/// Only assigned during construction or a configuration load/update via
 		/// <see cref="MachineIDWithConfigurationWithDiscrimination"/>.
 		/// </summary>
-		public string ID { get; private set; }
+		public string ID { get; internal set; }
 
 		public event Action<MachineConnection, MachineStateChanges>? OnChanges;
 
@@ -516,6 +516,41 @@ namespace Lib3Dp.Connectors
 		protected virtual Task ToggleLight_Internal(string fixtureName, bool isOn)
 		{
 			throw new NotImplementedException($"{nameof(ToggleLight_Internal)} has not been implemented on the Connector");
+		}
+	}
+	#endregion
+
+	#region Set Fan Speed
+	public abstract partial class MachineConnection
+	{
+		/// <summary>
+		/// Sets a fan output to <paramref name="speedPercent"/> (0–100), keyed by the same names as <see cref="IMachineState.Fans"/>.
+		/// </summary>
+		public async Task<MachineOperationResult> SetFanSpeed(string fanName, int speedPercent)
+		{
+			if (State.OpIfNotCapable(MachineCapabilities.Fans, out var uncapableResult)) return uncapableResult.Value;
+
+			if (!State.Fans.ContainsKey(fanName))
+			{
+				return MachineOperationResult.Fail(
+					Constants.MachineMessages.FailedToSetFanSpeed.Id,
+					Constants.MachineMessages.FailedToSetFanSpeed.Title,
+					$"Fan '{fanName}' does not exist");
+			}
+
+			var clamped = Math.Clamp(speedPercent, 0, 100);
+
+			var mutateResult = await this.Mono.MutateUntil(
+				() => SetFanSpeed_Internal(fanName, clamped),
+				() => this.State.Fans.TryGetValue(fanName, out var current) && current == clamped,
+				TimeSpan.FromSeconds(10));
+
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToSetFanSpeed.Id, Constants.MachineMessages.FailedToSetFanSpeed.Title, autoResolve: default);
+		}
+
+		protected virtual Task SetFanSpeed_Internal(string fanName, int speedPercent)
+		{
+			throw new NotImplementedException($"{nameof(SetFanSpeed_Internal)} has not been implemented on the Connector");
 		}
 	}
 	#endregion

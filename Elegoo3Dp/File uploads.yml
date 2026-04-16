@@ -20,18 +20,17 @@ http:
         value: "0"
       - name: TotalSize
         type: text
-        value: "17368338"
+        value: "9989932"
       - name: Uuid
         type: text
         value: cc2694a2676b436daec74e53220f87b0
       - name: File
         type: file
         value:
-          - C:\Users\Jay\Desktop\Connect3D\PenHolder.gcode
+          - C:\Users\Jay\Desktop\Connect3D\CanHolder.gcode
       - name: S-File-MD5
         type: text
-        value: 8b590a782abf03d6dfab5e320ba98c4d
-    auth: inherit
+        value: 2d20bf2749d471bc3918f136f662934e
 
 settings:
   encodeUrl: true

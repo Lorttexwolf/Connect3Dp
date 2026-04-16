@@ -12,6 +12,7 @@ using System.Text.Json;
 
 namespace Lib3Dp.Connectors.ELEGOO
 {
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 	public enum ELEGOOMachineKind
 	{
 		CentauriCarbon,
@@ -73,6 +74,8 @@ namespace Lib3Dp.Connectors.ELEGOO
 
 			return opResult.IntoOperationResult("elegoo.config.update.failed", "Update Configuration");
 		}
+
+		public static Type GetConfigurationType() => typeof(ELEGOOMachineConfiguration);
 
 		public static ELEGOOMachineConnector CreateFromConfiguration(IMachineFileStore fileStore, ELEGOOMachineConfiguration configuration)
 		{
@@ -388,6 +391,42 @@ namespace Lib3Dp.Connectors.ELEGOO
 			return false;
 		}
 
+		/// <summary>
+		/// SDCP V3 uses <c>CurrentTicks</c> / <c>TotalTicks</c> for elapsed and estimated total print duration (may be fractional).
+		/// Most firmware uses milliseconds; Centauri FDM often uses seconds when values stay below ~100k. Values in the millions are ms.
+		/// </summary>
+		private static bool TryGetPrintTickDurations(JsonElement printInfo, out double current, out double total, out bool ticksAreMilliseconds)
+		{
+			current = 0;
+			total = 0;
+			ticksAreMilliseconds = true;
+			bool haveCurrent = TryGetPropertyIgnoreCase(printInfo, "CurrentTicks", out var c)
+				&& c.ValueKind == JsonValueKind.Number;
+			bool haveTotal = TryGetPropertyIgnoreCase(printInfo, "TotalTicks", out var t)
+				&& t.ValueKind == JsonValueKind.Number;
+			if (haveCurrent)
+				current = c.TryGetInt64(out var cl) ? cl : c.GetDouble();
+			if (haveTotal)
+				total = t.TryGetInt64(out var tl) ? tl : t.GetDouble();
+			if (!(haveTotal && total > 0))
+				return false;
+			// Same heuristic as community integrations: small totals behave like seconds on FDM; large totals are ms (multi-hour jobs).
+			ticksAreMilliseconds = total >= 100_000;
+			return true;
+		}
+
+		private static bool TryGetSecondsTimeSpan(JsonElement el, out TimeSpan span)
+		{
+			span = TimeSpan.Zero;
+			if (el.ValueKind != JsonValueKind.Number)
+				return false;
+			double sec = el.TryGetInt64(out var li) ? li : el.GetDouble();
+			if (sec < 0)
+				return false;
+			span = TimeSpan.FromSeconds(sec);
+			return true;
+		}
+
 		private void MapPrintInfo(JsonElement status, MachineStateUpdate stateUpdate)
 		{
 			int currentStatus = 0;
@@ -422,19 +461,43 @@ namespace Lib3Dp.Connectors.ELEGOO
 				int currentLayer = printInfo.TryGetProperty("CurrentLayer", out var clEl) ? clEl.GetInt32() : 0;
 				int totalLayer = printInfo.TryGetProperty("TotalLayer", out var tlEl) ? tlEl.GetInt32() : 0;
 
+				bool haveTicks = TryGetPrintTickDurations(printInfo, out var currentTickRaw, out var totalTickRaw, out var tickMs);
+
 				int progress = 0;
-				if (printInfo.TryGetProperty("Progress", out var progEl))
-					progress = progEl.GetInt32();
-				else if (totalLayer > 0)
+				if (haveTicks)
+					progress = (int)Math.Clamp(Math.Round(currentTickRaw * 100.0 / totalTickRaw), 0, 100);
+				else if (printInfo.TryGetProperty("Progress", out var progEl) && progEl.ValueKind == JsonValueKind.Number)
+					progress = progEl.TryGetInt32(out var pi) ? pi : (int)progEl.GetDouble();
+
+				if (progress == 0 && totalLayer > 0)
 					progress = (int)(currentLayer * 100.0 / totalLayer);
 
 				if (justEnded && mappedStatus is MachineStatus.Printed)
 					progress = 100;
 
-				TimeSpan remainingTime = printInfo.TryGetProperty("RemainingTime", out var remEl)
-					? TimeSpan.FromSeconds(remEl.GetInt32()) : TimeSpan.Zero;
-				TimeSpan totalTime = printInfo.TryGetProperty("TotalTime", out var totEl)
-					? TimeSpan.FromSeconds(totEl.GetInt32()) : TimeSpan.Zero;
+				TimeSpan remainingTime = TimeSpan.Zero;
+				TimeSpan totalTime = TimeSpan.Zero;
+				if (haveTicks)
+				{
+					double remainingRaw = Math.Max(0, totalTickRaw - currentTickRaw);
+					if (tickMs)
+					{
+						totalTime = TimeSpan.FromMilliseconds(totalTickRaw);
+						remainingTime = TimeSpan.FromMilliseconds(remainingRaw);
+					}
+					else
+					{
+						totalTime = TimeSpan.FromSeconds(totalTickRaw);
+						remainingTime = TimeSpan.FromSeconds(remainingRaw);
+					}
+				}
+				else
+				{
+					if (TryGetPropertyIgnoreCase(printInfo, "RemainingTime", out var remEl))
+						TryGetSecondsTimeSpan(remEl, out remainingTime);
+					if (TryGetPropertyIgnoreCase(printInfo, "TotalTime", out var totEl))
+						TryGetSecondsTimeSpan(totEl, out totalTime);
+				}
 
 				if (totalTime == TimeSpan.Zero && remainingTime > TimeSpan.Zero && progress > 0)
 					totalTime = TimeSpan.FromSeconds(remainingTime.TotalSeconds / (1.0 - progress / 100.0));
@@ -697,6 +760,50 @@ namespace Lib3Dp.Connectors.ELEGOO
 			// ToggleLight waits on state. Apply the value we commanded so MutateUntil succeeds.
 			if (fixtureName == "Chamber")
 				this.CommitState(u => u.SetLights("Chamber", isOn));
+		}
+
+		protected override async Task SetFanSpeed_Internal(string fanName, int speedPercent)
+		{
+			var model = State.Fans.GetValueOrDefault("ModelFan", 0);
+			var aux = State.Fans.GetValueOrDefault("AuxiliaryFan", 0);
+			var box = State.Fans.GetValueOrDefault("BoxFan", 0);
+
+			switch (fanName)
+			{
+				case "ModelFan":
+					model = speedPercent;
+					break;
+				case "AuxiliaryFan":
+					aux = speedPercent;
+					break;
+				case "BoxFan":
+					box = speedPercent;
+					break;
+				default:
+					await SendCommand(ELEGOOCmd.EditStatusData, new
+					{
+						CurrentFanSpeed = new Dictionary<string, int> { { fanName, speedPercent } }
+					});
+					this.CommitState(u => u.SetFans(fanName, speedPercent));
+					return;
+			}
+
+			await SendCommand(ELEGOOCmd.EditStatusData, new
+			{
+				CurrentFanSpeed = new
+				{
+					ModelFan = model,
+					AuxiliaryFan = aux,
+					BoxFan = box
+				}
+			});
+
+			this.CommitState(u =>
+			{
+				u.SetFans("ModelFan", model);
+				u.SetFans("AuxiliaryFan", aux);
+				u.SetFans("BoxFan", box);
+			});
 		}
 
 		#endregion

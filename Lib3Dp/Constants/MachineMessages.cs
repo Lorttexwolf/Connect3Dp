@@ -95,6 +95,14 @@ namespace Lib3Dp.Constants
 			MachineMessageActions.None,
 			default);
 
+		public static MachineMessage FailedToSetFanSpeed => new(
+			"machine.fan.failed",
+			"Unable to Set Fan Speed",
+			"An issue occurred changing fan speed",
+			MachineMessageSeverity.Error,
+			MachineMessageActions.None,
+			default);
+
 		public static MachineMessage MUDoesNotExist(string unitID) => new(
 			$"machine.mu.notfound.{unitID}",
 			"Material Unit does not Exist",

@@ -63,3 +63,13 @@ export interface MarkAsIdlePayload { MachineID: string }
 export interface PauseMachinePayload { MachineID: string }
 export interface ResumeMachinePayload { MachineID: string }
 export interface StopMachinePayload { MachineID: string }
+export interface ToggleLightMachinePayload {
+  MachineID: string;
+  FixtureName: string;
+  IsOn: boolean;
+}
+export interface SetFanSpeedMachinePayload {
+  MachineID: string;
+  FanName: string;
+  SpeedPercent: number;
+}

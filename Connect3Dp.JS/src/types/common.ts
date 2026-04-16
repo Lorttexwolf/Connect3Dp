@@ -34,6 +34,8 @@ export const Topics = {
     Pause: "machine/pause",
     Resume: "machine/resume",
     Stop: "machine/stop",
+    ToggleLight: "machine/toggleLight",
+    SetFanSpeed: "machine/setFanSpeed",
     FindMatchingSpools: "machine/findMatchingSpools",
     StateUpdated: (machineId: string) => `machine/${machineId}/state`,
     Configurations: {

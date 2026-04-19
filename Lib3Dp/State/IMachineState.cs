@@ -1,3 +1,4 @@
+using Lib3Dp.Cameras;
 using System.Text.Json.Serialization;
 
 namespace Lib3Dp.State
@@ -24,8 +25,7 @@ namespace Lib3Dp.State
 		IReadOnlyDictionary<string, int> Fans { get; }
 		IReadOnlyDictionary<string, HeatingElement> HeatingElements { get; }
 		bool IsLocalStorageScanning { get; }
-		string? StreamingOMEURL { get; }
-		string? ThumbnailOMEURL { get; }
+		MachineStreamingURLs? StreamingURLs { get; }
 		PrintSpeedRange? SpeedRange { get; }
 		IReadOnlyDictionary<string, int> SpeedPresets { get; }
 	}

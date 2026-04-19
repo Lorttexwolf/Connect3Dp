@@ -2,6 +2,7 @@ using Connect3Dp;
 using Connect3Dp.Extensions;
 using Connect3Dp.Extensions.Connect3Dp;
 using Connect3Dp.Logging;
+using Connect3Dp.Relays.MediaMTX;
 using Lib3Dp;
 using Lib3Dp.Configuration;
 using Lib3Dp.Connectors;
@@ -19,8 +20,7 @@ namespace Connect3Dp.Host
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			builder.Configuration
-				.AddJsonFile("connect3dp.config.json", optional: true, reloadOnChange: true);
+			builder.Configuration.AddJsonFile("connect3dp.config.json", optional: true, reloadOnChange: true);
 
 			// TODO: Logs should be recorded and readable by HTTP / WS.
 			builder.Logging.AddConsole();
@@ -34,6 +34,7 @@ namespace Connect3Dp.Host
 				.AddUserDefinedMachineFileStore(builder.Configuration)
 				.AddUserDefinedMachineConfigurationStore(builder.Configuration)
 				.AddMachineConnectionCollection()
+				.AddUserDefinedMediaMTXRelay(builder.Configuration)
 				.AddConnect3DpWebSocketServer();
 
 			builder.Services.AddControllers();
@@ -121,6 +122,22 @@ namespace Connect3Dp.Host
 
 				_ => throw new InvalidOperationException($"Unknown FileStore type {type}")
 			};
+		}
+
+		public static IServiceCollection AddUserDefinedMediaMTXRelay(this IServiceCollection services, IConfiguration configuration)
+		{
+			var apiUrl = configuration["Connect3Dp:MediaMTX:ApiUrl"] ?? "http://localhost:9997";
+			var publishUrl = configuration["Connect3Dp:MediaMTX:PublishUrl"] ?? "rtsp://localhost:8554";
+			var webrtcUrl = configuration["Connect3Dp:MediaMTX:PublicWebRTCUrl"] ?? "http://localhost:8889";
+
+			return services.AddMediaMTXRelay(new MediaMTXRelayOptions(
+				ApiUrl: new Uri(apiUrl),
+				PublishUrl: new Uri(publishUrl),
+				PublicWebRTCUrl: new Uri(webrtcUrl),
+				AdminUsername:  configuration["Connect3Dp:MediaMTX:Admin:Username"],
+				AdminPassword:  configuration["Connect3Dp:MediaMTX:Admin:Password"],
+				ViewerUsername: configuration["Connect3Dp:MediaMTX:Viewer:Username"],
+				ViewerPassword: configuration["Connect3Dp:MediaMTX:Viewer:Password"]));
 		}
 
 		public static IServiceCollection AddUserDefinedMachineConfigurationStore(this IServiceCollection services, IConfiguration configuration)

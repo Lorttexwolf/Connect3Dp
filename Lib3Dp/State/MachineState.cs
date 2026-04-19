@@ -1,4 +1,5 @@
-﻿using PartialBuilderSourceGen.Attributes;
+﻿using Lib3Dp.Cameras;
+using PartialBuilderSourceGen.Attributes;
 
 namespace Lib3Dp.State
 {
@@ -28,8 +29,7 @@ namespace Lib3Dp.State
 
 		public bool IsLocalStorageScanning { get; set; }
 
-		public string? StreamingOMEURL { get; set; }
-		public string? ThumbnailOMEURL { get; set; }
+		public MachineStreamingURLs? StreamingURLs { get; set; }
 		public PrintSpeedRange? SpeedRange { get; set; }
 		public Dictionary<string, int> SpeedPresets { get; set; } = [];
 

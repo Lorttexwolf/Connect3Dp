@@ -18,14 +18,14 @@ export const MachineStatusFlags = {
   Canceled: 32,
 } as const;
 
-/** Comma-separated flag names, e.g. "StartLocalJob, Control, OME". */
+/** Comma-separated flag names, e.g. "StartLocalJob, Control, Camera". */
 export type MachineCapabilities = string;
 
 export const MachineCapabilityFlags = {
   None: "None",
   StartLocalJob: "StartLocalJob",
   Control: "Control",
-  OME: "OME",
+  Camera: "Camera",
   Lighting: "Lighting",
   PrintHistory: "PrintHistory",
   LocalJobs: "LocalJobs",
@@ -261,6 +261,26 @@ export interface ScheduledPrint {
 }
 
 // ---------------------------------------------------------------------------
+// Camera streaming
+// ---------------------------------------------------------------------------
+
+export interface CameraSpec {
+  width: number | null;
+  height: number | null;
+  fps: number | null;
+}
+
+export interface CameraStream {
+  url: string;
+  spec: CameraSpec | null;
+}
+
+export interface MachineStreamingURLs {
+  glance: CameraStream;
+  full: CameraStream;
+}
+
+// ---------------------------------------------------------------------------
 // Full machine state
 // ---------------------------------------------------------------------------
 
@@ -288,8 +308,7 @@ export interface IMachineState {
   /** Heating elements (bed, chamber, etc.) keyed by name. */
   heatingElements: Record<string, HeatingElement>;
   isLocalStorageScanning: boolean;
-  streamingOMEURL?: string | null;
-  thumbnailOMEURL?: string | null;
+  streamingURLs?: MachineStreamingURLs | null;
   /** Notifications keyed by message ID. */
   notifications: Record<string, Notification>;
 }

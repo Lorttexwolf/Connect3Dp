@@ -1,13 +1,12 @@
-﻿using Lib3Dp.Configuration;
+﻿using Lib3Dp.Cameras;
+using Lib3Dp.Configuration;
 using Lib3Dp.Constants;
 using Lib3Dp.Exceptions;
 using Lib3Dp.Extensions;
 using Lib3Dp.Files;
-using Lib3Dp.Plugins.OME;
 using Lib3Dp.Scheduling;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static Lib3Dp.MonoMachine;
 
@@ -73,6 +72,20 @@ namespace Lib3Dp.Connectors
 		public void AddNotification(MachineMessage message)
 		{
 			this.CommitState(new MachineStateUpdate().SetNotifications(message));
+		}
+
+		public void RemoveNotification(string messageId)
+		{
+			this.CommitState(new MachineStateUpdate().RemoveNotifications(messageId));
+		}
+
+		/// <summary>
+		/// Sets the public streaming URLs (WebRTC / WHEP, keyed by quality label) exposed on <see cref="IMachineState.StreamingURLs"/>.
+		/// Called by the MediaMTX camera coordinator as paths are registered and torn down.
+		/// </summary>
+		public void SetStreamingURLs(MachineStreamingURLs? urls)
+		{
+			this.CommitState(new MachineStateUpdate().SetStreamingURLs(urls));
 		}
 
 		public async Task<Stream> DownloadFile(MachineFileHandle fileHandle)
@@ -292,19 +305,6 @@ namespace Lib3Dp.Connectors
 		}
 
 		public abstract object GetConfiguration();
-
-		internal static class AvailablePlugins
-		{
-			public static readonly OMEPlugin? OME;
-
-			static AvailablePlugins()
-			{
-				if (OMEPlugin.TryGetInstance(out var omeInstance))
-				{
-					OME = omeInstance;
-				}
-			}
-		}
 	}
 
 	#region Connect and Disconnect
@@ -831,14 +831,21 @@ namespace Lib3Dp.Connectors
 	}
 	#endregion
 
-	#region Oven Media Engine Streaming
+	#region Camera Streaming
 	public abstract partial class MachineConnection
 	{
-		internal virtual bool OvenMediaEnginePullURL_Internal([NotNullWhen(true)] out string? passURL)
-		{
-			passURL = null;
-			return false;
-		}
+		/// <summary>
+		/// Describes how the MediaMTX relay should acquire this machine's camera feed.
+		/// Override on connectors that expose a camera.
+		/// </summary>
+		public virtual CameraSource GetCameraSource() => new CameraSource.NoCamera();
+
+		/// <summary>
+		/// Publishes the in-process camera stream to <paramref name="rtspTarget"/> (a MediaMTX
+		/// RTSP publish endpoint). Only invoked when <see cref="GetCameraSource"/> returns
+		/// <see cref="CameraSource.PublisherCameraSource"/>.
+		/// </summary>
+		public virtual Task RunRTSPCameraPublisher(Uri rtspTarget, StreamPublisherOptions options, CancellationToken ct) => Task.CompletedTask;
 	}
 	#endregion
 }

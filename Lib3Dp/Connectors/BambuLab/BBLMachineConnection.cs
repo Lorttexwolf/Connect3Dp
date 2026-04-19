@@ -1,4 +1,5 @@
 ﻿using FluentFTP.Exceptions;
+using Lib3Dp.Cameras;
 using Lib3Dp.Configuration;
 using Lib3Dp.Connectors.BambuLab.Constants;
 using Lib3Dp.Connectors.BambuLab.Files;
@@ -10,7 +11,6 @@ using Lib3Dp.Files;
 using Lib3Dp.State;
 using Lib3Dp.Utilities;
 using MQTTnet.Exceptions;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -246,19 +246,32 @@ namespace Lib3Dp.Connectors.BambuLab
 			await MQTT.PublishAMSStopHeatingCommand(unitID);
 		}
 
-		internal override bool OvenMediaEnginePullURL_Internal([NotNullWhen(true)] out string? passURL)
+		public override CameraSource GetCameraSource()
 		{
-			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(this.State.Model))
+			var model = this.State.Model;
+
+			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(model))
 			{
-				// RTSPS
-				passURL = $"rtsps://bblp:{Configuration.AccessCode}@{Configuration.Address}:322/streaming/live/1";
+				return new CameraSource.PullCameraSource(
+					Upstream: new Uri($"rtsps://bblp:{Configuration.AccessCode}@{Configuration.Address}:322/streaming/live/1"),
+					Spec: new CameraSpec(Width: 1920, Height: 1080, Fps: 30));
 			}
-			else
+
+			if (BBLConstants.ModelFeatures.With30FPMCamera.Contains(model))
 			{
-				// TODO: A1 Mini, A1, P1P, P1S
-				passURL = null;
+				return new CameraSource.PublisherCameraSource(
+					Full: new StreamPublisherOptions(MaxWidth: null, MaxHeight: null, Crf: 23, GopSize: 1, Framerate: "1"),
+					FullSpec: new CameraSpec(Width: 640, Height: 412, Fps: 20f / 60f),
+					Glance: new StreamPublisherOptions(MaxWidth: 640,  MaxHeight: null, Crf: 30, GopSize: 1, Framerate: "1"),
+					GlanceSpec: new CameraSpec(Width: 640, Height: 412, Fps: 20f / 60f));
 			}
-			return passURL != null;
+
+			return new CameraSource.NoCamera();
+		}
+
+		public override Task RunRTSPCameraPublisher(Uri rtspTarget, StreamPublisherOptions options, CancellationToken ct)
+		{
+			return BBLEspCameraPublisher.Run(Configuration.Address, Configuration.AccessCode, rtspTarget, options, Logger.OfCategory($"BBL Camera Publisher {Configuration.Nickname ?? Configuration.SerialNumber}"), ct);
 		}
 
 		protected override Task ChangeAirDuctMode_Internal(MachineAirDuctMode mode)
@@ -268,7 +281,6 @@ namespace Lib3Dp.Connectors.BambuLab
 
 		protected override Task ToggleLight_Internal(string fixtureName, bool isOn)
 		{
-			// State stores friendly names (e.g. "Chamber"), MQTT expects node names (e.g. "chamber_light")
 			var mqttNode = fixtureName switch
 			{
 				"Chamber" => "chamber_light",
@@ -401,16 +413,10 @@ namespace Lib3Dp.Connectors.BambuLab
 				machineFeatures |= MachineCapabilities.AirDuct;
 			}
 
-			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(model))
+			if (BBLConstants.ModelFeatures.WithRTSPSCamera.Contains(model)
+				|| BBLConstants.ModelFeatures.With30FPMCamera.Contains(model))
 			{
-				// TODO: Implement
-
-				//machineFeatures |= MachineCapabilities.OME;
-			}
-
-			if (BBLConstants.ModelFeatures.With30FPMCamera.Contains(model)) // Lovely, 30 Frames per Minute.
-			{
-				// TODO: Implement
+				machineFeatures |= MachineCapabilities.Camera;
 			}
 
 			// Apply runtime restrictions AFTER computing full capabilities

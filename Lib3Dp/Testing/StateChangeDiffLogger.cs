@@ -27,8 +27,8 @@ public static class StateChangeDiffLogger
 			sb.AppendLine($"  airDuctMode: {changes.AirDuctModePrevious} → {changes.AirDuctModeNew}");
 		if (changes.IsLocalStorageScanningHasChanged)
 			sb.AppendLine($"  isLocalStorageScanning: {changes.IsLocalStorageScanningPrevious} → {changes.IsLocalStorageScanningNew}");
-		if (changes.StreamingOMEURLHasChanged)
-			sb.AppendLine($"  streamingURL: \"{changes.StreamingOMEURLPrevious}\" → \"{changes.StreamingOMEURLNew}\"");
+		if (changes.StreamingURLsHasChanged)
+			sb.AppendLine($"  streamingURLs: {changes.StreamingURLsPrevious?.Glance.Url ?? "null"} → {changes.StreamingURLsNew?.Glance.Url ?? "null"}");
 
 		// Lights
 		foreach (var kv in changes.LightsAdded ?? [])

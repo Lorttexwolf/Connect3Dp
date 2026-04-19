@@ -141,3 +141,91 @@ CommitState(changes => changes.RemoveNotifications(existingNotification));
 ```
 
 Note that message signatures are derived from content, changing the `Title` or `Body` text breaks deduplication. Keep the user-facing summary stable and push volatile debug details to logs instead.
+
+### Camera Streaming
+
+Connectors that expose a camera feed override two methods: `GetCameraSource` and (for publisher-mode cameras) `RunRTSPCameraPublisher`. The MediaMTX relay layer calls these automatically when a machine connects and tears them down when it disconnects.
+
+#### Declaring a Camera Source
+
+Override `GetCameraSource` to describe how the relay should acquire the feed:
+
+```csharp
+public override CameraSource GetCameraSource()
+{
+    // Option 1 — MediaMTX pulls directly from a URL (e.g. native RTSPS on Bambu X1C)
+    return new CameraSource.PullCameraSource(
+        new Uri($"rtsps://user:pass@{address}:322/streaming/live/1"));
+
+    // Option 2 — your connector publishes into MediaMTX via RunRTSPCameraPublisher
+    return new CameraSource.PublisherCameraSource();
+
+    // Option 3 — no camera
+    return new CameraSource.NoCamera();
+}
+```
+
+Declare `MachineCapabilities.Camera` alongside your other capabilities so the interface knows a stream will be available:
+
+```csharp
+CommitState(changes => changes.SetCapabilities(
+    MachineCapabilities.Control | MachineCapabilities.Camera));
+```
+
+#### Publishing a Stream (PublisherCameraSource)
+
+When `GetCameraSource` returns `PublisherCameraSource`, the relay calls `RunRTSPCameraPublisher` once per quality level, passing the target RTSP URL and a `StreamPublisherOptions` describing the desired quality:
+
+```csharp
+public override Task RunRTSPCameraPublisher(Uri rtspTarget, StreamPublisherOptions options, CancellationToken ct)
+{
+    // Push your camera frames to rtspTarget, respecting options.MaxWidth / MaxHeight / Crf / GopSize / Framerate.
+    // The relay registers two paths per camera: {name}_full and {name}_glance.
+    return MyCamera.PublishRtsp(rtspTarget, options, ct);
+}
+```
+
+`StreamPublisherOptions` fields:
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `MaxWidth` | `int?` | Scale output to this width (proportional height). `null` = native. |
+| `MaxHeight` | `int?` | Scale output to this height. Ignored when `MaxWidth` is set. |
+| `Crf` | `int` | x264 Constant Rate Factor. Lower = better quality, larger stream. |
+| `GopSize` | `int` | Keyframe interval in frames. Use `1` for slow cameras (≤1 fps). |
+| `Framerate` | `string` | Expected input framerate hint for the encoder (e.g. `"1"`, `"30"`). |
+
+#### Streaming URLs in State
+
+Once paths are registered, the relay populates `IMachineState.StreamingURLs` with a `MachineStreamingURLs` record:
+
+```csharp
+public record MachineStreamingURLs(string Glance, string Full);
+```
+
+- `Glance` — lower quality WebRTC/WHEP URL (640px wide, CRF 35). Use in grid/thumbnail views.
+- `Full` — native quality WebRTC/WHEP URL (CRF 23). Use when the camera is maximized.
+
+For `PullCameraSource` cameras (native H264 stream), both `Glance` and `Full` point to the same path since transcoding is not performed on pull sources.
+
+#### MediaMTX Relay Configuration (Connect3Dp layer)
+
+The relay is configured via three separate credential pairs so that API management, stream publishing, and viewer access can each use a different account:
+
+| Config key | Purpose |
+|---|---|
+| `Connect3Dp:MediaMTX:Admin:Username/Password` | Basic auth for the MediaMTX HTTP control API and RTSP publish URL (path registration + ffmpeg publishing). |
+| `Connect3Dp:MediaMTX:Viewer:Username/Password` | End-user credentials for reading streams (provided to client apps out-of-band). Leave blank for anonymous viewer access. |
+
+Corresponding MediaMTX auth config (via env vars or `mediamtx.yml`):
+
+```
+MTX_AUTHINTERNALUSERS_0_USER=admin
+MTX_AUTHINTERNALUSERS_0_PASS=adminpass
+MTX_AUTHINTERNALUSERS_0_PERMISSIONS_0_ACTION=api
+MTX_AUTHINTERNALUSERS_0_PERMISSIONS_1_ACTION=publish   # needed for ffmpeg RTSP publishing
+
+MTX_AUTHINTERNALUSERS_1_USER=viewer   # or "any" for anonymous
+MTX_AUTHINTERNALUSERS_1_PERMISSIONS_0_ACTION=read
+MTX_AUTHINTERNALUSERS_1_PERMISSIONS_1_ACTION=playback
+```

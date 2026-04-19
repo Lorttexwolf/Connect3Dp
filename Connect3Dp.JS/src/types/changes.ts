@@ -33,6 +33,7 @@ import type {
   LocalPrintJob,
   ScheduledPrint,
   MachineFileHandle,
+  MachineStreamingURLs,
 } from "./state.js";
 
 /** A C# KeyValuePair<K, V> serialized to JSON with camelCase naming policy. */
@@ -263,12 +264,9 @@ export interface MachineStateChanges {
   isLocalStorageScanningHasChanged: boolean;
   isLocalStorageScanningPrevious: boolean | null;
   isLocalStorageScanningNew: boolean | null;
-  streamingOMEURLHasChanged: boolean;
-  streamingOMEURLPrevious: string | null;
-  streamingOMEURLNew: string | null;
-  thumbnailOMEURLHasChanged: boolean;
-  thumbnailOMEURLPrevious: string | null;
-  thumbnailOMEURLNew: string | null;
+  streamingURLsHasChanged: boolean;
+  streamingURLsPrevious: MachineStreamingURLs | null;
+  streamingURLsNew: MachineStreamingURLs | null;
   notificationsAdded: Array<KVP<string, Notification>>;
   notificationsRemoved: string[];
   notificationsUpdated: Array<KVP<string, NotificationChanges>>;

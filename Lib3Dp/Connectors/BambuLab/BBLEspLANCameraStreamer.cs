@@ -56,7 +56,7 @@ namespace Lib3Dp.Connectors.BambuLab
 				}
 				catch (Exception)
 				{
-					await Task.Delay(2000, ct);
+					await Task.Delay(1500, ct);
 				}
 			}
 		}

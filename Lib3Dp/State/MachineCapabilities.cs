@@ -17,9 +17,9 @@ namespace Lib3Dp.State
 		/// </summary>
 		Control = 1 << 2,
 		/// <summary>
-		/// Machine supports the ability to post it's camera stream, along with thumbnails.
+		/// Machine exposes a camera feed relayed through MediaMTX; <see cref="IMachineState.StreamingURLs"/> will be populated.
 		/// </summary>
-		OME = 1 << 12,
+		Camera = 1 << 12,
 		/// <summary>
 		/// Machine supports toggling a light fixture.
 		/// </summary>

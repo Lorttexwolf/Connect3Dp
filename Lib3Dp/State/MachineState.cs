@@ -30,11 +30,15 @@ namespace Lib3Dp.State
 
 		public string? StreamingOMEURL { get; set; }
 		public string? ThumbnailOMEURL { get; set; }
+		public PrintSpeedRange? SpeedRange { get; set; }
+		public Dictionary<string, int> SpeedPresets { get; set; } = [];
 
 		// Store notifications keyed by MachineMessage so updates can be expressed as dictionary-updates in the generated updater.
 		public Dictionary<string, Notification> Notifications { get; set; } = [];
 
 		IReadOnlyDictionary<string, bool> IMachineState.Lights => Lights;
+		IReadOnlyDictionary<string, int> IMachineState.SpeedPresets => SpeedPresets;
+		PrintSpeedRange? IMachineState.SpeedRange => SpeedRange;
 		IReadOnlyDictionary<string, int> IMachineState.Fans => Fans;
 		IReadOnlyDictionary<string, HeatingElement> IMachineState.HeatingElements => HeatingElements;
 		IMachinePrintJob? IMachineState.CurrentJob => CurrentJob;

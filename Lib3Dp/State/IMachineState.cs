@@ -26,5 +26,7 @@ namespace Lib3Dp.State
 		bool IsLocalStorageScanning { get; }
 		string? StreamingOMEURL { get; }
 		string? ThumbnailOMEURL { get; }
+		PrintSpeedRange? SpeedRange { get; }
+		IReadOnlyDictionary<string, int> SpeedPresets { get; }
 	}
 }

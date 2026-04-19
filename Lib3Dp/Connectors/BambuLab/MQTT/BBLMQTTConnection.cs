@@ -192,6 +192,12 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 			await PublishCommand("print", "resume");
 		}
 
+		public Task PublishSetPrintSpeed(int bblLevel)
+		{
+			var commandData = new JsonObject { { "param", bblLevel.ToString() } };
+			return PublishCommand("print", "print_speed", commandData);
+		}
+
 		public async Task PublishLEDControl(string fixtureName, bool isOn)
 		{
 			var commandData = new JsonObject
@@ -503,6 +509,11 @@ namespace Lib3Dp.Connectors.BambuLab.MQTT
 				var remainingTimeSpan = TimeSpan.FromSeconds(mc_remaining_time);
 
 				data.Changes.UpdateCurrentJob(changes => changes.SetRemainingTime(remainingTimeSpan));
+			}
+
+			if (printJSON.TryGetInt32(out var spd_mag, "spd_mag"))
+			{
+				data.Changes.UpdateCurrentJob(changes => changes.SetPrintSpeedPercent(spd_mag));
 			}
 
 			if (printJSON.TryGetString(out var metadata_id, "subtask_id")

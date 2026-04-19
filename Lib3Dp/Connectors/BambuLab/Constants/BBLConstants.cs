@@ -224,5 +224,23 @@ namespace Lib3Dp.Connectors.BambuLab.Constants
 
 			public static readonly string[] WithFTPSessionReuse = [ModelX1C, ModelX1E];
 		}
+
+		public static readonly PrintSpeedRange BBLSpeedRange = new(50, 166);
+
+		public static readonly IReadOnlyDictionary<string, int> BBLSpeedPresets = new Dictionary<string, int>
+		{
+			["Silent"] = 50,
+			["Normal"] = 100,
+			["Sport"] = 124,
+			["Ludicrous"] = 166
+		};
+
+		public static int SpeedPercentToBBLLevel(int percent) => percent switch
+		{
+			< 75  => 1,
+			< 115 => 2,
+			< 145 => 3,
+			_     => 4
+		};
 	}
 }

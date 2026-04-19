@@ -523,6 +523,30 @@ namespace Lib3Dp.Connectors
 		}
 	#endregion
 
+	#region Print Speed
+	public abstract partial class MachineConnection
+	{
+		public async Task<MachineOperationResult> SetPrintSpeed(int speedPercent)
+		{
+			if (State.OpIfNotCapable(MachineCapabilities.PrintSpeedControl, out var uncapableResult)) return uncapableResult.Value;
+
+			var clamped = Math.Max(speedPercent, 1);
+
+			var mutateResult = await this.Mono.MutateUntil(
+				() => SetPrintSpeed_Internal(clamped),
+				() => this.State.CurrentJob?.PrintSpeedPercent == clamped,
+				TimeSpan.FromSeconds(10));
+
+			return mutateResult.IntoOperationResult(Constants.MachineMessages.FailedToSetPrintSpeed.Id, Constants.MachineMessages.FailedToSetPrintSpeed.Title, autoResolve: default);
+		}
+
+		protected virtual Task SetPrintSpeed_Internal(int speedPercent)
+		{
+			throw new NotImplementedException($"{nameof(SetPrintSpeed_Internal)} has not been implemented on the Connector");
+		}
+	}
+	#endregion
+
 	#region Toggle Light
 	public abstract partial class MachineConnection
 	{

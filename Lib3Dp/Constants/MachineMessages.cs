@@ -111,6 +111,14 @@ namespace Lib3Dp.Constants
 			MachineMessageActions.None,
 			default);
 
+		public static MachineMessage FailedToSetPrintSpeed => new(
+			"machine.printspeed.failed",
+			"Unable to Set Print Speed",
+			"An issue occurred changing print speed",
+			MachineMessageSeverity.Error,
+			MachineMessageActions.None,
+			default);
+
 		public static MachineMessage MUDoesNotExist(string unitID) => new(
 			$"machine.mu.notfound.{unitID}",
 			"Material Unit does not Exist",

@@ -65,5 +65,9 @@ namespace Lib3Dp.State
 		/// Machine supports print option INSPECT_FIRST_LAYER
 		/// </summary>
 		Print_Options_InspectFirstLayer = 1 << 10,
+		/// <summary>
+		/// Machine supports changing print speed during a print.
+		/// </summary>
+		PrintSpeedControl = 1 << 20,
 	}
 }

@@ -282,6 +282,11 @@ namespace Lib3Dp.Connectors.BambuLab
 			throw new NotSupportedException($"Setting fan speed is not implemented for Bambu Lab connections (requested {fanName} = {speedPercent}%).");
 		}
 
+		protected override Task SetPrintSpeed_Internal(int speedPercent)
+		{
+			return this.MQTT.PublishSetPrintSpeed(BBLConstants.SpeedPercentToBBLLevel(speedPercent));
+		}
+
 		protected override Task ClearBed_Internal()
 		{
 			return this.MQTT.PublishClearBed();
@@ -382,6 +387,13 @@ namespace Lib3Dp.Connectors.BambuLab
 			if (BBLConstants.ModelFeatures.WithFlowRateCali.Contains(model))
 			{
 				machineFeatures |= MachineCapabilities.Print_Options_FlowCalibration;
+			}
+
+			machineFeatures |= MachineCapabilities.PrintSpeedControl;
+			data.Changes.SetSpeedRange(BBLConstants.BBLSpeedRange);
+			foreach (var (name, pct) in BBLConstants.BBLSpeedPresets)
+			{
+				data.Changes.SetSpeedPresets(name, pct);
 			}
 
 			if (BBLConstants.ModelFeatures.WithClimateControl.Contains(model))

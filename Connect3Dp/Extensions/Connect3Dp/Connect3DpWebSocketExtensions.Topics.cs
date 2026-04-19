@@ -28,6 +28,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 				public const string StartPrint = "machine/startPrint";
 				public const string FindMatchingSpools = "machine/findMatchingSpools";
 				public const string ChangeMaterial = "machine/changeMaterial";
+				public const string SetPrintSpeed = "machine/setPrintSpeed";
 
 				public static class Configurations
 				{

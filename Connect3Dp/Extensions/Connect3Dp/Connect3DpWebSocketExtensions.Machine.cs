@@ -86,6 +86,7 @@ namespace Connect3Dp.Extensions.Connect3Dp
 		public record struct StopMachinePayload(string MachineID) : IMachineSpecificPayload;
 		public record struct ToggleLightMachinePayload(string MachineID, string FixtureName, bool IsOn) : IMachineSpecificPayload;
 		public record struct SetFanSpeedMachinePayload(string MachineID, string FanName, int SpeedPercent) : IMachineSpecificPayload;
+		public record struct SetPrintSpeedPayload(string MachineID, int SpeedPercent) : IMachineSpecificPayload;
 		public record struct StartPrintPayload(string MachineID, MachineFileHandle File, PrintOptions Options) : IMachineSpecificPayload;
 
 		public static WebSocketServer<Connect3DpWebSocketClient> WithMarkAsIdleAction(
@@ -117,6 +118,11 @@ namespace Connect3Dp.Extensions.Connect3Dp
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
 			ws.MapMachineSpecificAction<SetFanSpeedMachinePayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.SetFanSpeed,
 				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.SetFanSpeed(payload.FanName, payload.SpeedPercent)));
+
+		public static WebSocketServer<Connect3DpWebSocketClient> WithSetPrintSpeedMachine(
+			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>
+			ws.MapMachineSpecificAction<SetPrintSpeedPayload, ClientMessageMachineOperationResult>(machineCollection, Topics.Machine.SetPrintSpeed,
+				async (_, payload, machine) => ClientMessageMachineOperationResult.Of(await machine.SetPrintSpeed(payload.SpeedPercent)));
 
 		public static WebSocketServer<Connect3DpWebSocketClient> WithStartPrintMachine(
 			this WebSocketServer<Connect3DpWebSocketClient> ws, MachineConnectionCollection machineCollection) =>

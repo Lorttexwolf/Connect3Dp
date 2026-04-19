@@ -18,6 +18,7 @@ namespace Lib3Dp.State
 		public string? SubStage { get; set; }
 		public int? TotalMaterialUsage { get; set; }
 		public string? LocalPath { get; set; }
+		public int? PrintSpeedPercent { get; set; }
 		public Dictionary<SpoolLocation, int>? SpoolMaterialUsages { get; set; }
 
 		IReadOnlyDictionary<SpoolLocation, int>? IMachinePrintJob.MaterialUsages => SpoolMaterialUsages;

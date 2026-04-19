@@ -15,6 +15,7 @@ namespace Lib3Dp.State
 		MachineFileHandle? Thumbnail { get; }
 		string? SubStage { get; }
 		public int? TotalMaterialUsage { get; set; }
+		int? PrintSpeedPercent { get; }
 
 		/// <summary>
 		/// Maps each material source used by this print job to the amount consumed in grams.

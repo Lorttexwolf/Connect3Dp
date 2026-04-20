@@ -4,6 +4,7 @@ import type {
   StateDetails,
   SubscribeActionResult,
   WebSocketClientActionResult,
+  FindMatchingSpoolsResult,
 } from "./types/actions.js";
 import type { BroadcastedMachineStateUpdateData } from "./types/changes.js";
 import type { MessageToClient, MessageToServer } from "./types/common.js";
@@ -14,7 +15,7 @@ import type {
   MachineFileStoreTotalUsageResult,
 } from "./types/file-store.js";
 import type { LogEntry, LogHistoryParams, LogHistoryResult } from "./types/logging.js";
-import type { MachineFileHandle } from "./types/state.js";
+import type { MachineFileHandle, Material, SpoolLocation, MaterialToPrint } from "./types/state.js";
 
 // ---------------------------------------------------------------------------
 // Options
@@ -287,6 +288,62 @@ export class Connect3DpClient {
     );
   }
 
+  /**
+   * Start printing a local file (alias for startPrint).
+   */
+  startLocalPrint(
+    machineId: string,
+    file: MachineFileHandle,
+    options: PrintOptions
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this.startPrint(machineId, file, options);
+  }
+
+  /**
+   * Set the active print speed. `speedPercent` is 0–100 relative to the machine's
+   * speed range (see {@link IMachineState.speedRange} and {@link IMachineState.speedPresets}).
+   * Only available when the machine has the `PrintSpeedControl` capability.
+   */
+  setPrintSpeed(
+    machineId: string,
+    speedPercent: number
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this._request(
+      Topics.Machine.SetPrintSpeed,
+      { MachineID: machineId, SpeedPercent: speedPercent },
+      this._opts.controlRequestTimeoutMs
+    );
+  }
+
+  /**
+   * Find available spools that match required materials for a print job.
+   * Returns a Matches object with all potential matches, best matches, and missing materials.
+   */
+  findMatchingSpools(
+    machineId: string,
+    materialsToPrint: Record<number, MaterialToPrint>
+  ): Promise<FindMatchingSpoolsResult> {
+    return this._request(
+      Topics.Machine.FindMatchingSpools,
+      { MachineID: machineId, MaterialsToPrint: materialsToPrint }
+    );
+  }
+
+  /**
+   * Change the material in a specific spool location.
+   */
+  changeMaterial(
+    machineId: string,
+    location: SpoolLocation,
+    material: Material
+  ): Promise<ClientMessageMachineOperationResult> {
+    return this._request(
+      Topics.Machine.ChangeMaterial,
+      { MachineID: machineId, Location: location, Material: material },
+      this._opts.controlRequestTimeoutMs
+    );
+  }
+
   // -------------------------------------------------------------------------
   // Log streaming
   // -------------------------------------------------------------------------
@@ -328,6 +385,21 @@ export class Connect3DpClient {
   // -------------------------------------------------------------------------
   // File store
   // -------------------------------------------------------------------------
+
+  /**
+   * Download a machine file via HTTP.
+   * Derives the HTTP base URL from the WebSocket URL (ws:// → http://, wss:// → https://).
+   * The server checks its local file store first; if absent it fetches from the machine.
+   * Returns the raw `Response` — call `.blob()`, `.arrayBuffer()`, or `.body` on it.
+   */
+  downloadFile(handle: MachineFileHandle): Promise<Response> {
+    const httpBase = this._url.replace(/^wss?/, (m) => (m === "wss" ? "https" : "http"));
+    return fetch(`${httpBase}/machineFileStore/download`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(handle),
+    });
+  }
 
   getTotalFileStoreUsage(): Promise<MachineFileStoreTotalUsageResult> {
     return this._request(Topics.MachineFileStore.TotalUsage, {});

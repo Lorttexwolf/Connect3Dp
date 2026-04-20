@@ -28,7 +28,7 @@ public static class StateChangeDiffLogger
 		if (changes.IsLocalStorageScanningHasChanged)
 			sb.AppendLine($"  isLocalStorageScanning: {changes.IsLocalStorageScanningPrevious} → {changes.IsLocalStorageScanningNew}");
 		if (changes.StreamingURLsHasChanged)
-			sb.AppendLine($"  streamingURLs: {changes.StreamingURLsPrevious?.Glance.Url ?? "null"} → {changes.StreamingURLsNew?.Glance.Url ?? "null"}");
+			sb.AppendLine($"  streamingURLs: {changes.StreamingURLsPrevious?.Glance?.WhepUrl ?? "null"} → {changes.StreamingURLsNew?.Glance?.WhepUrl ?? "null"}");
 
 		// Lights
 		foreach (var kv in changes.LightsAdded ?? [])

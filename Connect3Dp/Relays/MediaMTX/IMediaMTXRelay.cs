@@ -24,9 +24,14 @@ namespace Connect3Dp.Relays.MediaMTX
 		Task RemovePath(string name, CancellationToken ct = default);
 
 		/// <summary>
-		/// The public WebRTC (WHEP) URL browsers should use to play this path.
+		/// The public WebRTC playback URL browsers should use to play this path.
 		/// </summary>
 		Uri GetWebRTCUrl(string name);
+
+		/// <summary>
+		/// The public HLS URL clients should use to play this path (e.g. for expo-video / AVPlayer).
+		/// </summary>
+		Uri GetHlsUrl(string name);
 
 		/// <summary>
 		/// The internal RTSP URL an in-process publisher should push to when the path was

@@ -37,6 +37,7 @@ export const MachineCapabilityFlags = {
   Print_Options_FlowCalibration: "Print_Options_FlowCalibration",
   Print_Options_VibrationCalibration: "Print_Options_VibrationCalibration",
   Print_Options_InspectFirstLayer: "Print_Options_InspectFirstLayer",
+  PrintSpeedControl: "PrintSpeedControl",
 } as const;
 
 /** Returns true when the machine's capabilities string includes the given flag. */
@@ -229,6 +230,8 @@ export interface PrintJob {
    * Values are grams used.
    */
   spoolMaterialUsages?: Record<string, number> | null;
+  /** 0–100 percent of the configured speed presets. */
+  printSpeedPercent?: number | null;
 }
 
 export interface HistoricPrintJob {
@@ -271,12 +274,13 @@ export interface CameraSpec {
 }
 
 export interface CameraStream {
-  url: string;
+  whepUrl: string;
+  hlsUrl: string | null;
   spec: CameraSpec | null;
 }
 
 export interface MachineStreamingURLs {
-  glance: CameraStream;
+  glance: CameraStream | null;
   full: CameraStream;
 }
 
@@ -309,8 +313,17 @@ export interface IMachineState {
   heatingElements: Record<string, HeatingElement>;
   isLocalStorageScanning: boolean;
   streamingURLs?: MachineStreamingURLs | null;
+  /** Allowed speed range for setPrintSpeed. Null when PrintSpeedControl is not in capabilities. */
+  speedRange?: PrintSpeedRange | null;
+  /** Named speed presets, e.g. { "Silent": 50, "Standard": 100, "Sport": 124, "Ludicrous": 166 }. */
+  speedPresets: Record<string, number>;
   /** Notifications keyed by message ID. */
   notifications: Record<string, Notification>;
+}
+
+export interface PrintSpeedRange {
+  min: number;
+  max: number;
 }
 
 // ---------------------------------------------------------------------------

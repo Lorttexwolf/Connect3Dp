@@ -74,7 +74,13 @@ namespace Connect3Dp.Relays.MediaMTX
 		public Uri GetWebRTCUrl(string name)
 		{
 			var baseUrl = Options.PublicWebRTCUrl.ToString().TrimEnd('/');
-			return new Uri($"{baseUrl}/{name}/whep");
+			return new Uri($"{baseUrl}/{name}");
+		}
+
+		public Uri GetHlsUrl(string name)
+		{
+			var baseUrl = Options.PublicHlsUrl.ToString().TrimEnd('/');
+			return new Uri($"{baseUrl}/{name}/index.m3u8");
 		}
 
 		public Uri GetRtspPublishUrl(string name)

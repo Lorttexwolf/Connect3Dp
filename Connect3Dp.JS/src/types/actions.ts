@@ -4,7 +4,7 @@
  * Client-sent payload properties can be any case — server deserializes case-insensitively.
  */
 
-import type { IMachineState, AtAGlanceMachineState, MachineMessage, MachineFileHandle } from "./state.js";
+import type { IMachineState, AtAGlanceMachineState, MachineMessage, MachineFileHandle, Material, SpoolLocation, MaterialToPrint } from "./state.js";
 
 // ---------------------------------------------------------------------------
 // StateDetails enum
@@ -87,4 +87,39 @@ export interface StartPrintPayload {
   /** The full file handle, as returned in LocalPrintJob.file. All four fields must match. */
   File: MachineFileHandle;
   Options: PrintOptions;
+}
+
+export interface SpoolMatch {
+  location: SpoolLocation;
+  materialInMatchedSpool: Material;
+  deltaE: number;
+}
+
+export interface Matches<K extends string | number, V> {
+  all: Record<K, V[]>;
+  match: Record<K, V>;
+  missing: K[];
+  hasMissing: boolean;
+}
+
+export interface FindMatchingSpoolsPayload {
+  MachineID: string;
+  /** Extruder index → MaterialToPrint. */
+  MaterialsToPrint: Record<number, MaterialToPrint>;
+}
+
+export interface FindMatchingSpoolsResult {
+  matches: Matches<number, SpoolMatch>;
+}
+
+export interface ChangeMaterialPayload {
+  MachineID: string;
+  Location: SpoolLocation;
+  Material: Material;
+}
+
+export interface SetPrintSpeedPayload {
+  MachineID: string;
+  /** 0–100 percent of the machine's speed range. */
+  SpeedPercent: number;
 }

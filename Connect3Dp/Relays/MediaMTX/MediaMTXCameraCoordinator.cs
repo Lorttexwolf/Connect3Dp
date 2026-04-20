@@ -109,7 +109,10 @@ namespace Connect3Dp.Relays.MediaMTX
 				{
 					case CameraSource.PullCameraSource pull:
 						await Relay.AddPullPath(baseName, pull.Upstream);
-						var pullStream = new CameraStream(Relay.GetWebRTCUrl(baseName).ToString(), pull.Spec);
+						var pullStream = new CameraStream(
+							Relay.GetWebRTCUrl(baseName).ToString(),
+							Relay.GetHlsUrl(baseName).ToString(),
+							pull.Spec);
 						urls = new MachineStreamingURLs(pullStream, Glance: null);
 						break;
 
@@ -129,15 +132,24 @@ namespace Connect3Dp.Relays.MediaMTX
 							session.Tracks.Add(new CameraTrack(glancePath,
 								Task.Run(() => RunPublisherWithRestartAsync(connection, glancePath,
 									Relay.GetRtspPublishUrl(glancePath), publisher.Glance, session.Cts.Token))));
-							glanceStream = new CameraStream(Relay.GetWebRTCUrl(glancePath).ToString(), publisher.GlanceSpec);
+							glanceStream = new CameraStream(
+								Relay.GetWebRTCUrl(glancePath).ToString(),
+								Relay.GetHlsUrl(glancePath).ToString(),
+								publisher.GlanceSpec);
 						}
 						else
 						{
-							glanceStream = new CameraStream(Relay.GetWebRTCUrl(fullPath).ToString(), publisher.FullSpec);
+							glanceStream = new CameraStream(
+								Relay.GetWebRTCUrl(fullPath).ToString(),
+								Relay.GetHlsUrl(fullPath).ToString(),
+								publisher.FullSpec);
 						}
 
 						urls = new MachineStreamingURLs(
-							new CameraStream(Relay.GetWebRTCUrl(fullPath).ToString(), publisher.FullSpec),
+							new CameraStream(
+								Relay.GetWebRTCUrl(fullPath).ToString(),
+								Relay.GetHlsUrl(fullPath).ToString(),
+								publisher.FullSpec),
 							glanceStream);
 
 						break;

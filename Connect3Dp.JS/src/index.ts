@@ -42,6 +42,9 @@ export type {
   MachineMessageAutoResolve,
   Notification,
   MachineFileHandle,
+  CameraSpec,
+  CameraStream,
+  MachineStreamingURLs,
 } from "./types/state.js";
 export { MachineStatusFlags, MachineCapabilityFlags, MUCapabilityFlags, hasCapability } from "./types/state.js";
 
@@ -74,6 +77,13 @@ export type {
   StopMachinePayload,
   ToggleLightMachinePayload,
   SetFanSpeedMachinePayload,
+  StartPrintPayload,
+  PrintOptions as StartPrintOptions,
+  SpoolMatch,
+  Matches,
+  FindMatchingSpoolsPayload,
+  FindMatchingSpoolsResult,
+  ChangeMaterialPayload,
 } from "./types/actions.js";
 export { StateDetails } from "./types/actions.js";
 

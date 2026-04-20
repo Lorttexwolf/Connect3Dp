@@ -129,11 +129,13 @@ namespace Connect3Dp.Host
 			var apiUrl = configuration["Connect3Dp:MediaMTX:ApiUrl"] ?? "http://localhost:9997";
 			var publishUrl = configuration["Connect3Dp:MediaMTX:PublishUrl"] ?? "rtsp://localhost:8554";
 			var webrtcUrl = configuration["Connect3Dp:MediaMTX:PublicWebRTCUrl"] ?? "http://localhost:8889";
+			var hlsUrl = configuration["Connect3Dp:MediaMTX:PublicHlsUrl"] ?? "http://localhost:8888";
 
 			return services.AddMediaMTXRelay(new MediaMTXRelayOptions(
 				ApiUrl: new Uri(apiUrl),
 				PublishUrl: new Uri(publishUrl),
 				PublicWebRTCUrl: new Uri(webrtcUrl),
+				PublicHlsUrl: new Uri(hlsUrl),
 				AdminUsername:  configuration["Connect3Dp:MediaMTX:Admin:Username"],
 				AdminPassword:  configuration["Connect3Dp:MediaMTX:Admin:Password"],
 				ViewerUsername: configuration["Connect3Dp:MediaMTX:Viewer:Username"],

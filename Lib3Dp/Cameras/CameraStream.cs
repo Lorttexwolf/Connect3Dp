@@ -1,4 +1,4 @@
 namespace Lib3Dp.Cameras
 {
-	public record CameraStream(string Url, CameraSpec? Spec);
+	public record CameraStream(string WhepUrl, string? HlsUrl, CameraSpec? Spec);
 }
